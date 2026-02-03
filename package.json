@@ -19,7 +19,8 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
-    "govuk-frontend": "^5.14.0"
+    "govuk-frontend": "^5.14.0",
+    "prototype-annotator": "^0.2.3"
   },
   "devDependencies": {
     "concurrently": "^8.2.2",

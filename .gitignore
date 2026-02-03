@@ -30,3 +30,6 @@ coverage/
 
 # Agent workflow
 .claude/implement-queue.json
+
+# Prototype annotator - development annotation data
+/prototype-annotator/
