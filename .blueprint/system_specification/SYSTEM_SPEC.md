@@ -520,16 +520,41 @@ npm run dev          # Hot-reloading development mode
 
 ### 12.9 GOV.UK Design System Integration
 
-**Package:** `govuk-frontend` (npm)
+**Package:** `govuk-frontend` v5.14.0 (npm)
 
 **Implementation Approach:**
 - Use GOV.UK Design System components as base
 - React wrapper components for GOV.UK patterns
 - Typography, spacing, and colour from GOV.UK Frontend
 - Progressive enhancement: core functionality works without JavaScript
+- **Rebrand enabled:** Uses the 2024 GOV.UK rebrand with blue header and Tudor Crown
+
+**Sass Configuration:**
+```scss
+// client/src/styles/index.scss
+@use 'govuk-frontend' as *;
+```
+
+**HTML Configuration:**
+```html
+<!-- client/index.html -->
+<html lang="en" class="govuk-template govuk-template--rebranded">
+```
+
+**Asset Requirements:**
+- Copy `node_modules/govuk-frontend/dist/govuk/assets/` to `client/public/assets/`
+- Includes: fonts (GDS Transport woff/woff2), images (favicon, crown, icons), manifest.json
+
+**Header Component Requirements:**
+- Must include Tudor Crown SVG inline (not loaded from CSS)
+- Must include GOV.UK logotype SVG with raised dot (`govuk-logo-dot` class)
+- SVG viewBox: `0 0 324 60`, dimensions: 162x30
 
 **Key Components:**
-- GOV.UK Header and Footer
+- GOV.UK Header with Tudor Crown and blue background (rebrand)
+- GOV.UK Footer
+- Phase Banner (ALPHA/BETA indicators)
+- Skip Link for accessibility
 - Form components (text inputs, radios, checkboxes, date inputs)
 - Error summary and validation patterns
 - Task list pattern for multi-step journeys
@@ -558,3 +583,4 @@ npm run dev          # Hot-reloading development mode
 |------|--------|--------|-------------|
 | 2026-02-03 | Initial system specification created | Baseline system design from business context | Pending Review |
 | 2026-02-03 | Added Technical Architecture section (Section 12) | Define technology stack, project structure, and implementation approach | Pending Review |
+| 2026-02-03 | Updated Section 12.9 with GOV.UK Frontend v5 details | Document rebrand class, asset requirements, and Header SVG requirements after v5 upgrade | Pending Review |
