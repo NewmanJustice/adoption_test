@@ -34,10 +34,14 @@
 
   "postCreateCommand": "bash .devcontainer/setup.sh && .devcontainer/claudeinit.sh",
 
-  "forwardPorts": [3000],
+  "forwardPorts": [3000, 3001],
   "portsAttributes": {
     "3000": {
-      "label": "HMCTS Possessions Prototype",
+      "label": "Frontend (Vite)",
+      "onAutoForward": "notify"
+    },
+    "3001": {
+      "label": "Backend (Express API)",
       "onAutoForward": "notify"
     }
   },
