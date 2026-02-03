@@ -275,7 +275,53 @@ The System Spec Section 12.4 does not explicitly state:
 
 ---
 
-## 12. Change Log (Feature-Level)
+## 12. Implementation Details (Post-Implementation)
+
+### Backend Implementation
+
+**API Endpoints:**
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/auth/login` | POST | Create session with `{ username, role }`, returns `{ redirectUrl }` |
+| `/api/auth/logout` | POST | Destroy session, idempotent |
+| `/api/auth/session` | GET | Returns `{ authenticated, user, authMode }` |
+
+**Files Created:**
+- `server/src/types/auth.ts` - TypeScript interfaces
+- `server/src/config/roles.ts` - Role constants and validation
+- `server/src/config/session.ts` - Session configuration
+- `server/src/middleware/sessionMiddleware.ts` - Express-session setup
+- `server/src/middleware/authMiddleware.ts` - `requireAuth({ allowedRoles })` middleware
+- `server/src/services/sessionService.ts` - Session business logic
+- `server/src/controllers/authController.ts` - Request handlers
+- `server/src/routes/auth.ts` - Auth route definitions
+- `server/src/utils/urlSanitiser.ts` - Prevent open redirects
+
+### Frontend Implementation
+
+**Pages Created:**
+- `client/src/pages/LoginPage.tsx` - Mock login form with role selection
+- `client/src/pages/DashboardPage.tsx` - Authenticated dashboard with session info
+
+**Routing:**
+- `/` - Landing page with "Start now" button
+- `/login` - Login form
+- `/dashboard` - Protected dashboard (redirects to /login if not authenticated)
+
+**Dependencies Added:**
+- `react-router-dom` - Client-side routing
+- `express-session` - Server-side session management
+
+### Session Configuration
+- Memory store (development only)
+- 30-minute timeout
+- httpOnly, secure cookies (secure only in production)
+- `authMode: 'mock'` indicator in session response
+
+---
+
+## 13. Change Log (Feature-Level)
 | Date | Change | Reason | Raised By |
 |------|--------|--------|-----------|
 | 2026-02-03 | Initial feature specification created | Implement Phase 1 mock authentication per System Spec Section 12.4 | Alex |
+| 2026-02-03 | Added implementation details | Document backend API and frontend UI implementation | Codey |
