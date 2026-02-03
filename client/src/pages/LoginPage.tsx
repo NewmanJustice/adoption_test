@@ -6,12 +6,12 @@ import Footer from '../components/Footer';
 import { useNavigate } from 'react-router-dom';
 
 const ROLES = [
-  { value: 'hmcts_case_officer', label: 'HMCTS Case Officer' },
-  { value: 'judge', label: 'Judge / Legal Adviser' },
-  { value: 'cafcass_officer', label: 'Cafcass Officer' },
-  { value: 'la_social_worker', label: 'Local Authority Social Worker' },
-  { value: 'vaa_worker', label: 'Voluntary Adoption Agency Worker' },
-  { value: 'adopter', label: 'Adopter' },
+  { value: 'HMCTS_CASE_OFFICER', label: 'HMCTS Case Officer' },
+  { value: 'JUDGE_LEGAL_ADVISER', label: 'Judge / Legal Adviser' },
+  { value: 'CAFCASS_OFFICER', label: 'Cafcass Officer' },
+  { value: 'LA_SOCIAL_WORKER', label: 'Local Authority Social Worker' },
+  { value: 'VAA_WORKER', label: 'Voluntary Adoption Agency Worker' },
+  { value: 'ADOPTER', label: 'Adopter' },
 ];
 
 const LoginPage: React.FC = () => {
