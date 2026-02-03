@@ -1,0 +1,24 @@
+import dotenv from 'dotenv';
+
+// Load environment variables
+dotenv.config();
+
+export const config = {
+  nodeEnv: process.env.NODE_ENV || 'development',
+  port: parseInt(process.env.PORT || '3001', 10),
+  databaseUrl: process.env.DATABASE_URL || 'postgresql://adoption:adoption@localhost:5432/adoption',
+  corsOrigins: process.env.CORS_ORIGINS?.split(',') || ['http://localhost:3000'],
+  sessionSecret: process.env.SESSION_SECRET || 'development-secret',
+};
+
+/**
+ * Validate required environment variables
+ */
+export function validateEnv(): void {
+  const required = ['DATABASE_URL'];
+  const missing = required.filter((key) => !process.env[key]);
+
+  if (missing.length > 0 && config.nodeEnv === 'production') {
+    throw new Error(`Missing required environment variables: ${missing.join(', ')}`);
+  }
+}
