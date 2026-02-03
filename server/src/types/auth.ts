@@ -20,6 +20,8 @@ export interface SessionUser {
   role: UserRole;
   createdAt: string;
   lastAccessedAt: string;
+  courtAssignment?: string;
+  organisationId?: string;
 }
 
 /**
@@ -60,6 +62,8 @@ export interface LoginRequestBody {
   username?: string;
   role?: string;
   returnUrl?: string;
+  courtAssignment?: string;
+  organisationId?: string;
 }
 
 /**

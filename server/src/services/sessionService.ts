@@ -1,16 +1,23 @@
 import { AuthRequest, SessionUser, UserRole } from '../types/auth';
 
+export interface CreateSessionOptions {
+  courtAssignment?: string;
+  organisationId?: string;
+}
+
 /**
  * Create a new session for a user
  *
  * @param req - Express request with session
  * @param userId - The user's identifier (username)
  * @param role - The user's role
+ * @param options - Additional session options
  */
 export function createSession(
   req: AuthRequest,
   userId: string,
-  role: UserRole
+  role: UserRole,
+  options: CreateSessionOptions = {}
 ): void {
   const now = new Date().toISOString();
 
@@ -19,6 +26,8 @@ export function createSession(
     role,
     createdAt: now,
     lastAccessedAt: now,
+    courtAssignment: options.courtAssignment,
+    organisationId: options.organisationId,
   };
 
   req.session.user = sessionUser;

@@ -47,7 +47,10 @@ export async function login(
 
   // Create session
   const validRole = role as UserRole;
-  createSession(req, username.trim(), validRole);
+  createSession(req, username.trim(), validRole, {
+    courtAssignment: body.courtAssignment,
+    organisationId: body.organisationId,
+  });
 
   // Determine redirect URL
   let redirectUrl = getRedirectForRole(validRole);

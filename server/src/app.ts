@@ -6,6 +6,7 @@ import { sessionMiddleware } from './middleware/sessionMiddleware';
 import healthRouter from './routes/health';
 import authRouter from './routes/auth';
 import protectedRouter from './routes/protected';
+import caseRouter from './routes/cases';
 import { errorHandler } from './middleware/errorHandler';
 import { notFoundHandler } from './middleware/notFound';
 
@@ -40,6 +41,9 @@ app.use('/api', authRouter);
 
 // Protected routes (require authentication)
 app.use('/api', protectedRouter);
+
+// Case management routes
+app.use('/api', caseRouter);
 
 // 404 handler for unmatched routes
 app.use(notFoundHandler);
