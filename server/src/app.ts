@@ -2,7 +2,10 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import { config } from './config';
+import { sessionMiddleware } from './middleware/sessionMiddleware';
 import healthRouter from './routes/health';
+import authRouter from './routes/auth';
+import protectedRouter from './routes/protected';
 import { errorHandler } from './middleware/errorHandler';
 import { notFoundHandler } from './middleware/notFound';
 
@@ -21,8 +24,22 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Session middleware (must come before auth routes)
+app.use(sessionMiddleware);
+
 // API routes
 app.use('/api', healthRouter);
+
+// Public health endpoint (accessible without auth)
+app.get('/api/public/health', (_req, res) => {
+  res.json({ status: 'ok' });
+});
+
+// Auth routes (login, logout, session - all public)
+app.use('/api', authRouter);
+
+// Protected routes (require authentication)
+app.use('/api', protectedRouter);
 
 // 404 handler for unmatched routes
 app.use(notFoundHandler);

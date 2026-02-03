@@ -24,8 +24,7 @@ npm-debug.log*
 # Coverage
 coverage/
 
-# Temp files
-temp_context/*.md
+# Business context files
 .business_context/*.md
 .devcontainer/claudeinit.sh
 

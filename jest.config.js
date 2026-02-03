@@ -5,6 +5,13 @@ module.exports = {
       displayName: 'scaffold',
       testMatch: ['<rootDir>/test/**/*.test.js'],
       testEnvironment: 'node',
+      preset: 'ts-jest',
+      transform: {
+        '^.+\\.tsx?$': 'ts-jest',
+      },
+      moduleNameMapper: {
+        '^@adoption/shared$': '<rootDir>/shared',
+      },
     },
     {
       displayName: 'server',
