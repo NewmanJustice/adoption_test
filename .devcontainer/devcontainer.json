@@ -32,7 +32,7 @@
     }
   },
 
-  "postCreateCommand": "bash .devcontainer/setup.sh && .devcontainer/claudeinit.sh",
+  "postCreateCommand": "bash .devcontainer/setup.sh && .devcontainer/claudeinit.sh && docker compose up -d",
 
   "forwardPorts": [3000, 3001],
   "portsAttributes": {
