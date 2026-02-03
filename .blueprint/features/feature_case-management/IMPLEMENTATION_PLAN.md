@@ -1,57 +1,136 @@
 # Implementation Plan - Case Management Feature
 
 ## Summary
-Implement case management APIs for creating, viewing, listing, and updating adoption cases with role-based access control and audit logging. The implementation follows the existing Express/TypeScript patterns in `server/src/` and requires new routes, controllers, services, repositories, and database migrations. Tests import from `../server/src/app`, so the app export must remain compatible.
+Case management feature enabling creation, viewing, listing, and status updates of adoption cases with role-based access control and audit logging.
 
-## Files to Create/Modify
+---
 
-| Path | Action | Purpose |
-|------|--------|---------|
-| `server/src/types/case.ts` | Create | Case, CaseStatus, AdoptionType types and interfaces |
-| `server/src/types/audit.ts` | Create | AuditAction, AuditLogEntry types |
-| `server/src/types/assignment.ts` | Create | CaseAssignment, AssignmentType types |
-| `server/src/migrations/001_create_cases.sql` | Create | Cases table with enums, indexes, triggers |
-| `server/src/migrations/002_create_audit_log.sql` | Create | Audit log table with immutability triggers |
-| `server/src/migrations/003_create_assignments.sql` | Create | Case assignments and organisations tables |
-| `server/src/repositories/caseRepository.ts` | Create | Database operations for cases (CRUD, queries) |
-| `server/src/repositories/auditRepository.ts` | Create | Audit log persistence operations |
-| `server/src/repositories/assignmentRepository.ts` | Create | Case assignment persistence operations |
-| `server/src/services/caseService.ts` | Create | Business logic for case operations |
-| `server/src/services/auditService.ts` | Create | Audit logging service (async-safe) |
-| `server/src/services/accessControlService.ts` | Create | Role-based access evaluation logic |
-| `server/src/services/caseNumberService.ts` | Create | Case number generation (COURT/YEAR/SEQ) |
-| `server/src/controllers/caseController.ts` | Create | HTTP handlers for case endpoints |
-| `server/src/middleware/caseAccessMiddleware.ts` | Create | Per-case access control enforcement |
-| `server/src/routes/cases.ts` | Create | Case API route definitions |
-| `server/src/app.ts` | Modify | Register case routes |
-| `server/src/types/auth.ts` | Modify | Add courtAssignment, organisationId to SessionUser |
+## Phase 1: Backend API (COMPLETE)
 
-## Implementation Steps
+### Files Created
+| Path | Purpose |
+|------|---------|
+| `server/src/types/case.ts` | Case, CaseStatus, AdoptionType types |
+| `server/src/repositories/caseRepository.ts` | In-memory data persistence with CRUD, assignments, audit |
+| `server/src/services/caseService.ts` | Business logic, access control, status transitions |
+| `server/src/controllers/caseController.ts` | HTTP handlers for all endpoints |
+| `server/src/routes/cases.ts` | Express route definitions |
 
-1. **Extend auth types** - Add `courtAssignment` and `organisationId` to SessionUser interface and update mock login to accept these fields. Update authController to handle extended user context.
+### Files Modified
+| Path | Change |
+|------|--------|
+| `server/src/types/auth.ts` | Added courtAssignment, organisationId to SessionUser |
+| `server/src/services/sessionService.ts` | Extended session options |
+| `server/src/controllers/authController.ts` | Pass extended context to session |
+| `server/src/app.ts` | Registered case management routes |
 
-2. **Create case types** - Define AdoptionType enum (6 values), CaseStatus enum (9 values), Case interface, CreateCaseRequest, UpdateCaseRequest, and API response types matching test expectations.
+### API Endpoints Implemented
+| Method | Endpoint | Purpose |
+|--------|----------|---------|
+| POST | `/api/cases` | Create case (HMCTS only) |
+| GET | `/api/cases` | List cases (role-filtered) |
+| GET | `/api/cases/:id` | View case (with redaction) |
+| DELETE | `/api/cases/:id` | Soft-delete case |
+| PATCH | `/api/cases/:id/status` | Update status |
+| GET | `/api/cases/:id/audit` | View audit log |
+| POST | `/api/cases/:id/assignments` | Create assignment |
 
-3. **Create database migrations** - Write SQL for cases table with enums, audit_log with immutability triggers, and case_assignments/case_organisations tables. Include indexes for common queries.
+### Test Status
+- **107/107 tests passing**
+- Commit: `5eca031`
 
-4. **Implement repositories** - Create caseRepository (create, findById, findByFilters, updateStatus, softDelete), auditRepository (create, findByCaseId), assignmentRepository (create, revoke, findByCaseAndUser).
+---
 
-5. **Implement core services** - Build caseNumberService for COURT/YEAR/SEQ generation, accessControlService for role-based access evaluation per the AC matrix, auditService for async logging.
+## Phase 2: Frontend UI (PENDING)
 
-6. **Implement case service** - Create caseService with createCase (validates, generates number, logs), getCase (applies redaction for adopters), listCases (role-filtered), updateStatus (validates transitions and role authority).
+### Files to Create
+| Path | Purpose | Story ACs |
+|------|---------|-----------|
+| `client/src/pages/CaseListPage.tsx` | Case listing with role-based filtering | story-list-cases AC-1, AC-8, AC-10, AC-13-15, AC-18-19 |
+| `client/src/pages/CaseDetailPage.tsx` | Case detail view with redaction | story-view-case AC-1-3, AC-9-13, AC-16 |
+| `client/src/pages/CreateCasePage.tsx` | Case creation form (HMCTS only) | story-create-case AC-1-5, AC-14-17 |
+| `client/src/pages/UpdateStatusPage.tsx` | Status update form | story-update-case-status AC-1-2, AC-5, AC-13-16 |
+| `client/src/components/CaseStatusTag.tsx` | GOV.UK tag for status display | story-list-cases AC-18 |
+| `client/src/components/CaseTable.tsx` | Case list table component | story-list-cases AC-1, AC-19 |
+| `client/src/components/Pagination.tsx` | GOV.UK pagination component | story-list-cases AC-10 |
+| `client/src/services/caseService.ts` | API client for case operations | All stories |
 
-7. **Implement case controller** - HTTP handlers: POST /api/cases (201/400/403), GET /api/cases (200/401), GET /api/cases/:id (200/403/404), PATCH /api/cases/:id/status (200/400/403/409), GET /api/cases/:id/audit (200/403).
+### Files to Modify
+| Path | Change |
+|------|--------|
+| `client/src/App.tsx` | Add routes for case pages |
+| `client/src/pages/DashboardPage.tsx` | Add link/redirect to case list |
 
-8. **Implement access control middleware** - Middleware that evaluates case-level access per role rules (HMCTS by court, Judge/Cafcass by assignment, LA/VAA by organisation, Adopter by APPLICANT assignment).
+### Implementation Steps
 
-9. **Implement assignment endpoints** - POST /api/cases/:id/assignments (201/403), GET /api/cases/:id/assignments (200), DELETE /api/cases/:id/assignments/:aid (200). Only HMCTS can manage.
+1. **Create case API service** - Client-side service to call case endpoints with proper error handling and type safety.
 
-10. **Register routes and test** - Mount caseRouter in app.ts, run test suite incrementally, fix discrepancies between test expectations and story ACs (note: tests use different status values than stories).
+2. **Create CaseStatusTag component** - GOV.UK tag component with colour coding for different statuses (green for granted, red for refused/withdrawn, blue for active states).
 
-## Risks/Questions
+3. **Create Pagination component** - Reusable GOV.UK pagination following design system patterns.
 
-- **Enum mismatch**: Tests define statuses like SUBMITTED, IN_ASSESSMENT, PENDING_HEARING but stories use DIRECTIONS, CONSENT_AND_REPORTING, FINAL_HEARING. Tests are the contract - implement to match test values.
-- **Adopter case linking**: Tests expect `applicantIds` array and APPLICANT assignment. Stories mention assignment by HMCTS - confirm automatic linking or manual assignment workflow.
-- **Court code derivation**: Tests expect "Birmingham Family Court" -> "BFC". Need utility to extract court code from name (first letter of each word).
-- **Version/conflict handling**: Tests expect `version` field for optimistic locking on status updates - need to track case version or use updatedAt timestamp.
-- **In-memory vs PostgreSQL**: Tests may need mocked repositories for speed. Consider repository interface pattern for test doubles.
+4. **Create CaseTable component** - Accessible table with proper headers, scope attributes, and row click navigation.
+
+5. **Implement CaseListPage** -
+   - Fetch cases from API on mount
+   - Display in CaseTable with pagination
+   - Show "Create case" button for HMCTS only
+   - Handle empty state
+   - Handle loading and error states
+
+6. **Implement CaseDetailPage** -
+   - Fetch case by ID from URL params
+   - Display case details in GOV.UK summary list
+   - Show/hide fields based on `redacted` flag
+   - Display permissions-based action buttons
+   - Show case history section
+   - Handle 404 and 403 responses
+
+7. **Implement CreateCasePage** -
+   - GOV.UK form with radios for case type
+   - Text input for assigned court
+   - Optional fields for linked reference and notes
+   - Client-side validation with GOV.UK error summary
+   - Redirect non-HMCTS users
+   - Success redirect to case detail
+
+8. **Implement UpdateStatusPage** -
+   - Display current status
+   - Show available transitions as radios
+   - Require reason for ON_HOLD/APPLICATION_WITHDRAWN
+   - Handle 409 conflict response
+   - Redirect to case detail on success
+
+9. **Add routes to App.tsx** -
+   ```tsx
+   /cases - CaseListPage
+   /cases/create - CreateCasePage (HMCTS only)
+   /cases/:id - CaseDetailPage
+   /cases/:id/status - UpdateStatusPage
+   /my-cases - Redirect adopters to filtered list
+   ```
+
+10. **Update DashboardPage** - Add prominent link to case list.
+
+### Acceptance Criteria Coverage
+
+| Story | UI ACs | Status |
+|-------|--------|--------|
+| story-create-case | AC-1,2,3,4,5,14,15,16,17 | Pending |
+| story-list-cases | AC-1,8,10,13,14,15,16,18,19 | Pending |
+| story-view-case | AC-1,2,3,9,10,11,12,13,14,16 | Pending |
+| story-update-case-status | AC-1,2,5,13,14,15,16 | Pending |
+
+### Dependencies
+- GOV.UK Frontend components (already installed)
+- React Router (already configured)
+- Session context for role checking
+
+---
+
+## Risks/Considerations
+
+- **Auth context needed in frontend** - Components need access to current user role to conditionally render actions. May need React context or fetch from `/api/auth/session`.
+- **Loading states** - All pages need proper loading spinners following GOV.UK patterns.
+- **Error boundaries** - Consider error boundary for API failures.
+- **Mobile responsiveness** - Tables may need responsive treatment on small screens.

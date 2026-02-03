@@ -1,18 +1,32 @@
-import React from 'react';
+import { Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
+import { SessionProvider } from './context/SessionContext';
+
+const CaseListPage = lazy(() => import('./pages/CaseListPage'));
+const CaseDetailPage = lazy(() => import('./pages/CaseDetailPage'));
+const CreateCasePage = lazy(() => import('./pages/CreateCasePage'));
+const UpdateStatusPage = lazy(() => import('./pages/UpdateStatusPage'));
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/dashboard" element={<DashboardPage />} />
-      </Routes>
-    </BrowserRouter>
+    <SessionProvider>
+      <BrowserRouter>
+        <Suspense fallback={<div className="govuk-body">Loading...</div>}>
+          <Routes>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/cases" element={<CaseListPage />} />
+            <Route path="/cases/create" element={<CreateCasePage />} />
+            <Route path="/cases/:id" element={<CaseDetailPage />} />
+            <Route path="/cases/:id/status" element={<UpdateStatusPage />} />
+          </Routes>
+        </Suspense>
+      </BrowserRouter>
+    </SessionProvider>
   );
 }
 

@@ -111,11 +111,13 @@ const DashboardPage: React.FC = () => {
 
           <ul className="govuk-list">
             <li>
-              <a href="#" className="govuk-link">View cases (coming soon)</a>
+              <a href="/cases" className="govuk-link">View cases</a>
             </li>
-            <li>
-              <a href="#" className="govuk-link">Create new case (coming soon)</a>
-            </li>
+            {session?.user?.role === 'HMCTS_CASE_OFFICER' && (
+              <li>
+                <a href="/cases/create" className="govuk-link">Create new case</a>
+              </li>
+            )}
             <li>
               <a href="#" className="govuk-link">Upload documents (coming soon)</a>
             </li>

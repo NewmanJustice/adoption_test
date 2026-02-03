@@ -32,6 +32,17 @@ module.exports = {
         '\\.(css|scss)$': 'identity-obj-proxy',
       },
       setupFilesAfterEnv: ['<rootDir>/client/jest.setup.ts'],
+      transform: {
+        '^.+\\.tsx?$': ['ts-jest', {
+          tsconfig: {
+            jsx: 'react-jsx',
+            esModuleInterop: true,
+            allowSyntheticDefaultImports: true,
+            module: 'commonjs',
+            moduleResolution: 'node',
+          },
+        }],
+      },
     },
     {
       displayName: 'shared',
