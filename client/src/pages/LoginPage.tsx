@@ -4,6 +4,7 @@ import Header from '../components/Header';
 import PhaseBanner from '../components/PhaseBanner';
 import Footer from '../components/Footer';
 import { useNavigate } from 'react-router-dom';
+import { useSession } from '../context/SessionContext';
 
 const ROLES = [
   { value: 'HMCTS_CASE_OFFICER', label: 'HMCTS Case Officer' },
@@ -16,6 +17,7 @@ const ROLES = [
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
+  const { refreshSession } = useSession();
   const [username, setUsername] = useState('');
   const [role, setRole] = useState('');
   const [error, setError] = useState('');
@@ -48,6 +50,7 @@ const LoginPage: React.FC = () => {
       const data = await response.json();
 
       if (response.ok) {
+        await refreshSession();
         navigate(data.redirectUrl || '/dashboard');
       } else {
         setError(data.error || 'Login failed');
