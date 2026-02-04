@@ -53,6 +53,7 @@ jobs:
           {
             "name": "adoption-server-deploy",
             "version": "1.0.0",
+            "type": "module",
             "main": "dist/index.js",
             "scripts": {
               "start": "node dist/index.js"
