@@ -48,7 +48,12 @@ jobs:
           # Copy built server code
           cp -r server/dist/* deploy/dist/
 
-          # Create package.json with production dependencies
+          # Verify client assets were copied
+          echo "=== Client assets in server/dist/public ==="
+          ls -la server/dist/public/
+          ls -la server/dist/public/assets/ || echo "No assets folder"
+
+          # Create package.json with production dependencies (no prototype-annotator - using local)
           cat > deploy/package.json << 'EOF'
           {
             "name": "adoption-server-deploy",
@@ -67,8 +72,7 @@ jobs:
               "express": "^4.18.2",
               "express-session": "^1.19.0",
               "helmet": "^7.1.0",
-              "pg": "^8.11.3",
-              "prototype-annotator": "^0.2.3"
+              "pg": "^8.11.3"
             }
           }
           EOF
@@ -92,16 +96,47 @@ jobs:
           }
           EOF
 
+      - name: Copy local prototype-annotator package
+        run: |
+          mkdir -p deploy/node_modules/prototype-annotator
+          # Copy dist files (server-side)
+          cp -r packages/prototype-annotator/dist/* deploy/node_modules/prototype-annotator/
+          mkdir -p deploy/node_modules/prototype-annotator/dist
+          cp -r packages/prototype-annotator/dist/* deploy/node_modules/prototype-annotator/dist/
+          # Copy client dist (overlay.js, dashboard)
+          mkdir -p deploy/node_modules/prototype-annotator/client
+          cp -r packages/prototype-annotator/client/dist deploy/node_modules/prototype-annotator/client/
+          # Create package.json
+          cat > deploy/node_modules/prototype-annotator/package.json << 'EOF'
+          {
+            "name": "prototype-annotator",
+            "version": "0.2.4",
+            "type": "module",
+            "main": "./dist/index.js",
+            "types": "./dist/index.d.ts",
+            "exports": {
+              ".": {
+                "import": "./dist/index.js",
+                "types": "./dist/index.d.ts"
+              }
+            }
+          }
+          EOF
+
       - name: Verify deployment package
         run: |
           echo "=== Package structure ==="
           ls -la deploy/
+          echo "=== Dist public folder ==="
+          ls -la deploy/dist/public/ || echo "No public folder!"
+          echo "=== Dist public assets ==="
+          ls -la deploy/dist/public/assets/ || echo "No assets folder!"
           echo "=== Node modules ==="
           ls deploy/node_modules/ | head -20
           echo "=== prototype-annotator ==="
           ls -la deploy/node_modules/prototype-annotator/
-          echo "=== prototype-annotator dist ==="
-          ls -la deploy/node_modules/prototype-annotator/dist/
+          echo "=== prototype-annotator client/dist ==="
+          ls -la deploy/node_modules/prototype-annotator/client/dist/
           echo "=== prototype-annotator package.json ==="
           cat deploy/node_modules/prototype-annotator/package.json
 
