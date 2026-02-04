@@ -300,9 +300,11 @@ The Adoption Digital Platform exists to digitise and streamline the end-to-end j
 
 ### Security
 - Ministry of Justice Security Standards compliance
+- **HTTPS required** for all environments (enforced via Azure App Service HTTPS-only setting)
 - Data encryption at rest and in transit
 - No sensitive data exposure to external or non-permitted AI models
 - Anonymisation where possible for AI processing
+- Session cookies configured with `secure: true` and `sameSite: lax` in production
 
 ### Scalability
 - Support national caseload across England & Wales
@@ -395,8 +397,14 @@ The Adoption Digital Platform exists to digitise and streamline the end-to-end j
 
 **Environment Variables:**
 ```
-# Database
-DATABASE_URL=postgresql://user:pass@host:5432/dbname
+# Application Environment (controls database URL selection)
+APP_ENV=LOCAL|DEV|TEST|PROD
+
+# Database (one per environment)
+LOCAL_DATABASE_URL=postgresql://adoption:adoption@localhost:5432/adoption
+DEV_DATABASE_URL=postgresql://user:pass@dev-host:5432/dbname?sslmode=require
+TEST_DATABASE_URL=postgresql://user:pass@test-host:5432/dbname?sslmode=require
+PROD_DATABASE_URL=postgresql://user:pass@prod-host:5432/dbname?sslmode=require
 
 # API Keys
 ANTHROPIC_API_KEY=sk-...
@@ -410,9 +418,13 @@ GOVUK_ONE_LOGIN_CLIENT_SECRET=...
 FEATURE_AI_SUMMARISATION=true|false
 FEATURE_AI_RISK_FLAGGING=true|false
 
+# Prototype Annotator (dev/test environments only)
+ANNOTATION_ENABLED=true|false
+ANNOTATION_DB_PATH=/home/prototype-annotator/annotator.sqlite
+
 # Application
-NODE_ENV=development|test|production
-PORT=3000
+NODE_ENV=development|production
+PORT=3001
 ```
 
 **Secrets Management:** Environment variables for local development; Azure Key Vault for production secrets.
@@ -584,3 +596,4 @@ npm run dev          # Hot-reloading development mode
 | 2026-02-03 | Initial system specification created | Baseline system design from business context | Pending Review |
 | 2026-02-03 | Added Technical Architecture section (Section 12) | Define technology stack, project structure, and implementation approach | Pending Review |
 | 2026-02-03 | Updated Section 12.9 with GOV.UK Frontend v5 details | Document rebrand class, asset requirements, and Header SVG requirements after v5 upgrade | Pending Review |
+| 2026-02-04 | Added HTTPS requirement and updated environment variables | Document APP_ENV pattern, HTTPS enforcement, and session cookie security | Pending Review |
