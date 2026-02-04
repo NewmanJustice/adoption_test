@@ -53,7 +53,8 @@ jobs:
           ls -la server/dist/public/
           ls -la server/dist/public/assets/ || echo "No assets folder"
 
-          # Create package.json with production dependencies (no prototype-annotator - using local)
+          # Create package.json with production dependencies
+          # Include prototype-annotator's dependencies since we're using local copy
           cat > deploy/package.json << 'EOF'
           {
             "name": "adoption-server-deploy",
@@ -72,7 +73,10 @@ jobs:
               "express": "^4.18.2",
               "express-session": "^1.19.0",
               "helmet": "^7.1.0",
-              "pg": "^8.11.3"
+              "pg": "^8.11.3",
+              "sql.js": "^1.11.0",
+              "uuid": "^9.0.0",
+              "zod": "^3.22.0"
             }
           }
           EOF
