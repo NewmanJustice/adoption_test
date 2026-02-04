@@ -72,13 +72,14 @@ az webapp config appsettings set \
   --name $APP_NAME \
   --resource-group $RESOURCE_GROUP \
   --settings \
+    APP_ENV="DEV" \
     NODE_ENV="production" \
     PORT="8080" \
     ANNOTATION_ENABLED="true" \
     ANNOTATION_DB_PATH="/home/prototype-annotator/annotator.sqlite"
 ```
 
-> **Note:** `ANNOTATION_ENABLED=true` for dev environment. Set to `false` for production.
+> **Note:** `APP_ENV` controls which database URL is used. Set to `DEV`, `TEST`, or `PROD` as appropriate.
 
 ### Step 1.6: Configure Database Connection
 
@@ -89,8 +90,10 @@ az webapp config appsettings set \
   --name $APP_NAME \
   --resource-group $RESOURCE_GROUP \
   --settings \
-    DATABASE_URL="postgresql://USERNAME:PASSWORD@HOSTNAME:5432/DATABASE?sslmode=require"
+    DEV_DATABASE_URL="postgresql://USERNAME:PASSWORD@HOSTNAME:5432/DATABASE?sslmode=require"
 ```
+
+> **Note:** Use `DEV_DATABASE_URL` for dev, `TEST_DATABASE_URL` for test, `PROD_DATABASE_URL` for prod.
 
 > **Security:** Consider using Azure Key Vault references instead of storing credentials directly.
 > Format: `@Microsoft.KeyVault(VaultName=myvault;SecretName=mysecret)`
@@ -244,14 +247,18 @@ az webapp update \
 
 ## Environment Variables Reference
 
-| Variable | Dev Value | Prod Value | Description |
-|----------|-----------|------------|-------------|
-| `NODE_ENV` | `production` | `production` | Node environment |
-| `PORT` | `8080` | `8080` | Server port (Azure default) |
-| `DATABASE_URL` | (connection string) | (connection string) | PostgreSQL connection |
-| `SESSION_SECRET` | (generate unique) | (generate unique) | Express session secret |
-| `ANNOTATION_ENABLED` | `true` | `false` | Enable prototype annotator |
-| `ANNOTATION_DB_PATH` | `/home/prototype-annotator/annotator.sqlite` | N/A | SQLite path (persistent) |
+| Variable | Local | Dev | Test | Prod | Description |
+|----------|-------|-----|------|------|-------------|
+| `APP_ENV` | `LOCAL` | `DEV` | `TEST` | `PROD` | Application environment |
+| `NODE_ENV` | `development` | `production` | `production` | `production` | Node environment |
+| `PORT` | `3001` | `8080` | `8080` | `8080` | Server port |
+| `LOCAL_DATABASE_URL` | (local pg) | - | - | - | Local PostgreSQL |
+| `DEV_DATABASE_URL` | - | (azure pg) | - | - | Dev PostgreSQL |
+| `TEST_DATABASE_URL` | - | - | (azure pg) | - | Test PostgreSQL |
+| `PROD_DATABASE_URL` | - | - | - | (azure pg) | Prod PostgreSQL |
+| `SESSION_SECRET` | (default) | (generate) | (generate) | (generate) | Express session secret |
+| `ANNOTATION_ENABLED` | `true` | `true` | `true` | `false` | Enable prototype annotator |
+| `ANNOTATION_DB_PATH` | (default) | `/home/...` | `/home/...` | N/A | SQLite path (persistent) |
 
 ### Generate Session Secret
 
