@@ -111,27 +111,19 @@ az webapp config set \
 
 ## Part 2: GitHub Actions Setup
 
-### Step 2.1: Create Azure Service Principal
+### Step 2.1: Download Publish Profile
 
-This creates credentials for GitHub Actions to deploy to Azure:
-
-```bash
-az ad sp create-for-rbac \
-  --name "github-actions-cft-adoption" \
-  --role contributor \
-  --scopes /subscriptions/$(az account show --query id -o tsv)/resourceGroups/$RESOURCE_GROUP \
-  --sdk-auth
-```
-
-This outputs JSON - **copy the entire output** for the next step.
+1. Go to **Azure Portal** → **App Services** → **cft-adoption-dev**
+2. Click **Download publish profile** (top toolbar)
+3. This downloads a `.PublishSettings` file - open it in a text editor and copy the entire contents
 
 ### Step 2.2: Add GitHub Secret
 
 1. Go to your GitHub repository
 2. Navigate to **Settings** → **Secrets and variables** → **Actions**
 3. Click **New repository secret**
-4. Name: `AZURE_CREDENTIALS`
-5. Value: Paste the JSON output from Step 2.1
+4. Name: `AZURE_WEBAPP_PUBLISH_PROFILE`
+5. Value: Paste the entire contents of the `.PublishSettings` file
 
 ### Step 2.3: Verify Workflow File
 
@@ -139,7 +131,7 @@ The workflow file has been created at `.github/workflows/deploy.yml`. It will:
 - Trigger on pushes to `main` branch
 - Build client and server
 - Package everything together
-- Deploy to Azure App Service
+- Deploy to Azure App Service using publish profile
 
 ---
 
