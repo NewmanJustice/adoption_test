@@ -19,13 +19,23 @@ interface FormErrors {
 
 const CreateCasePage: React.FC = () => {
   const navigate = useNavigate();
-  const { user, isAuthenticated } = useSession();
+  const { user, isAuthenticated, loading } = useSession();
   const [caseType, setCaseType] = useState('');
   const [assignedCourt, setAssignedCourt] = useState('');
   const [linkedReference, setLinkedReference] = useState('');
   const [notes, setNotes] = useState('');
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  if (loading) {
+    return (
+      <div className="govuk-width-container">
+        <main className="govuk-main-wrapper" id="main-content" role="main">
+          <p className="govuk-body">Loading...</p>
+        </main>
+      </div>
+    );
+  }
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;

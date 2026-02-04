@@ -28,7 +28,7 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 const CaseListPage: React.FC = () => {
-  const { user, isAuthenticated } = useSession();
+  const { user, isAuthenticated, loading: sessionLoading } = useSession();
   const [cases, setCases] = useState<Case[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -56,6 +56,10 @@ const CaseListPage: React.FC = () => {
       setLoading(false);
     }
   };
+
+  if (sessionLoading) {
+    return <p className="govuk-body">Loading...</p>;
+  }
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;

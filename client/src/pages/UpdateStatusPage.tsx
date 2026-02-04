@@ -29,7 +29,7 @@ const STATUSES_REQUIRING_REASON = ['ON_HOLD', 'APPLICATION_WITHDRAWN'];
 const UpdateStatusPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { isAuthenticated } = useSession();
+  const { isAuthenticated, loading: sessionLoading } = useSession();
   const [caseData, setCaseData] = useState<CaseDetail | null>(null);
   const [validTransitions, setValidTransitions] = useState<string[]>([]);
   const [selectedStatus, setSelectedStatus] = useState('');
@@ -65,6 +65,10 @@ const UpdateStatusPage: React.FC = () => {
       setLoading(false);
     }
   };
+
+  if (sessionLoading) {
+    return <p className="govuk-body">Loading...</p>;
+  }
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;

@@ -25,7 +25,7 @@ interface CaseDetail {
 
 const CaseDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const { user, isAuthenticated } = useSession();
+  const { user, isAuthenticated, loading: sessionLoading } = useSession();
   const [caseData, setCaseData] = useState<CaseDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -61,6 +61,10 @@ const CaseDetailPage: React.FC = () => {
       setLoading(false);
     }
   };
+
+  if (sessionLoading) {
+    return <p className="govuk-body">Loading...</p>;
+  }
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
