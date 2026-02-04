@@ -9,7 +9,7 @@ const CASE_TYPES = [
   { value: 'INTERCOUNTRY_ADOPTION', label: 'Intercountry adoption' },
   { value: 'NON_AGENCY_ADOPTION', label: 'Non-agency (private)' },
   { value: 'FOSTER_TO_ADOPT', label: 'Foster to adopt' },
-  { value: 'PLACEMENT_ORDER', label: 'Placement order' },
+  { value: 'ADOPTION_FOLLOWING_PLACEMENT_ORDER', label: 'Adoption following placement order' },
 ];
 
 interface FormErrors {
