@@ -101,22 +101,40 @@ async function getAnnotator(): Promise<AnnotatorInstance | null> {
 }
 
 if (annotationEnabled) {
-  // Use the combined middleware which includes both injector and router
-  // The injector intercepts ALL HTML responses to inject the overlay script
-  // The router handles /__prototype-annotator/* API routes
+  // Mount annotator router for API routes at /__prototype-annotator/*
+  // Note: We don't use the injector middleware because express.static uses
+  // streaming (pipe) which bypasses response wrappers. Instead, we manually
+  // inject the script when serving index.html in production.
   app.use(async (req: Request, res: Response, next: NextFunction) => {
-    const annotator = await getAnnotator();
-    if (!annotator) {
-      // Graceful degradation - if annotator fails, just continue without it
-      if (req.path.startsWith('/__prototype-annotator')) {
-        return res.status(404).json({ error: 'Annotator not available' });
-      }
+    if (!req.path.startsWith('/__prototype-annotator')) {
       return next();
     }
 
-    // Use middleware() which combines injector (for all HTML) + router (for API)
-    annotator.middleware()(req, res, next);
+    const annotator = await getAnnotator();
+    if (!annotator) {
+      return res.status(404).json({ error: 'Annotator not available' });
+    }
+
+    // Use router for API routes and static assets (overlay.js, dashboard)
+    annotator.router(req, res, next);
   });
+}
+
+// Helper to inject annotator script into HTML
+function injectAnnotatorScript(html: string): string {
+  if (!annotationEnabled) return html;
+  if (!html.includes('</body>')) return html;
+  if (html.includes('prototype-annotator-root')) return html; // Already injected
+
+  const configScript = `<script>window.__PROTOTYPE_ANNOTATOR_CONFIG__=${JSON.stringify({
+    basePath: '/__prototype-annotator',
+    apiUrl: '/__prototype-annotator/api',
+    defaultActor: 'anonymous',
+    actorMode: 'prompt'
+  })};</script>`;
+  const overlayScript = `<script src="/__prototype-annotator/overlay.js"></script>`;
+
+  return html.replace('</body>', `${configScript}${overlayScript}</body>`);
 }
 
 // API routes
@@ -139,14 +157,32 @@ app.use('/api', caseRouter);
 // Serve static files from client build (production)
 if (process.env.NODE_ENV === 'production') {
   const publicPath = path.join(__dirname, 'public');
-  app.use(express.static(publicPath));
+  const indexHtmlPath = path.join(publicPath, 'index.html');
 
-  // Handle client-side routing - serve index.html for non-API routes
+  // Cache the injected index.html content
+  let cachedIndexHtml: string | null = null;
+
+  function getIndexHtml(): string {
+    if (cachedIndexHtml) return cachedIndexHtml;
+
+    const rawHtml = fs.readFileSync(indexHtmlPath, 'utf-8');
+    cachedIndexHtml = injectAnnotatorScript(rawHtml);
+    return cachedIndexHtml;
+  }
+
+  // Serve static assets (but not index.html directly - we handle that separately)
+  app.use(express.static(publicPath, {
+    index: false // Don't serve index.html automatically
+  }));
+
+  // Handle all non-API routes - serve index.html with injected annotator script
   app.get('*', (req: Request, res: Response, next: NextFunction) => {
     if (req.path.startsWith('/api') || req.path.startsWith('/__prototype-annotator')) {
       return next();
     }
-    res.sendFile(path.join(publicPath, 'index.html'));
+
+    res.setHeader('Content-Type', 'text/html');
+    res.send(getIndexHtml());
   });
 }
 
