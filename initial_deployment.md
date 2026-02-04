@@ -320,5 +320,5 @@ Update the GitHub workflow to deploy to different apps based on branch.
 - [ ] Session secret is unique per environment
 - [ ] HTTPS-only enabled
 - [ ] ANNOTATION_ENABLED=false for production
-- [ ] GitHub secret AZURE_CREDENTIALS configured
+- [ ] GitHub secret AZURE_WEBAPP_PUBLISH_PROFILE configured
 - [ ] Service principal has minimal required permissions
