@@ -53,55 +53,24 @@ export function useAnnotations(apiUrl: string, defaultActor: string): UseAnnotat
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Track URL as state to detect SPA navigation
+  // Track URL as state - updated via refresh() called by host app
   const [currentUrl, setCurrentUrl] = useState(
     () => window.location.origin + window.location.pathname
   );
 
-  // Detect URL changes for SPA navigation
-  useEffect(() => {
-    const getCanonicalUrl = () => window.location.origin + window.location.pathname;
-
-    const handleUrlChange = () => {
-      const newUrl = getCanonicalUrl();
-      if (newUrl !== currentUrl) {
-        setCurrentUrl(newUrl);
-      }
-    };
-
-    // Handle browser back/forward
-    window.addEventListener('popstate', handleUrlChange);
-    window.addEventListener('hashchange', handleUrlChange);
-
-    // Intercept History API for immediate detection (no polling needed)
-    const originalPushState = history.pushState.bind(history);
-    const originalReplaceState = history.replaceState.bind(history);
-
-    history.pushState = function (...args) {
-      originalPushState(...args);
-      handleUrlChange();
-    };
-
-    history.replaceState = function (...args) {
-      originalReplaceState(...args);
-      handleUrlChange();
-    };
-
-    return () => {
-      window.removeEventListener('popstate', handleUrlChange);
-      window.removeEventListener('hashchange', handleUrlChange);
-      history.pushState = originalPushState;
-      history.replaceState = originalReplaceState;
-    };
-  }, [currentUrl]);
 
   const refresh = useCallback(async () => {
+    // Always read current URL from window (not stale state)
+    const url = window.location.origin + window.location.pathname;
+
+    // Update state if URL changed
+    setCurrentUrl(url);
     setLoading(true);
     setError(null);
 
     try {
       const response = await fetch(
-        `${apiUrl}/annotations/by-url?url=${encodeURIComponent(currentUrl)}`
+        `${apiUrl}/annotations/by-url?url=${encodeURIComponent(url)}`
       );
       const data = await response.json();
 
@@ -115,11 +84,12 @@ export function useAnnotations(apiUrl: string, defaultActor: string): UseAnnotat
     } finally {
       setLoading(false);
     }
-  }, [apiUrl, currentUrl]);
+  }, [apiUrl]);
 
+  // Fetch on mount
   useEffect(() => {
     refresh();
-  }, [refresh]);
+  }, []);
 
   const create = useCallback(
     async (input: CreateAnnotationInput): Promise<Annotation | null> => {

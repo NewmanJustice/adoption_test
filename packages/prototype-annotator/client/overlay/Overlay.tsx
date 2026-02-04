@@ -46,14 +46,19 @@ export const Overlay: FunctionComponent<OverlayProps> = ({ config }) => {
     setSelectedAnnotation(null);
   }, [currentUrl, clearSelection]);
 
-  // Expose global refresh API for edge cases
+  // Expose global refresh API and handle browser back/forward
   useEffect(() => {
     (window as Window & { __PROTOTYPE_ANNOTATOR__?: { refresh: () => void } }).__PROTOTYPE_ANNOTATOR__ = {
       refresh,
     };
 
+    // Handle browser back/forward buttons
+    const handlePopState = () => refresh();
+    window.addEventListener('popstate', handlePopState);
+
     return () => {
       delete (window as Window & { __PROTOTYPE_ANNOTATOR__?: { refresh: () => void } }).__PROTOTYPE_ANNOTATOR__;
+      window.removeEventListener('popstate', handlePopState);
     };
   }, [refresh]);
 

@@ -1,5 +1,5 @@
-import { Suspense, lazy } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Suspense, lazy, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
@@ -11,10 +11,24 @@ const CaseDetailPage = lazy(() => import('./pages/CaseDetailPage'));
 const CreateCasePage = lazy(() => import('./pages/CreateCasePage'));
 const UpdateStatusPage = lazy(() => import('./pages/UpdateStatusPage'));
 
+// Notify prototype-annotator of route changes
+function AnnotatorRouteSync() {
+  const location = useLocation();
+
+  useEffect(() => {
+    // Call the annotator's refresh API when route changes
+    const annotator = (window as Window & { __PROTOTYPE_ANNOTATOR__?: { refresh: () => void } }).__PROTOTYPE_ANNOTATOR__;
+    annotator?.refresh();
+  }, [location.pathname]);
+
+  return null;
+}
+
 function App() {
   return (
     <SessionProvider>
       <BrowserRouter>
+        <AnnotatorRouteSync />
         <Suspense fallback={<div className="govuk-body">Loading...</div>}>
           <Routes>
             <Route path="/" element={<LandingPage />} />
