@@ -98,6 +98,10 @@ jobs:
 
       - name: Copy local prototype-annotator package
         run: |
+          echo "=== Verify source files exist ==="
+          ls -la packages/prototype-annotator/dist/
+          ls -la packages/prototype-annotator/client/dist/
+
           mkdir -p deploy/node_modules/prototype-annotator
           # Copy dist files (server-side)
           cp -r packages/prototype-annotator/dist/* deploy/node_modules/prototype-annotator/
@@ -106,6 +110,9 @@ jobs:
           # Copy client dist (overlay.js, dashboard)
           mkdir -p deploy/node_modules/prototype-annotator/client
           cp -r packages/prototype-annotator/client/dist deploy/node_modules/prototype-annotator/client/
+
+          echo "=== Verify copied files ==="
+          ls -la deploy/node_modules/prototype-annotator/client/dist/
           # Create package.json
           cat > deploy/node_modules/prototype-annotator/package.json << 'EOF'
           {
