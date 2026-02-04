@@ -102,10 +102,6 @@ jobs:
 
       - name: Copy local prototype-annotator package
         run: |
-          echo "=== Verify source files exist ==="
-          ls -la packages/prototype-annotator/dist/
-          ls -la packages/prototype-annotator/client/dist/
-
           mkdir -p deploy/node_modules/prototype-annotator
           # Copy dist files (server-side)
           cp -r packages/prototype-annotator/dist/* deploy/node_modules/prototype-annotator/
@@ -114,9 +110,6 @@ jobs:
           # Copy client dist (overlay.js, dashboard)
           mkdir -p deploy/node_modules/prototype-annotator/client
           cp -r packages/prototype-annotator/client/dist deploy/node_modules/prototype-annotator/client/
-
-          echo "=== Verify copied files ==="
-          ls -la deploy/node_modules/prototype-annotator/client/dist/
           # Create package.json
           cat > deploy/node_modules/prototype-annotator/package.json << 'EOF'
           {
@@ -136,20 +129,9 @@ jobs:
 
       - name: Verify deployment package
         run: |
-          echo "=== Package structure ==="
+          echo "Deployment package contents:"
           ls -la deploy/
-          echo "=== Dist public folder ==="
-          ls -la deploy/dist/public/ || echo "No public folder!"
-          echo "=== Dist public assets ==="
-          ls -la deploy/dist/public/assets/ || echo "No assets folder!"
-          echo "=== Node modules ==="
-          ls deploy/node_modules/ | head -20
-          echo "=== prototype-annotator ==="
-          ls -la deploy/node_modules/prototype-annotator/
-          echo "=== prototype-annotator client/dist ==="
-          ls -la deploy/node_modules/prototype-annotator/client/dist/
-          echo "=== prototype-annotator package.json ==="
-          cat deploy/node_modules/prototype-annotator/package.json
+          ls -la deploy/dist/public/assets/ | head -5
 
       - name: Upload artifact for deployment
         uses: actions/upload-artifact@v4

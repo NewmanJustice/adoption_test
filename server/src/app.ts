@@ -112,12 +112,7 @@ if (annotationEnabled) {
 
     const annotator = await getAnnotator();
     if (!annotator) {
-      return res.status(404).json({
-        error: 'Annotator not available',
-        enabled: annotationEnabled,
-        hasError: !!annotatorError,
-        errorMessage: annotatorError?.message || null
-      });
+      return res.status(404).json({ error: 'Annotator not available' });
     }
 
     // Use router for API routes and static assets (overlay.js, dashboard)
