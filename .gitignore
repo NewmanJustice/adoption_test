@@ -1,3 +1,6 @@
+#Azure publish profile
+.publishProfile.xml
+
 # Dependencies
 node_modules/
 
@@ -33,3 +36,4 @@ coverage/
 
 # Prototype annotator - development annotation data
 /prototype-annotator/
+packages/prototype-annotator/node_modules/
