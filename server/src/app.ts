@@ -1,16 +1,20 @@
 import express, { Request, Response, NextFunction, Router } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
-import fs from 'fs';
-import path from 'path';
-import { config } from './config';
-import { sessionMiddleware } from './middleware/sessionMiddleware';
-import healthRouter from './routes/health';
-import authRouter from './routes/auth';
-import protectedRouter from './routes/protected';
-import caseRouter from './routes/cases';
-import { errorHandler } from './middleware/errorHandler';
-import { notFoundHandler } from './middleware/notFound';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { config } from './config/index.js';
+import { sessionMiddleware } from './middleware/sessionMiddleware.js';
+import healthRouter from './routes/health.js';
+import authRouter from './routes/auth.js';
+import protectedRouter from './routes/protected.js';
+import caseRouter from './routes/cases.js';
+import { errorHandler } from './middleware/errorHandler.js';
+import { notFoundHandler } from './middleware/notFound.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 type AnnotatorMiddleware = { router: Router };
 

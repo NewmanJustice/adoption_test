@@ -11,9 +11,9 @@ import {
   KeyDates,
   CaseFilterParams,
   CaseDashboardCase,
-} from '../types/case';
-import { UserRole, SessionUser } from '../types/auth';
-import * as caseRepo from '../repositories/caseRepository';
+} from '../types/case.js';
+import { UserRole, SessionUser } from '../types/auth.js';
+import * as caseRepo from '../repositories/caseRepository.js';
 
 const STATUS_TRANSITIONS: Record<CaseStatus, CaseStatus[]> = {
   APPLICATION: ['DIRECTIONS', 'ON_HOLD', 'APPLICATION_WITHDRAWN'],

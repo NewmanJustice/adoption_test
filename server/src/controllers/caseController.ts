@@ -1,5 +1,5 @@
 import { Response } from 'express';
-import { AuthRequest } from '../types/auth';
+import { AuthRequest } from '../types/auth.js';
 import {
   CreateCaseRequest,
   UpdateStatusRequest,
@@ -8,9 +8,9 @@ import {
   AuditLogResponse,
   AssignmentRequest,
   AssignmentResponse,
-} from '../types/case';
-import * as caseService from '../services/caseService';
-import * as caseRepo from '../repositories/caseRepository';
+} from '../types/case.js';
+import * as caseService from '../services/caseService.js';
+import * as caseRepo from '../repositories/caseRepository.js';
 
 export async function createCase(
   req: AuthRequest,

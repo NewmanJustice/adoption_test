@@ -1,5 +1,5 @@
 import { SessionOptions } from 'express-session';
-import { config } from './index';
+import { config } from './index.js';
 
 /**
  * Session configuration for express-session

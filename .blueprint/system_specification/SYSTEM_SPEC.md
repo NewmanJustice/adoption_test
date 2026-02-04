@@ -350,9 +350,16 @@ The Adoption Digital Platform exists to digitise and streamline the end-to-end j
 | Layer | Technology | Rationale |
 |-------|------------|-----------|
 | **Frontend** | React.js with GOV.UK Design System | Modern component-based UI aligned with government standards; `govuk-frontend` npm package provides accessible, tested components |
-| **Backend** | Node.js with Express.js | JavaScript full-stack enables code sharing; Express provides lightweight, flexible API framework |
+| **Backend** | Node.js with Express.js (ESM) | JavaScript full-stack enables code sharing; Express provides lightweight, flexible API framework |
+| **Module System** | ECMAScript Modules (ESM) | Native JavaScript module standard; enables static analysis, tree-shaking, and compatibility with modern packages |
 | **Database** | PostgreSQL | Robust relational database suitable for complex case data, audit trails, and transactional integrity |
 | **API Style** | REST | Well-understood, stateless architecture suitable for multi-agency integration |
+
+**ESM Configuration:**
+- Server package.json includes `"type": "module"` to enable ESM
+- TypeScript uses `NodeNext` module resolution for proper ESM interoperability
+- All local imports use explicit `.js` extensions (required by ESM)
+- Uses `import.meta.url` and `fileURLToPath` for `__dirname` equivalent in ESM
 
 ### 12.2 Project Structure (Monorepo)
 
@@ -597,3 +604,4 @@ npm run dev          # Hot-reloading development mode
 | 2026-02-03 | Added Technical Architecture section (Section 12) | Define technology stack, project structure, and implementation approach | Pending Review |
 | 2026-02-03 | Updated Section 12.9 with GOV.UK Frontend v5 details | Document rebrand class, asset requirements, and Header SVG requirements after v5 upgrade | Pending Review |
 | 2026-02-04 | Added HTTPS requirement and updated environment variables | Document APP_ENV pattern, HTTPS enforcement, and session cookie security | Pending Review |
+| 2026-02-04 | Converted server to ECMAScript Modules (ESM) | Modern JavaScript standard with better static analysis, tree-shaking, and compatibility with ESM-only packages | Pending Review |

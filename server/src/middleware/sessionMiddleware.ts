@@ -1,5 +1,5 @@
 import session from 'express-session';
-import { sessionConfig } from '../config/session';
+import { sessionConfig } from '../config/session.js';
 
 /**
  * Configured session middleware using express-session

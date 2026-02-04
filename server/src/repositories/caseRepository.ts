@@ -5,7 +5,7 @@ import {
   CaseAssignment,
   AuditLogEntry,
   AuditAction,
-} from '../types/case';
+} from '../types/case.js';
 
 function generateUUID(): string {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {

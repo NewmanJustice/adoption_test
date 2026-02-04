@@ -1,4 +1,4 @@
-import { AuthRequest, SessionUser, UserRole } from '../types/auth';
+import { AuthRequest, SessionUser, UserRole } from '../types/auth.js';
 
 export interface CreateSessionOptions {
   courtAssignment?: string;

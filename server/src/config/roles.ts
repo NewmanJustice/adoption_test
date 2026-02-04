@@ -1,4 +1,4 @@
-import { UserRole } from '../types/auth';
+import { UserRole } from '../types/auth.js';
 
 /**
  * All valid user roles in the system

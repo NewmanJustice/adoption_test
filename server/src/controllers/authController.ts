@@ -7,10 +7,10 @@ import {
   LogoutResponse,
   SessionInfoResponse,
   UserRole,
-} from '../types/auth';
-import { isValidRole, getRedirectForRole } from '../config/roles';
-import { createSession, destroySession, getSessionData } from '../services/sessionService';
-import { sanitizeReturnUrl } from '../utils/urlSanitiser';
+} from '../types/auth.js';
+import { isValidRole, getRedirectForRole } from '../config/roles.js';
+import { createSession, destroySession, getSessionData } from '../services/sessionService.js';
+import { sanitizeReturnUrl } from '../utils/urlSanitiser.js';
 
 /**
  * Handle login request

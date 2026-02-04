@@ -2,6 +2,7 @@
   "name": "@adoption/server",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "main": "src/index.ts",
   "scripts": {
     "dev": "nodemon --exec tsx src/index.ts",

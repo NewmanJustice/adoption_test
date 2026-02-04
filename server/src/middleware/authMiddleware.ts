@@ -1,5 +1,5 @@
 import { Response, NextFunction } from 'express';
-import { AuthRequest, RequireAuthOptions, UserRole, AuthErrorResponse } from '../types/auth';
+import { AuthRequest, RequireAuthOptions, UserRole, AuthErrorResponse } from '../types/auth.js';
 
 /**
  * Middleware factory for protecting routes with authentication and role-based access control

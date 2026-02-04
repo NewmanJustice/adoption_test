@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import * as caseController from '../controllers/caseController';
+import * as caseController from '../controllers/caseController.js';
 
 const router = Router();
 

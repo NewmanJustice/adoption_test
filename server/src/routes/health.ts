@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { testConnection } from '../config/database';
+import { testConnection } from '../config/database.js';
 import { formatDate, HealthResponse } from '@adoption/shared';
 
 const router = Router();

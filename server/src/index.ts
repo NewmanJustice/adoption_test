@@ -1,6 +1,6 @@
-import app from './app';
-import { config, validateEnv } from './config';
-import { testConnection } from './config/database';
+import app from './app.js';
+import { config, validateEnv } from './config/index.js';
+import { testConnection } from './config/database.js';
 
 // Validate environment
 validateEnv();
