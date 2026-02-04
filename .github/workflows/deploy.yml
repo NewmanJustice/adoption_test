@@ -91,6 +91,19 @@ jobs:
           }
           EOF
 
+      - name: Verify deployment package
+        run: |
+          echo "=== Package structure ==="
+          ls -la deploy/
+          echo "=== Node modules ==="
+          ls deploy/node_modules/ | head -20
+          echo "=== prototype-annotator ==="
+          ls -la deploy/node_modules/prototype-annotator/
+          echo "=== prototype-annotator dist ==="
+          ls -la deploy/node_modules/prototype-annotator/dist/
+          echo "=== prototype-annotator package.json ==="
+          cat deploy/node_modules/prototype-annotator/package.json
+
       - name: Upload artifact for deployment
         uses: actions/upload-artifact@v4
         with:
