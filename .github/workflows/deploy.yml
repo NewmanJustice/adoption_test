@@ -76,10 +76,19 @@ jobs:
           cd deploy
           npm install --production
 
-      - name: Copy shared package
+      - name: Copy shared package (compiled)
         run: |
           mkdir -p deploy/node_modules/@adoption/shared
-          cp -r shared/* deploy/node_modules/@adoption/shared/
+          cp -r shared/dist/* deploy/node_modules/@adoption/shared/
+          # Create package.json pointing to compiled files
+          cat > deploy/node_modules/@adoption/shared/package.json << 'EOF'
+          {
+            "name": "@adoption/shared",
+            "version": "1.0.0",
+            "main": "index.js",
+            "types": "index.d.ts"
+          }
+          EOF
 
       - name: Upload artifact for deployment
         uses: actions/upload-artifact@v4
