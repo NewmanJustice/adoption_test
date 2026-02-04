@@ -106,6 +106,20 @@ app.use('/api', protectedRouter);
 // Case management routes
 app.use('/api', caseRouter);
 
+// Serve static files from client build (production)
+if (process.env.NODE_ENV === 'production') {
+  const publicPath = path.join(__dirname, 'public');
+  app.use(express.static(publicPath));
+
+  // Handle client-side routing - serve index.html for non-API routes
+  app.get('*', (req: Request, res: Response, next: NextFunction) => {
+    if (req.path.startsWith('/api') || req.path.startsWith('/__prototype-annotator')) {
+      return next();
+    }
+    res.sendFile(path.join(publicPath, 'index.html'));
+  });
+}
+
 // 404 handler for unmatched routes
 app.use(notFoundHandler);
 
