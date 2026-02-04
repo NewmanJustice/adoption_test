@@ -142,3 +142,53 @@ export interface AssignmentResponse {
   userId: string;
   assignmentType: AssignmentType;
 }
+
+export type AttentionLevel = 'normal' | 'approaching' | 'overdue';
+
+export interface KeyDates {
+  nextHearing?: string;
+  applicationDate?: string;
+  placementDate?: string;
+}
+
+export interface CaseFilterParams {
+  status?: CaseStatus;
+  caseType?: AdoptionType;
+  dateFrom?: string;
+  dateTo?: string;
+}
+
+export interface CaseSortParams {
+  sortBy?: 'attention' | 'caseNumber' | 'status' | 'createdAt';
+  sortOrder?: 'asc' | 'desc';
+}
+
+export interface CasePaginationParams {
+  page?: number;
+  pageSize?: number;
+}
+
+export interface CaseDashboardCase extends Case {
+  keyDates: KeyDates;
+  attention: AttentionLevel;
+  childName?: string;
+  localAuthority?: string;
+  birthFamily?: {
+    name: string;
+    address: string;
+  };
+  birthParent?: {
+    name: string;
+    details: string;
+  };
+}
+
+export interface CaseDashboardResponse {
+  cases: CaseDashboardCase[];
+  pagination: {
+    total: number;
+    page: number;
+    pageSize: number;
+    totalPages: number;
+  };
+}

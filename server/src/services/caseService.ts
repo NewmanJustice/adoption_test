@@ -7,6 +7,10 @@ import {
   CasePermissions,
   CaseResponse,
   CaseAssignment,
+  AttentionLevel,
+  KeyDates,
+  CaseFilterParams,
+  CaseDashboardCase,
 } from '../types/case';
 import { UserRole, SessionUser } from '../types/auth';
 import * as caseRepo from '../repositories/caseRepository';
@@ -252,4 +256,139 @@ export function getAssignments(caseId: string): CaseAssignment[] {
 
 export function getAuditLogs(caseId: string) {
   return caseRepo.getAuditLogs(caseId);
+}
+
+const APPROACHING_THRESHOLD_DAYS = 7;
+
+export function calculateAttentionLevel(keyDates: KeyDates): AttentionLevel {
+  if (!keyDates.nextHearing) {
+    return 'normal';
+  }
+
+  const now = new Date();
+  const hearingDate = new Date(keyDates.nextHearing);
+  const diffMs = hearingDate.getTime() - now.getTime();
+  const diffDays = diffMs / (1000 * 60 * 60 * 24);
+
+  if (diffDays < 0) {
+    return 'overdue';
+  }
+  if (diffDays <= APPROACHING_THRESHOLD_DAYS) {
+    return 'approaching';
+  }
+  return 'normal';
+}
+
+export function filterCases(
+  cases: CaseDashboardCase[],
+  filters: CaseFilterParams
+): CaseDashboardCase[] {
+  return cases.filter((c) => {
+    if (filters.status && c.status !== filters.status) {
+      return false;
+    }
+    if (filters.caseType && c.caseType !== filters.caseType) {
+      return false;
+    }
+    if (filters.dateFrom && c.keyDates.nextHearing) {
+      const from = new Date(filters.dateFrom);
+      const hearing = new Date(c.keyDates.nextHearing);
+      if (hearing < from) {
+        return false;
+      }
+    }
+    if (filters.dateTo && c.keyDates.nextHearing) {
+      const to = new Date(filters.dateTo);
+      const hearing = new Date(c.keyDates.nextHearing);
+      if (hearing > to) {
+        return false;
+      }
+    }
+    return true;
+  });
+}
+
+const ATTENTION_PRIORITY: Record<AttentionLevel, number> = {
+  overdue: 0,
+  approaching: 1,
+  normal: 2,
+};
+
+export function sortCases(
+  cases: CaseDashboardCase[],
+  sortBy: string = 'attention',
+  sortOrder: 'asc' | 'desc' = 'asc'
+): CaseDashboardCase[] {
+  const sorted = [...cases].sort((a, b) => {
+    let comparison = 0;
+
+    switch (sortBy) {
+      case 'attention':
+        comparison = ATTENTION_PRIORITY[a.attention] - ATTENTION_PRIORITY[b.attention];
+        break;
+      case 'caseNumber':
+        comparison = a.caseNumber.localeCompare(b.caseNumber);
+        break;
+      case 'status':
+        comparison = a.status.localeCompare(b.status);
+        break;
+      case 'createdAt':
+        comparison = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+        break;
+      default:
+        comparison = ATTENTION_PRIORITY[a.attention] - ATTENTION_PRIORITY[b.attention];
+    }
+
+    return sortOrder === 'desc' ? -comparison : comparison;
+  });
+
+  return sorted;
+}
+
+export function paginateCases(
+  cases: CaseDashboardCase[],
+  page: number = 1,
+  pageSize: number = 20
+): { cases: CaseDashboardCase[]; total: number; page: number; pageSize: number; totalPages: number } {
+  const total = cases.length;
+  const totalPages = Math.ceil(total / pageSize);
+  const startIndex = (page - 1) * pageSize;
+  const paginatedCases = cases.slice(startIndex, startIndex + pageSize);
+
+  return {
+    cases: paginatedCases,
+    total,
+    page,
+    pageSize,
+    totalPages,
+  };
+}
+
+export function toDashboardCase(caseData: Case): CaseDashboardCase {
+  const keyDates: KeyDates = {
+    nextHearing: undefined,
+    applicationDate: caseData.createdAt,
+  };
+
+  return {
+    ...caseData,
+    keyDates,
+    attention: calculateAttentionLevel(keyDates),
+  };
+}
+
+export function redactForVAAWorker(caseData: CaseDashboardCase): CaseDashboardCase {
+  return {
+    ...caseData,
+    birthFamily: caseData.birthFamily ? { name: 'REDACTED', address: 'REDACTED' } : undefined,
+  };
+}
+
+export function redactForAdopter(caseData: CaseDashboardCase): CaseDashboardCase {
+  const { internalNotes, staffComments, ...rest } = caseData as CaseDashboardCase & { internalNotes?: string; staffComments?: string };
+  return {
+    ...rest,
+    birthParent: null as unknown as undefined,
+    birthFamily: undefined,
+  };
 }

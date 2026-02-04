@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
+import MyCasesPage from './pages/MyCasesPage';
 import { SessionProvider } from './context/SessionContext';
 
 const CaseListPage = lazy(() => import('./pages/CaseListPage'));
@@ -19,6 +20,8 @@ function App() {
             <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/my-cases" element={<MyCasesPage />} />
+            <Route path="/my-cases/:id" element={<CaseDetailPage />} />
             <Route path="/cases" element={<CaseListPage />} />
             <Route path="/cases/create" element={<CreateCasePage />} />
             <Route path="/cases/:id" element={<CaseDetailPage />} />
