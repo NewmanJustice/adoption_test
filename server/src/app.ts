@@ -99,7 +99,9 @@ if (annotationEnabled) {
         console.error(`[Annotator] Failed to initialise: ${errorMessage}`);
         annotatorError = err instanceof Error ? err : new Error(String(err));
       }
-      next(annotatorError);
+      // Return 404 instead of 500 when annotator fails to load
+      // This prevents error pages and allows graceful degradation
+      res.status(404).json({ error: 'Annotator not available' });
     }
   });
 }
