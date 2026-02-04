@@ -1,6 +1,6 @@
 import { Response } from 'express';
-import { requireAuth } from './authMiddleware';
-import { AuthRequest, SessionUser } from '../types/auth';
+import { requireAuth } from './authMiddleware.js';
+import { AuthRequest, SessionUser } from '../types/auth.js';
 
 describe('authMiddleware', () => {
   let mockReq: Partial<AuthRequest>;

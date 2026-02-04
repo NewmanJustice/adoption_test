@@ -1,7 +1,7 @@
-import * as caseService from './caseService';
-import * as caseRepo from '../repositories/caseRepository';
-import { SessionUser } from '../types/auth';
-import { Case, CaseAssignment, CaseDashboardCase } from '../types/case';
+import * as caseService from './caseService.js';
+import * as caseRepo from '../repositories/caseRepository.js';
+import { SessionUser } from '../types/auth.js';
+import { Case, CaseAssignment, CaseDashboardCase } from '../types/case.js';
 
 describe('caseService', () => {
   beforeEach(() => {
