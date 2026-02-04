@@ -16,12 +16,13 @@ type AnnotatorMiddleware = { router: Router };
 
 const app = express();
 
-// Security middleware with CSP configured for React SPA
+// Security middleware with CSP configured for React SPA and GOV.UK Frontend
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
       scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+      scriptSrcAttr: ["'unsafe-inline'"],
       styleSrc: ["'self'", "'unsafe-inline'"],
       imgSrc: ["'self'", "data:", "blob:"],
       fontSrc: ["'self'", "data:"],
