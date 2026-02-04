@@ -16,8 +16,19 @@ type AnnotatorMiddleware = { router: Router };
 
 const app = express();
 
-// Security middleware
-app.use(helmet());
+// Security middleware with CSP configured for React SPA
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", "data:", "blob:"],
+      fontSrc: ["'self'", "data:"],
+      connectSrc: ["'self'"],
+    },
+  },
+}));
 
 // CORS configuration
 app.use(cors({
