@@ -43,13 +43,12 @@ jobs:
 
       - name: Prepare deployment package
         run: |
-          mkdir -p deploy
-          cp -r server/dist deploy/
-          cp -r server/node_modules deploy/ 2>/dev/null || true
-          cp server/package.json deploy/
-          cp package.json deploy/package-root.json
+          mkdir -p deploy/dist
 
-          # Create production package.json
+          # Copy built server code
+          cp -r server/dist/* deploy/dist/
+
+          # Create package.json with production dependencies
           cat > deploy/package.json << 'EOF'
           {
             "name": "adoption-server-deploy",
@@ -60,9 +59,22 @@ jobs:
             },
             "engines": {
               "node": ">=20.0.0"
+            },
+            "dependencies": {
+              "cors": "^2.8.5",
+              "dotenv": "^16.3.1",
+              "express": "^4.18.2",
+              "express-session": "^1.19.0",
+              "helmet": "^7.1.0",
+              "pg": "^8.11.3"
             }
           }
           EOF
+
+      - name: Install production dependencies
+        run: |
+          cd deploy
+          npm install --production
 
       - name: Upload artifact for deployment
         uses: actions/upload-artifact@v4
