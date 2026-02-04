@@ -3,10 +3,22 @@ import dotenv from 'dotenv';
 // Load environment variables
 dotenv.config();
 
+const nodeEnv = process.env.NODE_ENV || 'development';
+
+const getDatabaseUrl = (): string => {
+  if (process.env.DATABASE_URL) {
+    return process.env.DATABASE_URL;
+  }
+  if (nodeEnv !== 'production' && process.env.DEV_DATABASE_URL) {
+    return process.env.DEV_DATABASE_URL;
+  }
+  return 'postgresql://adoption:adoption@localhost:5432/adoption';
+};
+
 export const config = {
-  nodeEnv: process.env.NODE_ENV || 'development',
+  nodeEnv,
   port: parseInt(process.env.PORT || '3001', 10),
-  databaseUrl: process.env.DATABASE_URL || 'postgresql://adoption:adoption@localhost:5432/adoption',
+  databaseUrl: getDatabaseUrl(),
   corsOrigins: process.env.CORS_ORIGINS?.split(',') || ['http://localhost:3000'],
   sessionSecret: process.env.SESSION_SECRET || 'development-secret',
 };
