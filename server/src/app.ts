@@ -175,9 +175,18 @@ if (process.env.NODE_ENV === 'production') {
     index: false // Don't serve index.html automatically
   }));
 
-  // Handle all non-API routes - serve index.html with injected annotator script
+  // Handle SPA routes - serve index.html with injected annotator script
+  // Only for navigation requests, not static assets
   app.get('*', (req: Request, res: Response, next: NextFunction) => {
+    // Skip API and annotator routes
     if (req.path.startsWith('/api') || req.path.startsWith('/__prototype-annotator')) {
+      return next();
+    }
+
+    // Skip static asset requests - let them 404 naturally
+    // This prevents serving HTML for missing .js/.css/.map files
+    const staticExtensions = ['.js', '.css', '.map', '.json', '.png', '.jpg', '.jpeg', '.gif', '.svg', '.ico', '.woff', '.woff2', '.ttf', '.eot'];
+    if (staticExtensions.some(ext => req.path.endsWith(ext))) {
       return next();
     }
 
