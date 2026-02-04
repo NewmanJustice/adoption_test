@@ -16,6 +16,9 @@ type AnnotatorMiddleware = { router: Router };
 
 const app = express();
 
+// Trust proxy for Azure App Service (required for secure cookies behind load balancer)
+app.set('trust proxy', 1);
+
 // Security middleware with CSP configured for React SPA and GOV.UK Frontend
 app.use(helmet({
   contentSecurityPolicy: {
