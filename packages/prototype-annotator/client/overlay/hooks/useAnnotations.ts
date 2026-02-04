@@ -60,42 +60,38 @@ export function useAnnotations(apiUrl: string, defaultActor: string): UseAnnotat
 
   // Detect URL changes for SPA navigation
   useEffect(() => {
-    let lastUrl = window.location.href;
+    const getCanonicalUrl = () => window.location.origin + window.location.pathname;
+
+    const handleUrlChange = () => {
+      const newUrl = getCanonicalUrl();
+      if (newUrl !== currentUrl) {
+        setCurrentUrl(newUrl);
+      }
+    };
 
     // Handle browser back/forward
-    const handlePopState = () => {
-      const newUrl = window.location.origin + window.location.pathname;
-      if (newUrl !== currentUrl) {
-        setCurrentUrl(newUrl);
-      }
+    window.addEventListener('popstate', handleUrlChange);
+    window.addEventListener('hashchange', handleUrlChange);
+
+    // Intercept History API for immediate detection (no polling needed)
+    const originalPushState = history.pushState.bind(history);
+    const originalReplaceState = history.replaceState.bind(history);
+
+    history.pushState = function (...args) {
+      originalPushState(...args);
+      handleUrlChange();
     };
 
-    // Handle hash changes
-    const handleHashChange = () => {
-      const newUrl = window.location.origin + window.location.pathname;
-      if (newUrl !== currentUrl) {
-        setCurrentUrl(newUrl);
-      }
+    history.replaceState = function (...args) {
+      originalReplaceState(...args);
+      handleUrlChange();
     };
-
-    // Poll for pushState/replaceState changes (SPA routers like React Router)
-    const intervalId = setInterval(() => {
-      if (window.location.href !== lastUrl) {
-        lastUrl = window.location.href;
-        const newUrl = window.location.origin + window.location.pathname;
-        if (newUrl !== currentUrl) {
-          setCurrentUrl(newUrl);
-        }
-      }
-    }, 200);
-
-    window.addEventListener('popstate', handlePopState);
-    window.addEventListener('hashchange', handleHashChange);
 
     return () => {
-      window.removeEventListener('popstate', handlePopState);
-      window.removeEventListener('hashchange', handleHashChange);
-      clearInterval(intervalId);
+      window.removeEventListener('popstate', handleUrlChange);
+      window.removeEventListener('hashchange', handleUrlChange);
+      history.pushState = originalPushState;
+      history.replaceState = originalReplaceState;
     };
   }, [currentUrl]);
 
