@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { useSession } from '../context/SessionContext';
+import SkipLink from '../components/SkipLink';
+import Header from '../components/Header';
+import PhaseBanner from '../components/PhaseBanner';
+import Footer from '../components/Footer';
 
 const CASE_TYPES = [
   { value: '', label: '-- Choose --' },
@@ -29,11 +33,17 @@ const CreateCasePage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="govuk-width-container">
-        <main className="govuk-main-wrapper" id="main-content" role="main">
-          <p className="govuk-body">Loading...</p>
-        </main>
-      </div>
+      <>
+        <SkipLink />
+        <Header />
+        <div className="govuk-width-container">
+          <PhaseBanner />
+          <main className="govuk-main-wrapper" id="main-content" role="main">
+            <p className="govuk-body">Loading...</p>
+          </main>
+        </div>
+        <Footer />
+      </>
     );
   }
 
@@ -43,13 +53,19 @@ const CreateCasePage: React.FC = () => {
 
   if (user?.role !== 'HMCTS_CASE_OFFICER') {
     return (
-      <div className="govuk-width-container">
-        <main className="govuk-main-wrapper" id="main-content" role="main">
-          <h1 className="govuk-heading-xl">Access denied</h1>
-          <p className="govuk-body">Only HMCTS Case Officers can create cases.</p>
-          <Link to="/cases" className="govuk-link">Back to cases</Link>
-        </main>
-      </div>
+      <>
+        <SkipLink />
+        <Header />
+        <div className="govuk-width-container">
+          <PhaseBanner />
+          <main className="govuk-main-wrapper" id="main-content" role="main">
+            <h1 className="govuk-heading-xl">Access denied</h1>
+            <p className="govuk-body">Only HMCTS Case Officers can create cases.</p>
+            <Link to="/cases" className="govuk-link">Back to cases</Link>
+          </main>
+        </div>
+        <Footer />
+      </>
     );
   }
 
@@ -87,7 +103,8 @@ const CreateCasePage: React.FC = () => {
 
       if (response.ok) {
         const data = await response.json();
-        navigate(`/cases/${data.case.id}`);
+        // Server returns case directly, not wrapped in { case: ... }
+        navigate(`/cases/${data.id}`);
       } else {
         const data = await response.json();
         setErrors({ caseType: data.error || 'Failed to create case' });
@@ -102,11 +119,15 @@ const CreateCasePage: React.FC = () => {
   const errorList = Object.entries(errors).filter(([, msg]) => msg);
 
   return (
-    <div className="govuk-width-container">
-      <main className="govuk-main-wrapper" id="main-content" role="main">
-        <Link to="/cases" className="govuk-back-link">Back to cases</Link>
+    <>
+      <SkipLink />
+      <Header />
+      <div className="govuk-width-container">
+        <PhaseBanner />
+        <main className="govuk-main-wrapper" id="main-content" role="main">
+          <Link to="/cases" className="govuk-back-link">Back to cases</Link>
 
-        <h1 className="govuk-heading-xl">Create case</h1>
+          <h1 className="govuk-heading-xl">Create case</h1>
 
         {errorList.length > 0 && (
           <div className="govuk-error-summary" role="alert" aria-labelledby="error-summary-title" data-module="govuk-error-summary">
@@ -199,8 +220,10 @@ const CreateCasePage: React.FC = () => {
             <Link to="/cases" className="govuk-link">Cancel</Link>
           </div>
         </form>
-      </main>
-    </div>
+        </main>
+      </div>
+      <Footer />
+    </>
   );
 };
 
