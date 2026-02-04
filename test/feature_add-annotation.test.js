@@ -21,13 +21,14 @@ const readFileContent = (filePath) => {
 // Helper to create test app with specific NODE_ENV
 const createAppWithEnv = async (nodeEnv) => {
   const originalEnv = process.env.NODE_ENV;
+  const originalAnnotationEnabled = process.env.ANNOTATION_ENABLED;
   process.env.NODE_ENV = nodeEnv;
+  process.env.ANNOTATION_ENABLED = nodeEnv === 'development' ? 'true' : 'false';
 
-  // Clear module cache to reload with new environment
-  const appPath = require.resolve('../server/src/app');
-  delete require.cache[appPath];
+  // Use jest.resetModules() to properly clear Jest's module registry
+  jest.resetModules();
 
-  // Also clear any cached middleware modules
+  // Clear require.cache as well for good measure
   Object.keys(require.cache).forEach(key => {
     if (key.includes('prototype-annotator') || key.includes('server/src')) {
       delete require.cache[key];
@@ -36,9 +37,13 @@ const createAppWithEnv = async (nodeEnv) => {
 
   try {
     const app = require('../server/src/app').default;
-    return { app, cleanup: () => { process.env.NODE_ENV = originalEnv; } };
+    return { app, cleanup: () => {
+      process.env.NODE_ENV = originalEnv;
+      process.env.ANNOTATION_ENABLED = originalAnnotationEnabled;
+    } };
   } catch (e) {
     process.env.NODE_ENV = originalEnv;
+    process.env.ANNOTATION_ENABLED = originalAnnotationEnabled;
     throw e;
   }
 };
@@ -276,10 +281,9 @@ describe('Integration: App Configuration Verification', () => {
       expect(appContent).toContain('prototype-annotator');
     });
 
-    it('has NODE_ENV check for middleware', () => {
+    it('has ANNOTATION_ENABLED check for middleware', () => {
       expect(appContent).not.toBeNull();
-      expect(appContent).toContain('NODE_ENV');
-      expect(appContent).toContain('development');
+      expect(appContent).toContain('ANNOTATION_ENABLED');
     });
 
     it('uses correct basePath configuration', () => {
