@@ -1,4 +1,5 @@
 import express, { Request, Response, NextFunction, Router } from 'express';
+import { AuthSessionData } from './types/auth.js';
 import cors from 'cors';
 import helmet from 'helmet';
 import fs from 'node:fs';
@@ -48,6 +49,46 @@ app.use(express.urlencoded({ extended: true }));
 
 // Session middleware (must come before auth routes)
 app.use(sessionMiddleware);
+
+// Site access code configuration
+const siteAccessCode = process.env.SITE_ACCESS_CODE || '';
+const siteAccessEnabled = siteAccessCode.length > 0;
+
+if (siteAccessEnabled) {
+  console.log('[Site Access] Access code protection enabled');
+}
+
+// Helper to check if site access is granted
+function hasSiteAccess(req: Request): boolean {
+  if (!siteAccessEnabled) return true;
+  const session = req.session as AuthSessionData;
+  return session?.siteAccessGranted === true;
+}
+
+// Site access verification endpoint
+app.post('/api/site-access/verify', (req: Request, res: Response) => {
+  const { code } = req.body;
+
+  if (!siteAccessEnabled) {
+    return res.json({ success: true });
+  }
+
+  if (code === siteAccessCode) {
+    const session = req.session as AuthSessionData;
+    session.siteAccessGranted = true;
+    return res.json({ success: true });
+  }
+
+  return res.status(401).json({ success: false, error: 'Invalid access code' });
+});
+
+// Site access status endpoint
+app.get('/api/site-access/status', (req: Request, res: Response) => {
+  res.json({
+    required: siteAccessEnabled,
+    granted: hasSiteAccess(req)
+  });
+});
 
 const annotationEnabled = process.env.ANNOTATION_ENABLED === 'true';
 const annotationDbPath = process.env.ANNOTATION_DB_PATH || './prototype-annotator/annotator.sqlite';
@@ -110,6 +151,11 @@ if (annotationEnabled) {
       return next();
     }
 
+    // Require site access for annotator
+    if (!hasSiteAccess(req)) {
+      return res.status(403).json({ error: 'Site access required' });
+    }
+
     const annotator = await getAnnotator();
     if (!annotator) {
       return res.status(404).json({ error: 'Annotator not available' });
@@ -159,15 +205,23 @@ if (process.env.NODE_ENV === 'production') {
   const publicPath = path.join(__dirname, 'public');
   const indexHtmlPath = path.join(publicPath, 'index.html');
 
-  // Cache the injected index.html content
-  let cachedIndexHtml: string | null = null;
+  // Cache both versions of index.html
+  let cachedIndexHtmlWithAnnotator: string | null = null;
+  let cachedIndexHtmlWithoutAnnotator: string | null = null;
 
-  function getIndexHtml(): string {
-    if (cachedIndexHtml) return cachedIndexHtml;
-
-    const rawHtml = fs.readFileSync(indexHtmlPath, 'utf-8');
-    cachedIndexHtml = injectAnnotatorScript(rawHtml);
-    return cachedIndexHtml;
+  function getIndexHtml(withAnnotator: boolean): string {
+    if (withAnnotator) {
+      if (!cachedIndexHtmlWithAnnotator) {
+        const rawHtml = fs.readFileSync(indexHtmlPath, 'utf-8');
+        cachedIndexHtmlWithAnnotator = injectAnnotatorScript(rawHtml);
+      }
+      return cachedIndexHtmlWithAnnotator;
+    } else {
+      if (!cachedIndexHtmlWithoutAnnotator) {
+        cachedIndexHtmlWithoutAnnotator = fs.readFileSync(indexHtmlPath, 'utf-8');
+      }
+      return cachedIndexHtmlWithoutAnnotator;
+    }
   }
 
   // Serve static assets (but not index.html directly - we handle that separately)
@@ -175,7 +229,7 @@ if (process.env.NODE_ENV === 'production') {
     index: false // Don't serve index.html automatically
   }));
 
-  // Handle SPA routes - serve index.html with injected annotator script
+  // Handle SPA routes - serve index.html with conditionally injected annotator script
   // Only for navigation requests, not static assets
   app.get('*', (req: Request, res: Response, next: NextFunction) => {
     // Skip API and annotator routes
@@ -190,8 +244,11 @@ if (process.env.NODE_ENV === 'production') {
       return next();
     }
 
+    // Only inject annotator if site access is granted
+    const shouldInjectAnnotator = hasSiteAccess(req);
+
     res.setHeader('Content-Type', 'text/html');
-    res.send(getIndexHtml());
+    res.send(getIndexHtml(shouldInjectAnnotator));
   });
 }
 

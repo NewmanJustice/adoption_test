@@ -1,10 +1,12 @@
 import { Suspense, lazy, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import MyCasesPage from './pages/MyCasesPage';
+import AccessCodePage from './pages/AccessCodePage';
 import { SessionProvider } from './context/SessionContext';
+import { SiteAccessProvider, useSiteAccess } from './context/SiteAccessContext';
 
 const CaseListPage = lazy(() => import('./pages/CaseListPage'));
 const CaseDetailPage = lazy(() => import('./pages/CaseDetailPage'));
@@ -24,26 +26,58 @@ function AnnotatorRouteSync() {
   return null;
 }
 
+// Guard that redirects to access code page if site access is required but not granted
+function SiteAccessGuard({ children }: { children: React.ReactNode }) {
+  const location = useLocation();
+  const { required, granted, loading } = useSiteAccess();
+
+  // Don't guard the access page itself
+  if (location.pathname === '/access') {
+    return <>{children}</>;
+  }
+
+  if (loading) {
+    return <div className="govuk-body">Loading...</div>;
+  }
+
+  if (required && !granted) {
+    return <Navigate to="/access" replace />;
+  }
+
+  return <>{children}</>;
+}
+
+function AppRoutes() {
+  return (
+    <SiteAccessGuard>
+      <AnnotatorRouteSync />
+      <Suspense fallback={<div className="govuk-body">Loading...</div>}>
+        <Routes>
+          <Route path="/access" element={<AccessCodePage />} />
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/my-cases" element={<MyCasesPage />} />
+          <Route path="/my-cases/:id" element={<CaseDetailPage />} />
+          <Route path="/cases" element={<CaseListPage />} />
+          <Route path="/cases/create" element={<CreateCasePage />} />
+          <Route path="/cases/:id" element={<CaseDetailPage />} />
+          <Route path="/cases/:id/status" element={<UpdateStatusPage />} />
+        </Routes>
+      </Suspense>
+    </SiteAccessGuard>
+  );
+}
+
 function App() {
   return (
-    <SessionProvider>
-      <BrowserRouter>
-        <AnnotatorRouteSync />
-        <Suspense fallback={<div className="govuk-body">Loading...</div>}>
-          <Routes>
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/dashboard" element={<DashboardPage />} />
-            <Route path="/my-cases" element={<MyCasesPage />} />
-            <Route path="/my-cases/:id" element={<CaseDetailPage />} />
-            <Route path="/cases" element={<CaseListPage />} />
-            <Route path="/cases/create" element={<CreateCasePage />} />
-            <Route path="/cases/:id" element={<CaseDetailPage />} />
-            <Route path="/cases/:id/status" element={<UpdateStatusPage />} />
-          </Routes>
-        </Suspense>
-      </BrowserRouter>
-    </SessionProvider>
+    <SiteAccessProvider>
+      <SessionProvider>
+        <BrowserRouter>
+          <AppRoutes />
+        </BrowserRouter>
+      </SessionProvider>
+    </SiteAccessProvider>
   );
 }
 

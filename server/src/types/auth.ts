@@ -38,6 +38,7 @@ export interface RequestUser {
  */
 export interface AuthSessionData extends SessionData {
   user?: SessionUser;
+  siteAccessGranted?: boolean;
 }
 
 /**
