@@ -20,6 +20,7 @@ module.exports = {
       preset: 'ts-jest',
       moduleNameMapper: {
         '^@adoption/shared$': '<rootDir>/shared',
+        '^(\\.{1,2}/.*)\\.js$': '$1',
       },
     },
     {
