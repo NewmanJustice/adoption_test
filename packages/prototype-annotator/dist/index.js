@@ -1,8 +1,8 @@
 import { Router, json, static as _static } from 'express';
 import path4 from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 import initSqlJs from 'sql.js';
-import fs from 'fs';
 import { z } from 'zod';
 import { v4 } from 'uuid';
 
@@ -1314,11 +1314,27 @@ async function createPrototypeAnnotator(userConfig) {
   const clientConfig = getClientConfig(config);
   router.use(`${config.basePath}/api`, createApiRouter(config));
   const clientDistPath = getClientDistPath();
+  const overlayPath = path4.join(clientDistPath, "overlay.js");
+  console.log(`[prototype-annotator] Client dist path: ${clientDistPath}`);
+  console.log(`[prototype-annotator] __dirname: ${__dirname$1}`);
+  console.log(`[prototype-annotator] overlay.js exists: ${fs.existsSync(overlayPath)} at ${overlayPath}`);
   router.get(`${config.basePath}/overlay.js`, (_req, res) => {
-    res.sendFile(path4.join(clientDistPath, "overlay.js"));
+    const filePath = path4.join(clientDistPath, "overlay.js");
+    res.sendFile(filePath, (err) => {
+      if (err) {
+        console.error(`[prototype-annotator] Failed to send overlay.js from ${filePath}:`, err.message);
+        res.status(404).json({ error: "overlay.js not found", path: filePath });
+      }
+    });
   });
   router.get(`${config.basePath}/overlay.js.map`, (_req, res) => {
-    res.sendFile(path4.join(clientDistPath, "overlay.js.map"));
+    const filePath = path4.join(clientDistPath, "overlay.js.map");
+    res.sendFile(filePath, (err) => {
+      if (err) {
+        console.error(`[prototype-annotator] Failed to send overlay.js.map from ${filePath}:`, err.message);
+        res.status(404).json({ error: "overlay.js.map not found", path: filePath });
+      }
+    });
   });
   if (config.enableDashboard) {
     router.use(
