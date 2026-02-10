@@ -9,6 +9,14 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./constants/documentTypes": {
+      "types": "./dist/constants/documentTypes.d.ts",
+      "import": "./dist/constants/documentTypes.js"
+    },
+    "./types/document": {
+      "types": "./dist/types/document.d.ts",
+      "import": "./dist/types/document.js"
     }
   },
   "scripts": {

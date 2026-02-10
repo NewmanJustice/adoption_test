@@ -11,18 +11,14 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "declaration": true,
-    "baseUrl": ".",
-    "paths": {
-      "@adoption/shared": ["../shared"],
-      "@adoption/shared/*": ["../shared/*"]
-    }
+    "declaration": true
   },
   "include": [
     "src/**/*.ts"
   ],
   "exclude": [
     "node_modules",
-    "dist"
+    "dist",
+    "../shared"
   ]
 }

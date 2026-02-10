@@ -103,6 +103,8 @@ export interface SessionInfoResponse {
   user?: {
     userId: string;
     role: UserRole;
+    courtAssignment?: string;
+    organisationId?: string;
   };
   authMode: 'mock';
 }
