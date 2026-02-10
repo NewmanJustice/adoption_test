@@ -84,7 +84,7 @@ const UpdateStatusPage: React.FC = () => {
         <main className="govuk-main-wrapper" id="main-content" role="main">
           <h1 className="govuk-heading-xl">Error</h1>
           <p className="govuk-body">{error || 'Case not found'}</p>
-          <Link to="/cases" className="govuk-link">Back to cases</Link>
+          <Link to="/dashboard" className="govuk-link">Back to cases</Link>
         </main>
       </div>
     );

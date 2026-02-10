@@ -8,7 +8,6 @@ import AccessCodePage from './pages/AccessCodePage';
 import { SessionProvider } from './context/SessionContext';
 import { SiteAccessProvider, useSiteAccess } from './context/SiteAccessContext';
 
-const CaseListPage = lazy(() => import('./pages/CaseListPage'));
 const CaseDetailPage = lazy(() => import('./pages/CaseDetailPage'));
 const CreateCasePage = lazy(() => import('./pages/CreateCasePage'));
 const UpdateStatusPage = lazy(() => import('./pages/UpdateStatusPage'));
@@ -59,7 +58,7 @@ function AppRoutes() {
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/my-cases" element={<MyCasesPage />} />
           <Route path="/my-cases/:id" element={<CaseDetailPage />} />
-          <Route path="/cases" element={<CaseListPage />} />
+          <Route path="/cases" element={<Navigate to="/dashboard" replace />} />
           <Route path="/cases/create" element={<CreateCasePage />} />
           <Route path="/cases/:id" element={<CaseDetailPage />} />
           <Route path="/cases/:id/status" element={<UpdateStatusPage />} />

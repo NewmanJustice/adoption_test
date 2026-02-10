@@ -59,7 +59,7 @@ const CreateCasePage: React.FC = () => {
           <main className="govuk-main-wrapper" id="main-content" role="main">
             <h1 className="govuk-heading-xl">Access denied</h1>
             <p className="govuk-body">Only HMCTS Case Officers can create cases.</p>
-            <Link to="/cases" className="govuk-link">Back to cases</Link>
+            <Link to="/dashboard" className="govuk-link">Back to cases</Link>
           </main>
         </div>
         <Footer />
@@ -119,7 +119,7 @@ const CreateCasePage: React.FC = () => {
       <div className="govuk-width-container">
         <PhaseBanner />
         <main className="govuk-main-wrapper" id="main-content" role="main">
-          <Link to="/cases" className="govuk-back-link">Back to cases</Link>
+          <Link to="/dashboard" className="govuk-back-link">Back to cases</Link>
 
           <h1 className="govuk-heading-xl">Create case</h1>
 
@@ -203,7 +203,7 @@ const CreateCasePage: React.FC = () => {
             >
               {isSubmitting ? 'Creating...' : 'Create case'}
             </button>
-            <Link to="/cases" className="govuk-link">Cancel</Link>
+            <Link to="/dashboard" className="govuk-link">Cancel</Link>
           </div>
         </form>
         </main>

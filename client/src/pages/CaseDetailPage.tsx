@@ -80,7 +80,7 @@ const CaseDetailPage: React.FC = () => {
         <main className="govuk-main-wrapper" id="main-content" role="main">
           <h1 className="govuk-heading-xl">Access denied</h1>
           <p className="govuk-body">You do not have permission to view this case.</p>
-          <Link to="/cases" className="govuk-link">Back to cases</Link>
+          <Link to="/dashboard" className="govuk-link">Back to cases</Link>
         </main>
       </div>
     );
@@ -92,7 +92,7 @@ const CaseDetailPage: React.FC = () => {
         <main className="govuk-main-wrapper" id="main-content" role="main">
           <h1 className="govuk-heading-xl">Error</h1>
           <p className="govuk-body">{error || 'Case not found'}</p>
-          <Link to="/cases" className="govuk-link">Back to cases</Link>
+          <Link to="/dashboard" className="govuk-link">Back to cases</Link>
         </main>
       </div>
     );
@@ -112,7 +112,7 @@ const CaseDetailPage: React.FC = () => {
   return (
     <div className="govuk-width-container">
       <main className="govuk-main-wrapper" id="main-content" role="main">
-        <Link to="/cases" className="govuk-back-link">Back to cases</Link>
+        <Link to="/dashboard" className="govuk-back-link">Back to cases</Link>
 
         <h1 className="govuk-heading-xl">{caseData.caseNumber}</h1>
 
