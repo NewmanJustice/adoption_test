@@ -1,17 +1,44 @@
 /** @type {import('jest').Config} */
 module.exports = {
+  extensionsToTreatAsEsm: ['.ts', '.tsx'],
+  globals: {
+    'ts-jest': {
+      useESM: false,
+    },
+  },
   projects: [
+    {
+      displayName: 'unit',
+      testMatch: ['<rootDir>/test/unit/**/*.test.js'],
+      testEnvironment: 'node',
+    },
     {
       displayName: 'scaffold',
       testMatch: ['<rootDir>/test/**/*.test.js'],
       testEnvironment: 'node',
       preset: 'ts-jest',
       transform: {
-        '^.+\\.tsx?$': 'ts-jest',
+        '^.+\\.tsx?$': ['ts-jest', {
+          tsconfig: {
+            module: 'commonjs',
+            moduleResolution: 'node',
+            esModuleInterop: true,
+            allowSyntheticDefaultImports: true,
+            isolatedModules: true,
+          },
+          diagnostics: {
+            ignoreCodes: ['TS1343'], // Ignore import.meta errors
+          },
+        }],
       },
       moduleNameMapper: {
+        '^@adoption/shared/(.*)$': '<rootDir>/shared/$1',
         '^@adoption/shared$': '<rootDir>/shared',
+        '^(\\.{1,2}/.*)\\.js$': '$1',
       },
+      transformIgnorePatterns: [
+        'node_modules/(?!(@adoption)/)',
+      ],
     },
     {
       displayName: 'server',

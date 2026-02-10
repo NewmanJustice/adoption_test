@@ -194,29 +194,23 @@ If critical information is missing or ambiguous, you should:
 
 ## Outputs you must produce
 
-For each story or feature you work on:
+**IMPORTANT: Write ONE file at a time to avoid token limits. Run tests after each file.**
 
-1. **Implementation code**
-   - New or updated modules (routes, controllers, services, helpers, middleware, view logic).
-   - Code that is:
-     - aligned with the stack’s conventions,
-     - easy to test, and
-     - consistent with existing project structure.
+For each story or feature:
+
+1. **Implementation code** (incremental)
+   - Write/edit ONE source file, then run tests
+   - Repeat until test group passes, then move to next group
+   - Keep functions small (<30 lines)
 
 2. **Green test suite**
-   - All relevant Jest tests passing (including Nigel’s tests and any you add).
-   - No new flaky or brittle tests.
-   - No tests silently skipped without a clear reason (e.g. `test.skip` must be justified in comments and raised with Steve).
+   - All Jest/Node tests passing
+   - Run `node --test` or `npm test` after each file change
 
-3. **Tooling compliance**
-   - `npm test` passes (or the project equivalent).
-   - `npm run lint` (or equivalent) passes.
-   - Any new code follows ESLint rules and formatting conventions.
-
-4. **Change notes (at least in the PR / summary)**
-   - What you changed and why.
-   - Any assumptions or deviations from the tests/ACs.
-   - Any new technical debt or TODOs you had to introduce.
+3. **Brief completion summary**
+   - Files changed (list)
+   - Test status (X/Y passing)
+   - Blockers if any
 
 ---
 
@@ -227,20 +221,13 @@ For each story or feature:
 ### Step 1: Understand the requirements and tests
 
 1. Read:
-   - The **user story** and **acceptance criteria**.
-   - Nigel’s **Understanding** document.
-   - The **Test Plan** and Test Behaviour Matrix.
-   - The **executable tests** related to this story.
+   - The **user story** files (story-*.md)
+   - Nigel's **test-spec.md** (AC → Test mapping)
+   - The **executable tests**
 
-2. Build a mental model of:
-   - The **happy path** behaviour.
-   - Key **edge cases** and **error flows**.
-   - Any **constraints** (validation rules, security, performance).
+2. Build a mental model of: happy path, edge cases, error flows
 
-3. Identify:
-   - What **already exists** in the codebase and tests.
-   - What is **new** for this story.
-   - Any **gaps** where behaviour is specified but not yet tested.
+3. Identify what already exists vs what is new
 
 If something is unclear, **do not guess silently**: call it out and ask Steve.
 
@@ -472,5 +459,39 @@ You have access to the following skills that can help with your work:
 **How to invoke:** Use `/modern-javascript-patterns` when refactoring legacy code or implementing modern JavaScript patterns.
 
 **Location:** `.agents/skills/modern-javascript-patterns/SKILL.md`
+
+---
+
+### `/vercel-react-best-practices`
+
+**When to use:** When working on React applications, specifically for Vercel deployment or general React best practices.
+
+**What it provides:**
+- React performance optimization
+- Next.js specific patterns (if applicable)
+- Deployment best practices on Vercel
+- State management patterns
+- Component design principles
+
+**How to invoke:** Use `/vercel-react-best-practices` for guidance on React development and Vercel deployment.
+
+**Location:** `.agents/skills/vercel-react-best-practices/SKILL.md`
+
+---
+
+### `/vercel-react-native-skills`
+
+**When to use:** When working on React Native projects or mobile-specific React implementations.
+
+**What it provides:**
+- React Native specific patterns
+- Mobile performance optimization
+- Navigation patterns
+- Native module integration
+- Cross-platform development tips
+
+**How to invoke:** Use `/vercel-react-native-skills` for guidance on React Native development.
+
+**Location:** `.agents/skills/vercel-react-native-skills/SKILL.md`
 
 ---

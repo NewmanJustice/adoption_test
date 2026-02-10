@@ -36,7 +36,7 @@ az account show
 
 ```bash
 # Set these variables for use in subsequent commands
-RESOURCE_GROUP="CFT-software-engineering"
+RESOURCE_GROUP="CFT-software-engineering" 
 LOCATION="uksouth"
 APP_SERVICE_PLAN="cft-adoption-plan"
 APP_NAME="cft-adoption-dev"
@@ -111,19 +111,27 @@ az webapp config set \
 
 ## Part 2: GitHub Actions Setup
 
-### Step 2.1: Download Publish Profile
+### Step 2.1: Create Azure Service Principal
 
-1. Go to **Azure Portal** → **App Services** → **cft-adoption-dev**
-2. Click **Download publish profile** (top toolbar)
-3. This downloads a `.PublishSettings` file - open it in a text editor and copy the entire contents
+This creates credentials for GitHub Actions to deploy to Azure:
+
+```bash
+az ad sp create-for-rbac \
+  --name "github-actions-cft-adoption" \
+  --role contributor \
+  --scopes /subscriptions/$(az account show --query id -o tsv)/resourceGroups/$RESOURCE_GROUP \
+  --sdk-auth
+```
+
+This outputs JSON - **copy the entire output** for the next step.
 
 ### Step 2.2: Add GitHub Secret
 
 1. Go to your GitHub repository
 2. Navigate to **Settings** → **Secrets and variables** → **Actions**
 3. Click **New repository secret**
-4. Name: `AZURE_WEBAPP_PUBLISH_PROFILE`
-5. Value: Paste the entire contents of the `.PublishSettings` file
+4. Name: `AZURE_CREDENTIALS`
+5. Value: Paste the JSON output from Step 2.1
 
 ### Step 2.3: Verify Workflow File
 
@@ -131,7 +139,7 @@ The workflow file has been created at `.github/workflows/deploy.yml`. It will:
 - Trigger on pushes to `main` branch
 - Build client and server
 - Package everything together
-- Deploy to Azure App Service using publish profile
+- Deploy to Azure App Service
 
 ---
 
@@ -320,5 +328,5 @@ Update the GitHub workflow to deploy to different apps based on branch.
 - [ ] Session secret is unique per environment
 - [ ] HTTPS-only enabled
 - [ ] ANNOTATION_ENABLED=false for production
-- [ ] GitHub secret AZURE_WEBAPP_PUBLISH_PROFILE configured
+- [ ] GitHub secret AZURE_CREDENTIALS configured
 - [ ] Service principal has minimal required permissions

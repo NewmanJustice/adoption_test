@@ -1,0 +1,25 @@
+export declare const DOCUMENT_TYPES: {
+    readonly LEGAL_CORRESPONDENCE: "legal-correspondence";
+    readonly COURT_ORDER: "court-order";
+    readonly BACKGROUND_CHECKS: "background-checks";
+    readonly MEDICAL_REPORTS: "medical-reports";
+    readonly CAFCASS_REPORTS: "cafcass-reports";
+    readonly HOME_STUDY_ASSESSMENT: "home-study-assessment";
+    readonly CHILD_PERMANENCE_REPORT: "child-permanence-report";
+    readonly PROSPECTIVE_ADOPTER_REPORT: "prospective-adopter-report";
+    readonly MATCHING_REPORT: "matching-report";
+    readonly PLACEMENT_PLAN: "placement-plan";
+    readonly SUPPORT_PLAN: "support-plan";
+    readonly CONTACT_ARRANGEMENTS: "contact-arrangements";
+    readonly IDENTITY_DOCUMENTS: "identity-documents";
+    readonly PHOTOGRAPHS: "photographs";
+    readonly OTHER: "other";
+};
+export type DocumentType = typeof DOCUMENT_TYPES[keyof typeof DOCUMENT_TYPES];
+export declare const DOCUMENT_TYPE_LABELS: Record<DocumentType, string>;
+export declare const DOCUMENT_TYPE_HELP_TEXT: Record<DocumentType, string>;
+export declare const ALLOWED_MIME_TYPES: readonly ["application/pdf", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "application/msword", "image/jpeg", "image/jpg", "image/png", "image/tiff"];
+export declare const ALLOWED_EXTENSIONS: readonly [".pdf", ".docx", ".doc", ".jpg", ".jpeg", ".png", ".tiff", ".tif"];
+export declare const MAX_FILE_SIZE: number;
+export declare const MAX_BULK_UPLOAD = 10;
+export declare const DESCRIPTION_MAX_LENGTH = 500;

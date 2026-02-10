@@ -24,10 +24,10 @@ echo "Installing Azure CLI..."
 curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
 echo "✅ Azure CLI installed"  
 
-# Install Clude CLI
-echo "Installing Clude CLI..."
-curl -fsSL https://claude.ai/install.sh | bash
-echo "✅ Clude CLI installed"
+# Install Co-pilot CLI
+echo "Installing Co-pilot CLI..."
+curl curl -fsSL https://gh.io/copilot-install | bash
+echo "✅ Co-pilot CLI installed"
 
 # Install kubelogin for AKS authentication
 echo "Installing kubelogin..."
@@ -51,10 +51,11 @@ echo "✅ Bash history configured"
 
 echo "✅ Dev container setup complete."
 
+echo "Intall PostgreSQL Client"
+sudo apt-get update
+sudo apt-get install postgresql postgresql-contrib
+echo "✅ PostgreSQL Client installed"
+
 exec $SHELL
 
-# Launch Claude
-echo "Launching Claude CLI..."
-chmod +x ./.devcontainer/claudeinit.sh
-./.devcontainer/claudeinit.sh
 

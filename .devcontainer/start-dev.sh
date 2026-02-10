@@ -1,3 +1,5 @@
+#use for local development environment setup only!!!!!!!!
+
 #!/usr/bin/env bash
 set -e
 

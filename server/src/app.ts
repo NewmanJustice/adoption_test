@@ -6,11 +6,17 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { config } from './config/index.js';
+import { pool } from './config/database.js';
 import { sessionMiddleware } from './middleware/sessionMiddleware.js';
 import healthRouter from './routes/health.js';
 import authRouter from './routes/auth.js';
 import protectedRouter from './routes/protected.js';
 import caseRouter from './routes/cases.js';
+import { createDocumentRoutes } from './routes/documents.js';
+import { DocumentRepository } from './repositories/documentRepository.js';
+import { DocumentService } from './services/documentService.js';
+import { OcrService } from './services/ocrService.js';
+import { DocumentController } from './controllers/documentController.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { notFoundHandler } from './middleware/notFound.js';
 
@@ -199,6 +205,14 @@ app.use('/api', protectedRouter);
 
 // Case management routes
 app.use('/api', caseRouter);
+
+// Document management routes
+const documentRepository = new DocumentRepository(pool);
+const ocrService = new OcrService(documentRepository);
+const documentService = new DocumentService(documentRepository, ocrService);
+const documentController = new DocumentController(documentService);
+const documentRoutes = createDocumentRoutes(documentController);
+app.use('/api', documentRoutes);
 
 // Serve static files from client build (production)
 if (process.env.NODE_ENV === 'production') {
