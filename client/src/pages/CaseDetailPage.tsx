@@ -54,7 +54,7 @@ const CaseDetailPage: React.FC = () => {
       }
 
       const data = await response.json();
-      setCaseData(data.case);
+      setCaseData(data);
     } catch {
       setError('Failed to load case');
     } finally {
