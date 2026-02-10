@@ -40,10 +40,17 @@ const LoginPage: React.FC = () => {
     setIsLoading(true);
 
     try {
+      // Set default court assignment for HMCTS officers
+      const courtAssignment = role === 'HMCTS_CASE_OFFICER' ? 'Family Court at Brighton' : undefined;
+      
       const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: username.trim(), role }),
+        body: JSON.stringify({ 
+          username: username.trim(), 
+          role,
+          courtAssignment,
+        }),
         credentials: 'include',
       });
 

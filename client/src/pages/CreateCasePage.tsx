@@ -18,14 +18,12 @@ const CASE_TYPES = [
 
 interface FormErrors {
   caseType?: string;
-  assignedCourt?: string;
 }
 
 const CreateCasePage: React.FC = () => {
   const navigate = useNavigate();
   const { user, isAuthenticated, loading } = useSession();
   const [caseType, setCaseType] = useState('');
-  const [assignedCourt, setAssignedCourt] = useState('');
   const [linkedReference, setLinkedReference] = useState('');
   const [notes, setNotes] = useState('');
   const [errors, setErrors] = useState<FormErrors>({});
@@ -76,9 +74,6 @@ const CreateCasePage: React.FC = () => {
     if (!caseType) {
       newErrors.caseType = 'Select a case type';
     }
-    if (!assignedCourt.trim()) {
-      newErrors.assignedCourt = 'Enter an assigned court';
-    }
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -95,7 +90,6 @@ const CreateCasePage: React.FC = () => {
         credentials: 'include',
         body: JSON.stringify({
           caseType,
-          assignedCourt: assignedCourt.trim(),
           linkedFamilyCourtCaseReference: linkedReference.trim() || undefined,
           notes: notes.trim() || undefined,
         }),
@@ -128,6 +122,12 @@ const CreateCasePage: React.FC = () => {
           <Link to="/cases" className="govuk-back-link">Back to cases</Link>
 
           <h1 className="govuk-heading-xl">Create case</h1>
+
+          {user?.courtAssignment && (
+            <div className="govuk-inset-text">
+              Cases will be created for: <strong>{user.courtAssignment}</strong>
+            </div>
+          )}
 
         {errorList.length > 0 && (
           <div className="govuk-error-summary" role="alert" aria-labelledby="error-summary-title" data-module="govuk-error-summary">
@@ -164,20 +164,6 @@ const CreateCasePage: React.FC = () => {
                 </option>
               ))}
             </select>
-          </div>
-
-          <div className={`govuk-form-group ${errors.assignedCourt ? 'govuk-form-group--error' : ''}`}>
-            <label className="govuk-label govuk-label--m" htmlFor="assignedCourt">
-              Assigned court
-            </label>
-            <input
-              className={`govuk-input ${errors.assignedCourt ? 'govuk-input--error' : ''}`}
-              id="assignedCourt"
-              name="assignedCourt"
-              type="text"
-              value={assignedCourt}
-              onChange={(e) => setAssignedCourt(e.target.value)}
-            />
           </div>
 
           <div className="govuk-form-group">

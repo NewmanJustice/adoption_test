@@ -29,7 +29,9 @@ export async function createCase(
 
   const body = req.body as Partial<CreateCaseRequest>;
   const caseType = body.caseType as string | undefined;
-  const assignedCourt = body.assignedCourt as string | undefined;
+  
+  // HMCTS officers can only create cases for their assigned court
+  const assignedCourt = user.courtAssignment;
 
   if (!caseType || caseType === '') {
     res.status(400).json({ error: 'caseType is required' });
@@ -42,7 +44,7 @@ export async function createCase(
   }
 
   if (!assignedCourt || assignedCourt === '') {
-    res.status(400).json({ error: 'assignedCourt is required' });
+    res.status(400).json({ error: 'User must have a court assignment to create cases' });
     return;
   }
 

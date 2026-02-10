@@ -111,6 +111,8 @@ export async function getSession(
     response.user = {
       userId: sessionData.userId,
       role: sessionData.role,
+      courtAssignment: sessionData.courtAssignment,
+      organisationId: sessionData.organisationId,
     };
   }
 
