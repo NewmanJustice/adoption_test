@@ -16,12 +16,16 @@ As an **authenticated user**, I want **to see a list of adoption cases that I ha
   - Case data model and database schema
   - Case assignment mechanism (for non-HMCTS users)
 - **Routes:**
-  - `GET /cases` — Display case list page
+  - `GET /dashboard` — Display case list page with filters and attention flags
   - `GET /api/cases` — Retrieve filtered case list
+  - `GET /cases` — Redirects to `/dashboard` (legacy route)
+- **Implementation:**
+  - Primary UI: `DashboardPage.tsx` (feature-rich with filters, attention flags)
+  - Legacy route removed: `CaseListPage.tsx` (consolidated Feb 2026)
 - **This story establishes:**
   - Role-based case visibility
   - Paginated case listing
-  - Basic case list display
+  - Basic case list display with filtering capabilities
 
 ---
 
