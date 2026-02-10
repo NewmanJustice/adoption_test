@@ -8,6 +8,18 @@ export class OcrService {
   }
 
   async queueDocument(documentId: string, storagePath: string, mimeType: string): Promise<void> {
+    // If queue is not configured (Redis not available), mark as not-applicable
+    if (!ocrQueue) {
+      await this.documentRepository.updateOcrStatus(documentId, 'not-applicable');
+      await this.documentRepository.createAuditLog({
+        documentId,
+        userId: 'system',
+        action: 'ocr_skipped',
+        metadata: { reason: 'Redis queue not configured' }
+      });
+      return;
+    }
+
     try {
       await ocrQueue.add({
         documentId,
@@ -31,6 +43,10 @@ export class OcrService {
   }
 
   async retryOcr(documentId: string): Promise<void> {
+    if (!ocrQueue) {
+      throw new Error('OCR queue not configured');
+    }
+
     const doc = await this.documentRepository.findById(documentId);
     if (!doc) {
       throw new Error('Document not found');
@@ -41,6 +57,10 @@ export class OcrService {
   }
 
   private setupQueueProcessing() {
+    if (!ocrQueue) {
+      return; // Skip queue processing setup if Redis is not configured
+    }
+
     ocrQueue.process(async (job) => {
       const { documentId } = job.data;
       

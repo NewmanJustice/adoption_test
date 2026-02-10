@@ -72,7 +72,7 @@ export interface DocumentAuditLog {
   id: string;
   documentId: string;
   userId: string;
-  action: 'upload' | 'download' | 'access_denied' | 'virus_detected' | 'ocr_queued' | 'ocr_complete' | 'ocr_failed';
+  action: 'upload' | 'download' | 'access_denied' | 'virus_detected' | 'ocr_queued' | 'ocr_complete' | 'ocr_failed' | 'ocr_skipped';
   timestamp: Date;
   ipAddress?: string;
   metadata?: Record<string, unknown>;
