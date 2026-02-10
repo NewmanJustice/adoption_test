@@ -1,6 +1,6 @@
 import { Pool } from 'pg';
-import { DocumentMetadata, DocumentVersion, DocumentAuditLog, OcrStatus } from '@adoption/shared/types/document';
-import { DocumentType } from '@adoption/shared/constants/documentTypes';
+import { DocumentMetadata, DocumentVersion, DocumentAuditLog, OcrStatus } from '@adoption/shared/types/document.js';
+import { DocumentType } from '@adoption/shared/constants/documentTypes.js';
 
 export class DocumentRepository {
   constructor(private pool: Pool) {}

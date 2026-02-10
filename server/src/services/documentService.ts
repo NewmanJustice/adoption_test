@@ -3,8 +3,8 @@ import { OcrService } from './ocrService.js';
 import { storage } from '../config/storage.js';
 import { antivirus } from '../config/antivirus.js';
 import { calculateFileHash } from '../utils/fileHash.js';
-import { DocumentMetadata, UploadResult, BulkUploadResult, DocumentListFilter } from '@adoption/shared/types/document';
-import { DocumentType, DESCRIPTION_MAX_LENGTH } from '@adoption/shared/constants/documentTypes';
+import { DocumentMetadata, UploadResult, BulkUploadResult, DocumentListFilter } from '@adoption/shared/types/document.js';
+import { DocumentType, DESCRIPTION_MAX_LENGTH } from '@adoption/shared/constants/documentTypes.js';
 
 export class DocumentService {
   constructor(

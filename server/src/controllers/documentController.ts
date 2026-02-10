@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { DocumentService } from '../services/documentService.js';
 import { AuthenticatedRequest } from '../middleware/permissions.js';
-import { DocumentType, DOCUMENT_TYPES, DOCUMENT_TYPE_LABELS, DOCUMENT_TYPE_HELP_TEXT } from '@adoption/shared/constants/documentTypes';
+import { DocumentType, DOCUMENT_TYPES, DOCUMENT_TYPE_LABELS, DOCUMENT_TYPE_HELP_TEXT } from '@adoption/shared/constants/documentTypes.js';
 
 export class DocumentController {
   constructor(private documentService: DocumentService) {}

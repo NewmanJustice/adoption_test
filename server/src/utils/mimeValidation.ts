@@ -1,4 +1,4 @@
-import { ALLOWED_MIME_TYPES, ALLOWED_EXTENSIONS } from '@adoption/shared/constants/documentTypes';
+import { ALLOWED_MIME_TYPES, ALLOWED_EXTENSIONS } from '@adoption/shared/constants/documentTypes.js';
 import path from 'path';
 
 export function isValidFileExtension(filename: string): boolean {

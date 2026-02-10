@@ -1,6 +1,6 @@
 import { ocrQueue } from '../config/queue.js';
 import { DocumentRepository } from '../repositories/documentRepository.js';
-import { OcrStatus } from '@adoption/shared/types/document';
+import { OcrStatus } from '@adoption/shared/types/document.js';
 
 export class OcrService {
   constructor(private documentRepository: DocumentRepository) {

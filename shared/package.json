@@ -14,7 +14,15 @@
       "types": "./dist/constants/documentTypes.d.ts",
       "import": "./dist/constants/documentTypes.js"
     },
+    "./constants/documentTypes.js": {
+      "types": "./dist/constants/documentTypes.d.ts",
+      "import": "./dist/constants/documentTypes.js"
+    },
     "./types/document": {
+      "types": "./dist/types/document.d.ts",
+      "import": "./dist/types/document.js"
+    },
+    "./types/document.js": {
       "types": "./dist/types/document.d.ts",
       "import": "./dist/types/document.js"
     }

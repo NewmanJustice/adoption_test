@@ -1,5 +1,5 @@
 import multer from 'multer';
-import { MAX_FILE_SIZE, MAX_BULK_UPLOAD } from '@adoption/shared/constants/documentTypes';
+import { MAX_FILE_SIZE, MAX_BULK_UPLOAD } from '@adoption/shared/constants/documentTypes.js';
 import { validateFile } from '../utils/mimeValidation.js';
 import { Request, Response, NextFunction } from 'express';
 
