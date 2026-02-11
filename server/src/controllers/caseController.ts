@@ -48,7 +48,7 @@ export async function createCase(
     return;
   }
 
-  const newCase = caseService.createCase(caseType, assignedCourt, user);
+  const newCase = await caseService.createCase(caseType, assignedCourt, user);
   res.status(201).json(newCase);
 }
 
@@ -62,7 +62,7 @@ export async function listCases(
     return;
   }
 
-  const cases = caseService.listCasesForUser(user);
+  const cases = await caseService.listCasesForUser(user);
 
   const response: CaseListResponse = {
     cases: cases.map((c) => ({
@@ -91,14 +91,14 @@ export async function getCase(
   }
 
   const { id } = req.params;
-  const caseData = caseService.getCase(id);
+  const caseData = await caseService.getCase(id);
 
   if (!caseData) {
     res.status(404).json({ error: 'Case not found', code: 'NOT_FOUND' });
     return;
   }
 
-  const assignments = caseService.getAssignments(id);
+  const assignments = await caseService.getAssignments(id);
   const hasAccess = caseService.checkCaseAccess(user, caseData, assignments);
 
   if (!hasAccess) {
@@ -128,14 +128,14 @@ export async function updateCaseStatus(
   }
 
   const { id } = req.params;
-  const caseData = caseService.getCase(id);
+  const caseData = await caseService.getCase(id);
 
   if (!caseData) {
     res.status(404).json({ error: 'Case not found', code: 'NOT_FOUND' });
     return;
   }
 
-  const assignments = caseService.getAssignments(id);
+  const assignments = await caseService.getAssignments(id);
   const hasAccess = caseService.checkCaseAccess(user, caseData, assignments);
 
   if (!hasAccess && user.role !== 'HMCTS_CASE_OFFICER' && user.role !== 'JUDGE_LEGAL_ADVISER') {
@@ -149,7 +149,7 @@ export async function updateCaseStatus(
   }
 
   const body = req.body as UpdateStatusRequest;
-  const result = caseService.updateStatus(
+  const result = await caseService.updateStatus(
     id,
     body.status,
     user,
@@ -196,7 +196,7 @@ export async function deleteCase(
   }
 
   const { id } = req.params;
-  const deleted = caseService.deleteCase(id, user);
+  const deleted = await caseService.deleteCase(id, user);
 
   if (!deleted) {
     res.status(404).json({ error: 'Case not found', code: 'NOT_FOUND' });
@@ -217,7 +217,7 @@ export async function getAuditLog(
   }
 
   const { id } = req.params;
-  const caseData = caseService.getCase(id);
+  const caseData = await caseService.getCase(id);
 
   if (!caseData) {
     res.status(404).json({ error: 'Case not found', code: 'NOT_FOUND' });
@@ -229,7 +229,7 @@ export async function getAuditLog(
     return;
   }
 
-  const entries = caseService.getAuditLogs(id);
+  const entries = await caseService.getAuditLogs(id);
   const response: AuditLogResponse = { entries };
 
   res.status(200).json(response);
@@ -251,7 +251,7 @@ export async function createAssignment(
   }
 
   const { id } = req.params;
-  const caseData = caseService.getCase(id);
+  const caseData = await caseService.getCase(id);
 
   if (!caseData) {
     res.status(404).json({ error: 'Case not found', code: 'NOT_FOUND' });
@@ -259,7 +259,7 @@ export async function createAssignment(
   }
 
   const body = req.body as AssignmentRequest;
-  const assignment = caseService.createAssignment(
+  const assignment = await caseService.createAssignment(
     id,
     body.userId,
     body.assignmentType,
@@ -287,7 +287,7 @@ export async function listAssignments(
   }
 
   const { id } = req.params;
-  const assignments = caseService.getAssignments(id);
+  const assignments = await caseService.getAssignments(id);
 
   res.status(200).json({ assignments });
 }

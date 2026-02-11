@@ -104,14 +104,14 @@ export function redactCaseForAdopter(caseData: Case): CaseResponse {
   };
 }
 
-export function createCase(
+export async function createCase(
   caseType: AdoptionType,
   assignedCourt: string,
   user: SessionUser
-): Case {
-  const newCase = caseRepo.createCase(caseType, assignedCourt, user.userId);
+): Promise<Case> {
+  const newCase = await caseRepo.createCase(caseType, assignedCourt, user.userId);
 
-  caseRepo.addAuditLog(newCase.id, 'CREATE', user.userId, {
+  await caseRepo.addAuditLog(newCase.id, 'CREATE', user.userId, {
     caseType,
     assignedCourt,
   });
@@ -119,24 +119,24 @@ export function createCase(
   return newCase;
 }
 
-export function getCase(id: string): Case | undefined {
-  return caseRepo.findCaseById(id);
+export async function getCase(id: string): Promise<Case | undefined> {
+  return await caseRepo.findCaseById(id);
 }
 
-export function listCasesForUser(user: SessionUser): Case[] {
+export async function listCasesForUser(user: SessionUser): Promise<Case[]> {
   const { role, userId, courtAssignment, organisationId } = user;
 
   if (role === 'HMCTS_CASE_OFFICER') {
-    return caseRepo.findCasesByFilters({ courtAssignment });
+    return await caseRepo.findCasesByFilters({ courtAssignment });
   }
 
   if (role === 'JUDGE_LEGAL_ADVISER') {
-    const allCases = caseRepo.findCasesByFilters({});
+    const allCases = await caseRepo.findCasesByFilters({});
     return allCases.filter((c) => c.assignedJudge === userId);
   }
 
   if (role === 'ADOPTER') {
-    const allCases = caseRepo.findCasesByFilters({});
+    const allCases = await caseRepo.findCasesByFilters({});
     return allCases.filter((c) => c.applicantIds.includes(userId));
   }
 
@@ -152,14 +152,14 @@ export interface UpdateStatusResult {
   currentVersion?: number;
 }
 
-export function updateStatus(
+export async function updateStatus(
   caseId: string,
   newStatus: CaseStatus,
   user: SessionUser,
   reason?: string,
   expectedVersion?: number
-): UpdateStatusResult {
-  const caseData = caseRepo.findCaseById(caseId);
+): Promise<UpdateStatusResult> {
+  const caseData = await caseRepo.findCaseById(caseId);
   if (!caseData) {
     return { success: false, error: 'Case not found', code: 'NOT_FOUND' };
   }
@@ -206,9 +206,9 @@ export function updateStatus(
   }
 
   const previousStatus = caseData.status;
-  const updated = caseRepo.updateCaseStatus(caseId, newStatus, reason);
+  const updated = await caseRepo.updateCaseStatus(caseId, newStatus, reason);
 
-  caseRepo.addAuditLog(caseId, 'STATUS_CHANGE', user.userId, {
+  await caseRepo.addAuditLog(caseId, 'STATUS_CHANGE', user.userId, {
     before: previousStatus,
     after: newStatus,
     reason,
@@ -221,28 +221,28 @@ export function updateStatus(
   };
 }
 
-export function deleteCase(caseId: string, user: SessionUser): boolean {
-  const result = caseRepo.softDeleteCase(caseId);
+export async function deleteCase(caseId: string, user: SessionUser): Promise<boolean> {
+  const result = await caseRepo.softDeleteCase(caseId);
   if (result) {
-    caseRepo.addAuditLog(caseId, 'DELETE', user.userId);
+    await caseRepo.addAuditLog(caseId, 'DELETE', user.userId);
   }
   return result;
 }
 
-export function createAssignment(
+export async function createAssignment(
   caseId: string,
   userId: string,
   assignmentType: string,
   createdBy: SessionUser
-): CaseAssignment {
-  const assignment = caseRepo.createAssignment(
+): Promise<CaseAssignment> {
+  const assignment = await caseRepo.createAssignment(
     caseId,
     userId,
     assignmentType,
     createdBy.userId
   );
 
-  caseRepo.addAuditLog(caseId, 'ASSIGNMENT_CREATE', createdBy.userId, {
+  await caseRepo.addAuditLog(caseId, 'ASSIGNMENT_CREATE', createdBy.userId, {
     userId,
     assignmentType,
   });
@@ -250,12 +250,12 @@ export function createAssignment(
   return assignment;
 }
 
-export function getAssignments(caseId: string): CaseAssignment[] {
-  return caseRepo.findAssignmentsByCaseId(caseId);
+export async function getAssignments(caseId: string): Promise<CaseAssignment[]> {
+  return await caseRepo.findAssignmentsByCaseId(caseId);
 }
 
-export function getAuditLogs(caseId: string) {
-  return caseRepo.getAuditLogs(caseId);
+export async function getAuditLogs(caseId: string): Promise<any[]> {
+  return await caseRepo.getAuditLogs(caseId);
 }
 
 const APPROACHING_THRESHOLD_DAYS = 7;
