@@ -245,17 +245,17 @@ export async function addAuditLog(
   actor: string,
   changes?: { before?: string; after?: string; [key: string]: unknown }
 ): Promise<AuditLogEntry> {
-  const id = generateUUID();
   const timestamp = new Date().toISOString();
 
-  await pool.query(
-    `INSERT INTO audit_log (id, action, entity_type, entity_id, user_id, timestamp, changes)
-     VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-    [id, action, 'case', caseId, actor, timestamp, changes ? JSON.stringify(changes) : null]
+  const result = await pool.query(
+    `INSERT INTO audit_log (action, entity_type, entity_id, user_id, timestamp, changes)
+     VALUES ($1, $2, $3, $4, $5, $6)
+     RETURNING id`,
+    [action, 'case', caseId, actor, timestamp, changes ? JSON.stringify(changes) : null]
   );
 
   return {
-    id,
+    id: result.rows[0].id.toString(),
     caseId,
     action,
     actor,
