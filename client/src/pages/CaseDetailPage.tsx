@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Link, Navigate, useParams } from 'react-router-dom';
 import { useSession } from '../context/SessionContext';
+import SkipLink from '../components/SkipLink';
+import Header from '../components/Header';
+import PhaseBanner from '../components/PhaseBanner';
+import Footer from '../components/Footer';
 
 interface HistoryEntry {
   from: string | null;
@@ -63,7 +67,19 @@ const CaseDetailPage: React.FC = () => {
   };
 
   if (sessionLoading) {
-    return <p className="govuk-body">Loading...</p>;
+    return (
+      <>
+        <SkipLink />
+        <Header />
+        <div className="govuk-width-container">
+          <PhaseBanner />
+          <main className="govuk-main-wrapper" id="main-content" role="main">
+            <p className="govuk-body">Loading...</p>
+          </main>
+        </div>
+        <Footer />
+      </>
+    );
   }
 
   if (!isAuthenticated) {
@@ -71,30 +87,54 @@ const CaseDetailPage: React.FC = () => {
   }
 
   if (loading) {
-    return <p className="govuk-body">Loading...</p>;
+    return (
+      <>
+        <SkipLink />
+        <Header />
+        <div className="govuk-width-container">
+          <PhaseBanner />
+          <main className="govuk-main-wrapper" id="main-content" role="main">
+            <p className="govuk-body">Loading...</p>
+          </main>
+        </div>
+        <Footer />
+      </>
+    );
   }
 
   if (accessDenied) {
     return (
-      <div className="govuk-width-container">
-        <main className="govuk-main-wrapper" id="main-content" role="main">
-          <h1 className="govuk-heading-xl">Access denied</h1>
-          <p className="govuk-body">You do not have permission to view this case.</p>
-          <Link to="/dashboard" className="govuk-link">Back to cases</Link>
-        </main>
-      </div>
+      <>
+        <SkipLink />
+        <Header />
+        <div className="govuk-width-container">
+          <PhaseBanner />
+          <main className="govuk-main-wrapper" id="main-content" role="main">
+            <h1 className="govuk-heading-xl">Access denied</h1>
+            <p className="govuk-body">You do not have permission to view this case.</p>
+            <Link to="/dashboard" className="govuk-link">Back to cases</Link>
+          </main>
+        </div>
+        <Footer />
+      </>
     );
   }
 
   if (error || !caseData) {
     return (
-      <div className="govuk-width-container">
-        <main className="govuk-main-wrapper" id="main-content" role="main">
-          <h1 className="govuk-heading-xl">Error</h1>
-          <p className="govuk-body">{error || 'Case not found'}</p>
-          <Link to="/dashboard" className="govuk-link">Back to cases</Link>
-        </main>
-      </div>
+      <>
+        <SkipLink />
+        <Header />
+        <div className="govuk-width-container">
+          <PhaseBanner />
+          <main className="govuk-main-wrapper" id="main-content" role="main">
+            <h1 className="govuk-heading-xl">Error</h1>
+            <p className="govuk-body">{error || 'Case not found'}</p>
+            <Link to="/dashboard" className="govuk-link">Back to cases</Link>
+          </main>
+        </div>
+        <Footer />
+      </>
     );
   }
 
@@ -110,11 +150,15 @@ const CaseDetailPage: React.FC = () => {
   };
 
   return (
-    <div className="govuk-width-container">
-      <main className="govuk-main-wrapper" id="main-content" role="main">
-        <Link to="/dashboard" className="govuk-back-link">Back to cases</Link>
+    <>
+      <SkipLink />
+      <Header />
+      <div className="govuk-width-container">
+        <PhaseBanner />
+        <main className="govuk-main-wrapper" id="main-content" role="main">
+          <Link to="/dashboard" className="govuk-back-link">Back to cases</Link>
 
-        <h1 className="govuk-heading-xl">{caseData.caseNumber}</h1>
+          <h1 className="govuk-heading-xl">{caseData.caseNumber}</h1>
 
         {canUpdateStatus && (
           <Link to={`/cases/${id}/status`} className="govuk-button govuk-button--secondary">
@@ -182,8 +226,10 @@ const CaseDetailPage: React.FC = () => {
             </table>
           </>
         )}
-      </main>
-    </div>
+        </main>
+      </div>
+      <Footer />
+    </>
   );
 };
 
