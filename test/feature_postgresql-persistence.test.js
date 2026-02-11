@@ -53,7 +53,7 @@ async function seedCourtSequences() {
   await pool.query(`
     INSERT INTO court_sequences (court_code, current_year, current_sequence)
     VALUES ('BFC', 2026, 0), ('MFC', 2026, 0), ('LFC', 2026, 0)
-    ON CONFLICT (court_code) DO NOTHING
+    ON CONFLICT (court_code, current_year) DO NOTHING
   `);
 }
 
@@ -108,8 +108,8 @@ describe('Story 1: Migrate Case Repository to PostgreSQL', () => {
       };
 
       await pool.query(
-        `INSERT INTO cases (id, court, status, version, created_at, updated_at)
-         VALUES ($1, $2, $3, $4, $5, $6)`,
+        `INSERT INTO cases (id, case_number, case_type, court, status, created_by, version, created_at, updated_at)
+         VALUES ($1, $1, 'ADOPTION', $2, $3, 'test-user', $4, $5, $6)`,
         [caseData.id, caseData.court, caseData.status, caseData.version, caseData.created_at, caseData.updated_at]
       );
 
@@ -133,8 +133,8 @@ describe('Story 1: Migrate Case Repository to PostgreSQL', () => {
     it('T-1.4: queries database excluding soft-deleted cases', async () => {
       const caseId = '550e8400-e29b-41d4-a716-446655440001';
       await pool.query(
-        `INSERT INTO cases (id, court, status, version, created_at, updated_at)
-         VALUES ($1, $2, $3, $4, $5, $6)`,
+        `INSERT INTO cases (id, case_number, case_type, court, status, created_by, version, created_at, updated_at)
+         VALUES ($1, $1, 'ADOPTION', $2, $3, 'test-user', $4, $5, $6)`,
         [caseId, 'Manchester Family Court', 'DIRECTIONS', 1, new Date(), new Date()]
       );
 
@@ -152,8 +152,8 @@ describe('Story 1: Migrate Case Repository to PostgreSQL', () => {
     it('T-1.5: succeeds when version matches', async () => {
       const caseId = '550e8400-e29b-41d4-a716-446655440002';
       await pool.query(
-        `INSERT INTO cases (id, court, status, version, created_at, updated_at)
-         VALUES ($1, $2, $3, $4, $5, $6)`,
+        `INSERT INTO cases (id, case_number, case_type, court, status, created_by, version, created_at, updated_at)
+         VALUES ($1, $1, 'ADOPTION', $2, $3, 'test-user', $4, $5, $6)`,
         [caseId, 'London Family Court', 'APPLICATION', 1, new Date(), new Date()]
       );
 
@@ -173,8 +173,8 @@ describe('Story 1: Migrate Case Repository to PostgreSQL', () => {
     it('T-1.6: fails when version is stale (concurrent update conflict)', async () => {
       const caseId = '550e8400-e29b-41d4-a716-446655440003';
       await pool.query(
-        `INSERT INTO cases (id, court, status, version, created_at, updated_at)
-         VALUES ($1, $2, $3, $4, $5, $6)`,
+        `INSERT INTO cases (id, case_number, case_type, court, status, created_by, version, created_at, updated_at)
+         VALUES ($1, $1, 'ADOPTION', $2, $3, 'test-user', $4, $5, $6)`,
         [caseId, 'Birmingham Family Court', 'DIRECTIONS', 3, new Date(), new Date()]
       );
 
@@ -193,11 +193,11 @@ describe('Story 1: Migrate Case Repository to PostgreSQL', () => {
   describe('AC-5: List cases filters by role and court', () => {
     it('T-1.7: filters by court and excludes deleted cases', async () => {
       await pool.query(
-        `INSERT INTO cases (id, court, status, version, created_at, updated_at)
+        `INSERT INTO cases (id, case_number, case_type, court, status, created_by, version, created_at, updated_at)
          VALUES 
-         ($1, $2, $3, $4, $5, $6),
-         ($7, $8, $9, $10, $11, $12),
-         ($13, $14, $15, $16, $17, $18)`,
+         ($1, $1, 'ADOPTION', $2, $3, 'test-user', $4, $5, $6),
+         ($7, $7, 'ADOPTION', $8, $9, 'test-user', $10, $11, $12),
+         ($13, $13, 'ADOPTION', $14, $15, 'test-user', $16, $17, $18)`,
         [
           '550e8400-e29b-41d4-a716-446655440010', 'Birmingham Family Court', 'APPLICATION', 1, new Date(), new Date(),
           '550e8400-e29b-41d4-a716-446655440011', 'Birmingham Family Court', 'DIRECTIONS', 1, new Date(), new Date(),
@@ -226,8 +226,8 @@ describe('Story 1: Migrate Case Repository to PostgreSQL', () => {
     it('T-1.8: sets deleted_at timestamp', async () => {
       const caseId = '550e8400-e29b-41d4-a716-446655440020';
       await pool.query(
-        `INSERT INTO cases (id, court, status, version, created_at, updated_at)
-         VALUES ($1, $2, $3, $4, $5, $6)`,
+        `INSERT INTO cases (id, case_number, case_type, court, status, created_by, version, created_at, updated_at)
+         VALUES ($1, $1, 'ADOPTION', $2, $3, 'test-user', $4, $5, $6)`,
         [caseId, 'London Family Court', 'APPLICATION', 1, new Date(), new Date()]
       );
 
@@ -254,8 +254,8 @@ describe('Story 1: Migrate Case Repository to PostgreSQL', () => {
     it('T-1.9: case data intact after simulated restart', async () => {
       const caseId = '550e8400-e29b-41d4-a716-446655440030';
       await pool.query(
-        `INSERT INTO cases (id, court, status, version, created_at, updated_at)
-         VALUES ($1, $2, $3, $4, $5, $6)`,
+        `INSERT INTO cases (id, case_number, case_type, court, status, created_by, version, created_at, updated_at)
+         VALUES ($1, $1, 'ADOPTION', $2, $3, 'test-user', $4, $5, $6)`,
         [caseId, 'Birmingham Family Court', 'HEARING', 1, new Date(), new Date()]
       );
 
@@ -294,8 +294,8 @@ describe('Story 2: Migrate Case Assignments to PostgreSQL', () => {
     it('T-2.2: has unique constraint on (case_id, user_id, role)', async () => {
       const caseId = '550e8400-e29b-41d4-a716-446655440100';
       await pool.query(
-        `INSERT INTO cases (id, court, status, version, created_at, updated_at)
-         VALUES ($1, $2, $3, $4, $5, $6)`,
+        `INSERT INTO cases (id, case_number, case_type, court, status, created_by, version, created_at, updated_at)
+         VALUES ($1, $1, 'ADOPTION', $2, $3, 'test-user', $4, $5, $6)`,
         [caseId, 'Birmingham Family Court', 'APPLICATION', 1, new Date(), new Date()]
       );
 
@@ -319,8 +319,8 @@ describe('Story 2: Migrate Case Assignments to PostgreSQL', () => {
     it('T-2.3: inserts row and logs audit entry', async () => {
       const caseId = '550e8400-e29b-41d4-a716-446655440101';
       await pool.query(
-        `INSERT INTO cases (id, court, status, version, created_at, updated_at)
-         VALUES ($1, $2, $3, $4, $5, $6)`,
+        `INSERT INTO cases (id, case_number, case_type, court, status, created_by, version, created_at, updated_at)
+         VALUES ($1, $1, 'ADOPTION', $2, $3, 'test-user', $4, $5, $6)`,
         [caseId, 'Manchester Family Court', 'DIRECTIONS', 1, new Date(), new Date()]
       );
 
@@ -350,8 +350,8 @@ describe('Story 2: Migrate Case Assignments to PostgreSQL', () => {
     it('T-2.4: returns all assignments for a case', async () => {
       const caseId = '550e8400-e29b-41d4-a716-446655440102';
       await pool.query(
-        `INSERT INTO cases (id, court, status, version, created_at, updated_at)
-         VALUES ($1, $2, $3, $4, $5, $6)`,
+        `INSERT INTO cases (id, case_number, case_type, court, status, created_by, version, created_at, updated_at)
+         VALUES ($1, $1, 'ADOPTION', $2, $3, 'test-user', $4, $5, $6)`,
         [caseId, 'London Family Court', 'HEARING', 1, new Date(), new Date()]
       );
 
@@ -379,8 +379,8 @@ describe('Story 2: Migrate Case Assignments to PostgreSQL', () => {
       const case3 = '550e8400-e29b-41d4-a716-446655440105';
 
       await pool.query(
-        `INSERT INTO cases (id, court, status, version, created_at, updated_at)
-         VALUES ($1, $2, $3, $4, $5, $6), ($7, $8, $9, $10, $11, $12), ($13, $14, $15, $16, $17, $18)`,
+        `INSERT INTO cases (id, case_number, case_type, court, status, created_by, version, created_at, updated_at)
+         VALUES ($1, $1, 'ADOPTION', $2, $3, 'test-user', $4, $5, $6), ($7, $7, 'ADOPTION', $8, $9, 'test-user', $10, $11, $12), ($13, $13, 'ADOPTION', $14, $15, 'test-user', $16, $17, $18)`,
         [
           case1, 'Birmingham Family Court', 'APPLICATION', 1, new Date(), new Date(),
           case2, 'Manchester Family Court', 'DIRECTIONS', 1, new Date(), new Date(),
@@ -412,8 +412,8 @@ describe('Story 2: Migrate Case Assignments to PostgreSQL', () => {
     it('T-2.6: deletes row and logs audit entry', async () => {
       const caseId = '550e8400-e29b-41d4-a716-446655440106';
       await pool.query(
-        `INSERT INTO cases (id, court, status, version, created_at, updated_at)
-         VALUES ($1, $2, $3, $4, $5, $6)`,
+        `INSERT INTO cases (id, case_number, case_type, court, status, created_by, version, created_at, updated_at)
+         VALUES ($1, $1, 'ADOPTION', $2, $3, 'test-user', $4, $5, $6)`,
         [caseId, 'Birmingham Family Court', 'APPLICATION', 1, new Date(), new Date()]
       );
 
@@ -441,8 +441,8 @@ describe('Story 2: Migrate Case Assignments to PostgreSQL', () => {
     it('T-2.7: assignments remain when case soft-deleted, excluded from user queries', async () => {
       const caseId = '550e8400-e29b-41d4-a716-446655440107';
       await pool.query(
-        `INSERT INTO cases (id, court, status, version, created_at, updated_at)
-         VALUES ($1, $2, $3, $4, $5, $6)`,
+        `INSERT INTO cases (id, case_number, case_type, court, status, created_by, version, created_at, updated_at)
+         VALUES ($1, $1, 'ADOPTION', $2, $3, 'test-user', $4, $5, $6)`,
         [caseId, 'London Family Court', 'DIRECTIONS', 1, new Date(), new Date()]
       );
 
@@ -497,15 +497,15 @@ describe('Story 3: Migrate Document Repository to PostgreSQL', () => {
       const docId = '550e8400-e29b-41d4-a716-446655440201';
 
       await pool.query(
-        `INSERT INTO cases (id, court, status, version, created_at, updated_at)
-         VALUES ($1, $2, $3, $4, $5, $6)`,
+        `INSERT INTO cases (id, case_number, case_type, court, status, created_by, version, created_at, updated_at)
+         VALUES ($1, $1, 'ADOPTION', $2, $3, 'test-user', $4, $5, $6)`,
         [caseId, 'Birmingham Family Court', 'APPLICATION', 1, new Date(), new Date()]
       );
 
       await pool.query(
-        `INSERT INTO documents (id, case_id, filename, document_type, upload_status, created_at)
-         VALUES ($1, $2, $3, $4, $5, $6)`,
-        [docId, caseId, 'birth-certificate.pdf', 'birth_certificate', 'complete', new Date()]
+        `INSERT INTO documents (id, case_id, filename, original_filename, document_type, file_size, file_hash, mime_type, storage_path, uploaded_by, upload_status, created_at)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
+        [docId, caseId, 'birth-certificate.pdf', 'birth-certificate.pdf', 'birth_certificate', 1024, 'abc123', 'application/pdf', '/storage/docs', 'test-user', 'complete', new Date()]
       );
 
       const result = await pool.query('SELECT * FROM documents WHERE id = $1', [docId]);
@@ -521,15 +521,15 @@ describe('Story 3: Migrate Document Repository to PostgreSQL', () => {
       const docId = '550e8400-e29b-41d4-a716-446655440203';
 
       await pool.query(
-        `INSERT INTO cases (id, court, status, version, created_at, updated_at)
-         VALUES ($1, $2, $3, $4, $5, $6)`,
+        `INSERT INTO cases (id, case_number, case_type, court, status, created_by, version, created_at, updated_at)
+         VALUES ($1, $1, 'ADOPTION', $2, $3, 'test-user', $4, $5, $6)`,
         [caseId, 'London Family Court', 'HEARING', 1, new Date(), new Date()]
       );
 
       await pool.query(
-        `INSERT INTO documents (id, case_id, filename, document_type, upload_status, created_at)
-         VALUES ($1, $2, $3, $4, $5, $6)`,
-        [docId, caseId, 'consent-form.pdf', 'consent_form', 'complete', new Date()]
+        `INSERT INTO documents (id, case_id, filename, original_filename, document_type, file_size, file_hash, mime_type, storage_path, uploaded_by, upload_status, created_at)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
+        [docId, caseId, 'consent-form.pdf', 'consent-form.pdf', 'consent_form', 2048, 'def456', 'application/pdf', '/storage/docs', 'test-user', 'complete', new Date()]
       );
 
       const result = await pool.query('SELECT * FROM documents WHERE id = $1', [docId]);
@@ -542,17 +542,17 @@ describe('Story 3: Migrate Document Repository to PostgreSQL', () => {
       const caseId = '550e8400-e29b-41d4-a716-446655440204';
 
       await pool.query(
-        `INSERT INTO cases (id, court, status, version, created_at, updated_at)
-         VALUES ($1, $2, $3, $4, $5, $6)`,
+        `INSERT INTO cases (id, case_number, case_type, court, status, created_by, version, created_at, updated_at)
+         VALUES ($1, $1, 'ADOPTION', $2, $3, 'test-user', $4, $5, $6)`,
         [caseId, 'Manchester Family Court', 'DIRECTIONS', 1, new Date(), new Date()]
       );
 
       await pool.query(
-        `INSERT INTO documents (id, case_id, filename, document_type, upload_status, created_at)
-         VALUES ($1, $2, $3, $4, $5, $6), ($7, $8, $9, $10, $11, $12)`,
+        `INSERT INTO documents (id, case_id, filename, original_filename, document_type, file_size, file_hash, mime_type, storage_path, uploaded_by, upload_status, created_at)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12), ($13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24)`,
         [
-          '550e8400-e29b-41d4-a716-446655440205', caseId, 'doc1.pdf', 'medical_report', 'complete', new Date(),
-          '550e8400-e29b-41d4-a716-446655440206', caseId, 'doc2.pdf', 'consent_form', 'complete', new Date()
+          '550e8400-e29b-41d4-a716-446655440205', caseId, 'doc1.pdf', 'doc1.pdf', 'medical_report', 3072, 'hash1', 'application/pdf', '/storage/docs', 'test-user', 'complete', new Date(),
+          '550e8400-e29b-41d4-a716-446655440206', caseId, 'doc2.pdf', 'doc2.pdf', 'consent_form', 4096, 'hash2', 'application/pdf', '/storage/docs', 'test-user', 'complete', new Date()
         ]
       );
 
@@ -571,15 +571,15 @@ describe('Story 3: Migrate Document Repository to PostgreSQL', () => {
       const docId = '550e8400-e29b-41d4-a716-446655440208';
 
       await pool.query(
-        `INSERT INTO cases (id, court, status, version, created_at, updated_at)
-         VALUES ($1, $2, $3, $4, $5, $6)`,
+        `INSERT INTO cases (id, case_number, case_type, court, status, created_by, version, created_at, updated_at)
+         VALUES ($1, $1, 'ADOPTION', $2, $3, 'test-user', $4, $5, $6)`,
         [caseId, 'Birmingham Family Court', 'APPLICATION', 1, new Date(), new Date()]
       );
 
       await pool.query(
-        `INSERT INTO documents (id, case_id, filename, document_type, upload_status, created_at)
-         VALUES ($1, $2, $3, $4, $5, $6)`,
-        [docId, caseId, 'processing.pdf', 'medical_report', 'uploading', new Date()]
+        `INSERT INTO documents (id, case_id, filename, original_filename, document_type, file_size, file_hash, mime_type, storage_path, uploaded_by, upload_status, created_at)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
+        [docId, caseId, 'processing.pdf', 'processing.pdf', 'medical_report', 5120, 'hashproc', 'application/pdf', '/storage/docs', 'test-user', 'uploading', new Date()]
       );
 
       await pool.query(
@@ -598,15 +598,15 @@ describe('Story 3: Migrate Document Repository to PostgreSQL', () => {
       const docId = '550e8400-e29b-41d4-a716-446655440210';
 
       await pool.query(
-        `INSERT INTO cases (id, court, status, version, created_at, updated_at)
-         VALUES ($1, $2, $3, $4, $5, $6)`,
+        `INSERT INTO cases (id, case_number, case_type, court, status, created_by, version, created_at, updated_at)
+         VALUES ($1, $1, 'ADOPTION', $2, $3, 'test-user', $4, $5, $6)`,
         [caseId, 'London Family Court', 'HEARING', 1, new Date(), new Date()]
       );
 
       await pool.query(
-        `INSERT INTO documents (id, case_id, filename, document_type, upload_status, created_at)
-         VALUES ($1, $2, $3, $4, $5, $6)`,
-        [docId, caseId, 'to-delete.pdf', 'consent_form', 'complete', new Date()]
+        `INSERT INTO documents (id, case_id, filename, original_filename, document_type, file_size, file_hash, mime_type, storage_path, uploaded_by, upload_status, created_at)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
+        [docId, caseId, 'to-delete.pdf', 'to-delete.pdf', 'consent_form', 6144, 'hashdel', 'application/pdf', '/storage/docs', 'test-user', 'complete', new Date()]
       );
 
       await pool.query('UPDATE documents SET deleted_at = NOW() WHERE id = $1', [docId]);
@@ -866,8 +866,8 @@ describe('Story 7: Verify Data Persistence Across Application Restarts', () => {
     it('T-7.1: retrieves case with all fields intact after restart', async () => {
       const caseId = '550e8400-e29b-41d4-a716-446655440300';
       await pool.query(
-        `INSERT INTO cases (id, court, status, version, created_at, updated_at)
-         VALUES ($1, $2, $3, $4, $5, $6)`,
+        `INSERT INTO cases (id, case_number, case_type, court, status, created_by, version, created_at, updated_at)
+         VALUES ($1, $1, 'ADOPTION', $2, $3, 'test-user', $4, $5, $6)`,
         [caseId, 'Birmingham Family Court', 'APPLICATION', 1, new Date(), new Date()]
       );
 
@@ -885,18 +885,18 @@ describe('Story 7: Verify Data Persistence Across Application Restarts', () => {
     it('T-7.2: retrieves all documents after restart', async () => {
       const caseId = '550e8400-e29b-41d4-a716-446655440301';
       await pool.query(
-        `INSERT INTO cases (id, court, status, version, created_at, updated_at)
-         VALUES ($1, $2, $3, $4, $5, $6)`,
+        `INSERT INTO cases (id, case_number, case_type, court, status, created_by, version, created_at, updated_at)
+         VALUES ($1, $1, 'ADOPTION', $2, $3, 'test-user', $4, $5, $6)`,
         [caseId, 'London Family Court', 'HEARING', 1, new Date(), new Date()]
       );
 
       await pool.query(
-        `INSERT INTO documents (id, case_id, filename, document_type, upload_status, created_at)
-         VALUES ($1, $2, $3, $4, $5, $6), ($7, $8, $9, $10, $11, $12), ($13, $14, $15, $16, $17, $18)`,
+        `INSERT INTO documents (id, case_id, filename, original_filename, document_type, file_size, file_hash, mime_type, storage_path, uploaded_by, upload_status, created_at)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12), ($13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24), ($25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36)`,
         [
-          '550e8400-e29b-41d4-a716-446655440302', caseId, 'doc1.pdf', 'birth_certificate', 'complete', new Date(),
-          '550e8400-e29b-41d4-a716-446655440303', caseId, 'doc2.pdf', 'consent_form', 'complete', new Date(),
-          '550e8400-e29b-41d4-a716-446655440304', caseId, 'doc3.pdf', 'medical_report', 'complete', new Date()
+          '550e8400-e29b-41d4-a716-446655440302', caseId, 'doc1.pdf', 'doc1.pdf', 'birth_certificate', 1024, 'hash302', 'application/pdf', '/storage/docs', 'test-user', 'complete', new Date(),
+          '550e8400-e29b-41d4-a716-446655440303', caseId, 'doc2.pdf', 'doc2.pdf', 'consent_form', 2048, 'hash303', 'application/pdf', '/storage/docs', 'test-user', 'complete', new Date(),
+          '550e8400-e29b-41d4-a716-446655440304', caseId, 'doc3.pdf', 'doc3.pdf', 'medical_report', 3072, 'hash304', 'application/pdf', '/storage/docs', 'test-user', 'complete', new Date()
         ]
       );
 
@@ -917,8 +917,8 @@ describe('Story 7: Verify Data Persistence Across Application Restarts', () => {
       const case2 = '550e8400-e29b-41d4-a716-446655440306';
 
       await pool.query(
-        `INSERT INTO cases (id, court, status, version, created_at, updated_at)
-         VALUES ($1, $2, $3, $4, $5, $6), ($7, $8, $9, $10, $11, $12)`,
+        `INSERT INTO cases (id, case_number, case_type, court, status, created_by, version, created_at, updated_at)
+         VALUES ($1, $1, 'ADOPTION', $2, $3, 'test-user', $4, $5, $6), ($7, $7, 'ADOPTION', $8, $9, 'test-user', $10, $11, $12)`,
         [
           case1, 'Birmingham Family Court', 'APPLICATION', 1, new Date(), new Date(),
           case2, 'Manchester Family Court', 'DIRECTIONS', 1, new Date(), new Date()
@@ -971,8 +971,8 @@ describe('Story 7: Verify Data Persistence Across Application Restarts', () => {
     it('T-7.5: optimistic locking prevents conflicts after restart', async () => {
       const caseId = '550e8400-e29b-41d4-a716-446655440308';
       await pool.query(
-        `INSERT INTO cases (id, court, status, version, created_at, updated_at)
-         VALUES ($1, $2, $3, $4, $5, $6)`,
+        `INSERT INTO cases (id, case_number, case_type, court, status, created_by, version, created_at, updated_at)
+         VALUES ($1, $1, 'ADOPTION', $2, $3, 'test-user', $4, $5, $6)`,
         [caseId, 'London Family Court', 'DIRECTIONS', 2, new Date(), new Date()]
       );
 

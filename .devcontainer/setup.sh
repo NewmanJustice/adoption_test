@@ -3,11 +3,12 @@ set -e
 
 # Install NVM (Node Version Manager)
 echo "Installing NVM..."
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash || true
 
 # Load nvm
 export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
 # Install and use Node.js LTS version
 echo "Installing Node.js LTS..."
@@ -26,7 +27,7 @@ echo "✅ Azure CLI installed"
 
 # Install Co-pilot CLI
 echo "Installing Co-pilot CLI..."
-curl curl -fsSL https://gh.io/copilot-install | bash
+curl -fsSL https://gh.io/copilot-install | bash
 echo "✅ Co-pilot CLI installed"
 
 # Install kubelogin for AKS authentication
@@ -51,11 +52,9 @@ echo "✅ Bash history configured"
 
 echo "✅ Dev container setup complete."
 
-echo "Intall PostgreSQL Client"
+echo "Install PostgreSQL Client"
 sudo apt-get update
-sudo apt-get install postgresql postgresql-contrib
+sudo apt-get install -y postgresql-client
 echo "✅ PostgreSQL Client installed"
-
-exec $SHELL
 
 

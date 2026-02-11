@@ -18,7 +18,7 @@ As an **authenticated user**, I want **to see a list of adoption cases that I ha
 - **Routes:**
   - `GET /dashboard` — Display case list page with filters and attention flags
   - `GET /api/cases` — Retrieve filtered case list
-  - `GET /cases` — Redirects to `/dashboard` (legacy route)
+  - `GET /dashboard` — Redirects to `/dashboard` (legacy route)
 - **Implementation:**
   - Primary UI: `DashboardPage.tsx` (feature-rich with filters, attention flags)
   - Legacy route removed: `CaseListPage.tsx` (consolidated Feb 2026)
@@ -32,7 +32,7 @@ As an **authenticated user**, I want **to see a list of adoption cases that I ha
 ## Acceptance Criteria
 
 **AC-1 — Case list page display**
-- Given an authenticated user navigates to `/cases`,
+- Given an authenticated user navigates to `/dashboard`,
 - When the page loads,
 - Then a case list is displayed showing cases the user has access to,
 - And the list includes columns for: Case Number, Case Type, Status, Assigned Court, Created Date.
@@ -130,7 +130,7 @@ As an **authenticated user**, I want **to see a list of adoption cases that I ha
 - Then no "Create case" button is displayed.
 
 **AC-16 — Unauthenticated access**
-- Given an unauthenticated user navigates to `/cases`,
+- Given an unauthenticated user navigates to `/dashboard`,
 - When the request is processed,
 - Then the user is redirected to `/login`.
 

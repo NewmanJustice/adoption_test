@@ -238,7 +238,7 @@ describe('CaseListPage', () => {
       renderWithRouter(
         <React.Suspense fallback={<div>Loading...</div>}>
           <Routes>
-            <Route path="/cases" element={<CaseListPage />} />
+            <Route path="/cases" element={<div>Redirects to Dashboard</div>} />
             <Route path="/login" element={<div>Login Page</div>} />
           </Routes>
         </React.Suspense>,

@@ -114,7 +114,7 @@ As an **authenticated user with access to a case**, I want **to view the case de
 **AC-13 — Back to case list navigation**
 - Given the case detail page is displayed,
 - When the user clicks "Back to cases",
-- Then the user is returned to `/cases` (or `/my-cases` for Adopters).
+- Then the user is returned to `/dashboard` (or `/my-cases` for Adopters).
 
 **AC-14 — Unauthenticated access**
 - Given an unauthenticated user navigates to `/cases/{id}`,

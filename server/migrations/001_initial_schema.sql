@@ -5,12 +5,20 @@
 CREATE TABLE IF NOT EXISTS audit_log (
   id SERIAL PRIMARY KEY,
   action VARCHAR(100) NOT NULL,
-  entity_type VARCHAR(100),
-  entity_id VARCHAR(100),
-  user_id VARCHAR(100),
+  entity_type VARCHAR(100) NOT NULL,
+  entity_id VARCHAR(255) NOT NULL,
+  user_id VARCHAR(255) NOT NULL,
   timestamp TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  details JSONB
+  details JSONB,
+  changes JSONB,
+  metadata JSONB
 );
+
+CREATE INDEX IF NOT EXISTS idx_audit_log_entity_id ON audit_log(entity_id);
+CREATE INDEX IF NOT EXISTS idx_audit_log_user_id ON audit_log(user_id);
+CREATE INDEX IF NOT EXISTS idx_audit_log_action ON audit_log(action);
+CREATE INDEX IF NOT EXISTS idx_audit_log_timestamp ON audit_log(timestamp);
+CREATE INDEX IF NOT EXISTS idx_audit_log_entity_type ON audit_log(entity_type);
 
 -- Sessions table for express-session with connect-pg-simple
 CREATE TABLE IF NOT EXISTS sessions (
