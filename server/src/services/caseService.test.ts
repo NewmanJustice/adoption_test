@@ -142,14 +142,14 @@ describe('caseService', () => {
   });
 
   describe('createCase', () => {
-    it('creates a case with APPLICATION status', () => {
+    it('creates a case with APPLICATION status', async () => {
       const user: SessionUser = {
         userId: 'officer1',
         role: 'HMCTS_CASE_OFFICER',
         createdAt: '2026-01-01',
         lastAccessedAt: '2026-01-01',
       };
-      const newCase = caseService.createCase('AGENCY_ADOPTION', 'London Court', user);
+      const newCase = await caseService.createCase('AGENCY_ADOPTION', 'London Court', user);
 
       expect(newCase.id).toBeDefined();
       expect(newCase.caseType).toBe('AGENCY_ADOPTION');
@@ -158,15 +158,15 @@ describe('caseService', () => {
       expect(newCase.version).toBe(1);
     });
 
-    it('generates unique case numbers', () => {
+    it('generates unique case numbers', async () => {
       const user: SessionUser = {
         userId: 'officer1',
         role: 'HMCTS_CASE_OFFICER',
         createdAt: '2026-01-01',
         lastAccessedAt: '2026-01-01',
       };
-      const case1 = caseService.createCase('AGENCY_ADOPTION', 'London Court', user);
-      const case2 = caseService.createCase('AGENCY_ADOPTION', 'London Court', user);
+      const case1 = await caseService.createCase('AGENCY_ADOPTION', 'London Court', user);
+      const case2 = await caseService.createCase('AGENCY_ADOPTION', 'London Court', user);
 
       expect(case1.caseNumber).not.toBe(case2.caseNumber);
     });
@@ -181,60 +181,60 @@ describe('caseService', () => {
       lastAccessedAt: '2026-01-01',
     };
 
-    beforeEach(() => {
-      testCase = caseService.createCase('AGENCY_ADOPTION', 'Test Court', hmctsUser);
+    beforeEach(async () => {
+      testCase = await caseService.createCase('AGENCY_ADOPTION', 'Test Court', hmctsUser);
     });
 
-    it('successfully transitions from APPLICATION to DIRECTIONS', () => {
-      const result = caseService.updateStatus(testCase.id, 'DIRECTIONS', hmctsUser);
+    it('successfully transitions from APPLICATION to DIRECTIONS', async () => {
+      const result = await caseService.updateStatus(testCase.id, 'DIRECTIONS', hmctsUser);
 
       expect(result.success).toBe(true);
       expect(result.case?.status).toBe('DIRECTIONS');
       expect(result.previousStatus).toBe('APPLICATION');
     });
 
-    it('fails for invalid transitions', () => {
-      const result = caseService.updateStatus(testCase.id, 'FINAL_HEARING', hmctsUser);
+    it('fails for invalid transitions', async () => {
+      const result = await caseService.updateStatus(testCase.id, 'FINAL_HEARING', hmctsUser);
 
       expect(result.success).toBe(false);
       expect(result.code).toBe('INVALID_TRANSITION');
     });
 
-    it('fails when reason required but not provided', () => {
-      const result = caseService.updateStatus(testCase.id, 'ON_HOLD', hmctsUser);
+    it('fails when reason required but not provided', async () => {
+      const result = await caseService.updateStatus(testCase.id, 'ON_HOLD', hmctsUser);
 
       expect(result.success).toBe(false);
       expect(result.code).toBe('REASON_REQUIRED');
     });
 
-    it('succeeds when reason provided for ON_HOLD', () => {
-      const result = caseService.updateStatus(testCase.id, 'ON_HOLD', hmctsUser, 'Awaiting documents');
+    it('succeeds when reason provided for ON_HOLD', async () => {
+      const result = await caseService.updateStatus(testCase.id, 'ON_HOLD', hmctsUser, 'Awaiting documents');
 
       expect(result.success).toBe(true);
       expect(result.case?.status).toBe('ON_HOLD');
     });
 
-    it('fails for version conflict', () => {
-      const result = caseService.updateStatus(testCase.id, 'DIRECTIONS', hmctsUser, undefined, 999);
+    it('fails for version conflict', async () => {
+      const result = await caseService.updateStatus(testCase.id, 'DIRECTIONS', hmctsUser, undefined, 999);
 
       expect(result.success).toBe(false);
       expect(result.code).toBe('CONFLICT');
       expect(result.currentVersion).toBe(1);
     });
 
-    it('prevents HMCTS from granting order', () => {
+    it('prevents HMCTS from granting order', async () => {
       // Move to FINAL_HEARING first
-      caseService.updateStatus(testCase.id, 'DIRECTIONS', hmctsUser);
-      caseService.updateStatus(testCase.id, 'CONSENT_AND_REPORTING', hmctsUser);
-      caseService.updateStatus(testCase.id, 'FINAL_HEARING', hmctsUser);
+      await caseService.updateStatus(testCase.id, 'DIRECTIONS', hmctsUser);
+      await caseService.updateStatus(testCase.id, 'CONSENT_AND_REPORTING', hmctsUser);
+      await caseService.updateStatus(testCase.id, 'FINAL_HEARING', hmctsUser);
 
-      const result = caseService.updateStatus(testCase.id, 'ORDER_GRANTED', hmctsUser);
+      const result = await caseService.updateStatus(testCase.id, 'ORDER_GRANTED', hmctsUser);
 
       expect(result.success).toBe(false);
       expect(result.code).toBe('FORBIDDEN');
     });
 
-    it('allows JUDGE to grant order', () => {
+    it('allows JUDGE to grant order', async () => {
       const judgeUser: SessionUser = {
         userId: 'judge1',
         role: 'JUDGE_LEGAL_ADVISER',
@@ -243,11 +243,11 @@ describe('caseService', () => {
       };
 
       // Move to FINAL_HEARING
-      caseService.updateStatus(testCase.id, 'DIRECTIONS', hmctsUser);
-      caseService.updateStatus(testCase.id, 'CONSENT_AND_REPORTING', hmctsUser);
-      caseService.updateStatus(testCase.id, 'FINAL_HEARING', hmctsUser);
+      await caseService.updateStatus(testCase.id, 'DIRECTIONS', hmctsUser);
+      await caseService.updateStatus(testCase.id, 'CONSENT_AND_REPORTING', hmctsUser);
+      await caseService.updateStatus(testCase.id, 'FINAL_HEARING', hmctsUser);
 
-      const result = caseService.updateStatus(testCase.id, 'ORDER_GRANTED', judgeUser);
+      const result = await caseService.updateStatus(testCase.id, 'ORDER_GRANTED', judgeUser);
 
       expect(result.success).toBe(true);
       expect(result.case?.status).toBe('ORDER_GRANTED');
