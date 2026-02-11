@@ -1,16 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
 import { useSession } from '../context/SessionContext';
+import SkipLink from '../components/SkipLink';
+import Header from '../components/Header';
+import PhaseBanner from '../components/PhaseBanner';
+import Footer from '../components/Footer';
 
 interface CaseDetail {
   id: string;
   caseNumber: string;
   status: string;
-}
-
-interface StatusResponse {
-  case: CaseDetail;
-  validTransitions: string[];
+  permissions?: {
+    canUpdate?: boolean;
+    validTransitions?: string[];
+  };
 }
 
 const STATUS_LABELS: Record<string, string> = {
@@ -56,9 +59,9 @@ const UpdateStatusPage: React.FC = () => {
         return;
       }
 
-      const data: StatusResponse = await response.json();
-      setCaseData(data.case);
-      setValidTransitions(data.validTransitions || []);
+      const data: CaseDetail = await response.json();
+      setCaseData(data);
+      setValidTransitions(data.permissions?.validTransitions || []);
     } catch {
       setError('Failed to load case');
     } finally {
@@ -67,7 +70,19 @@ const UpdateStatusPage: React.FC = () => {
   };
 
   if (sessionLoading) {
-    return <p className="govuk-body">Loading...</p>;
+    return (
+      <>
+        <SkipLink />
+        <Header />
+        <div className="govuk-width-container">
+          <PhaseBanner />
+          <main className="govuk-main-wrapper" id="main-content" role="main">
+            <p className="govuk-body">Loading...</p>
+          </main>
+        </div>
+        <Footer />
+      </>
+    );
   }
 
   if (!isAuthenticated) {
@@ -75,18 +90,36 @@ const UpdateStatusPage: React.FC = () => {
   }
 
   if (loading) {
-    return <p className="govuk-body">Loading...</p>;
+    return (
+      <>
+        <SkipLink />
+        <Header />
+        <div className="govuk-width-container">
+          <PhaseBanner />
+          <main className="govuk-main-wrapper" id="main-content" role="main">
+            <p className="govuk-body">Loading...</p>
+          </main>
+        </div>
+        <Footer />
+      </>
+    );
   }
 
   if (error || !caseData) {
     return (
-      <div className="govuk-width-container">
-        <main className="govuk-main-wrapper" id="main-content" role="main">
-          <h1 className="govuk-heading-xl">Error</h1>
-          <p className="govuk-body">{error || 'Case not found'}</p>
-          <Link to="/dashboard" className="govuk-link">Back to cases</Link>
-        </main>
-      </div>
+      <>
+        <SkipLink />
+        <Header />
+        <div className="govuk-width-container">
+          <PhaseBanner />
+          <main className="govuk-main-wrapper" id="main-content" role="main">
+            <h1 className="govuk-heading-xl">Error</h1>
+            <p className="govuk-body">{error || 'Case not found'}</p>
+            <Link to="/dashboard" className="govuk-link">Back to cases</Link>
+          </main>
+        </div>
+        <Footer />
+      </>
     );
   }
 
@@ -146,11 +179,15 @@ const UpdateStatusPage: React.FC = () => {
   };
 
   return (
-    <div className="govuk-width-container">
-      <main className="govuk-main-wrapper" id="main-content" role="main">
-        <Link to={`/cases/${id}`} className="govuk-back-link">Back</Link>
+    <>
+      <SkipLink />
+      <Header />
+      <div className="govuk-width-container">
+        <PhaseBanner />
+        <main className="govuk-main-wrapper" id="main-content" role="main">
+          <Link to={`/cases/${id}`} className="govuk-back-link">Back</Link>
 
-        <h1 className="govuk-heading-xl">Update case status</h1>
+          <h1 className="govuk-heading-xl">Update case status</h1>
 
         <p className="govuk-body">
           <strong>Current status:</strong> <span>{caseData.status}</span>
@@ -239,8 +276,10 @@ const UpdateStatusPage: React.FC = () => {
             <Link to={`/cases/${id}`} className="govuk-link">Cancel</Link>
           </div>
         </form>
-      </main>
-    </div>
+        </main>
+      </div>
+      <Footer />
+    </>
   );
 };
 
