@@ -11,6 +11,7 @@ import { SiteAccessProvider, useSiteAccess } from './context/SiteAccessContext';
 const CaseDetailPage = lazy(() => import('./pages/CaseDetailPage'));
 const CreateCasePage = lazy(() => import('./pages/CreateCasePage'));
 const UpdateStatusPage = lazy(() => import('./pages/UpdateStatusPage'));
+const DocumentUploadPage = lazy(() => import('./pages/DocumentUploadPage'));
 
 // Notify prototype-annotator of route changes
 function AnnotatorRouteSync() {
@@ -62,6 +63,7 @@ function AppRoutes() {
           <Route path="/cases/create" element={<CreateCasePage />} />
           <Route path="/cases/:id" element={<CaseDetailPage />} />
           <Route path="/cases/:id/status" element={<UpdateStatusPage />} />
+          <Route path="/cases/:id/upload-document" element={<DocumentUploadPage />} />
         </Routes>
       </Suspense>
     </SiteAccessGuard>

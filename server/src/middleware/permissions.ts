@@ -1,81 +1,92 @@
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
+import { AuthRequest, SessionUser, UserRole } from '../types/auth.js';
+import * as caseService from '../services/caseService.js';
 
-export interface AuthenticatedUser {
-  id: string;
-  role: string;
-  assignedCases: string[];
-  organisation: string | null;
+export interface AuthenticatedRequest extends AuthRequest {
+  user?: {
+    userId: string;
+    role: UserRole;
+    sessionId: string;
+  };
 }
 
-export interface AuthenticatedRequest extends Request {
-  user?: AuthenticatedUser;
-}
-
-export function canAccessCase(caseId: string, user?: AuthenticatedUser): boolean {
+export function canUploadToCase(user?: SessionUser): boolean {
   if (!user) return false;
-  return user.assignedCases.includes(caseId);
+  return [
+    'HMCTS_CASE_OFFICER',
+    'LA_SOCIAL_WORKER',
+    'CAFCASS_OFFICER',
+    'VAA_WORKER',
+    'ADOPTER'
+  ].includes(user.role);
 }
 
-export function canUploadToCase(caseId: string, user?: AuthenticatedUser): boolean {
-  if (!user) return false;
-  if (!user.assignedCases.includes(caseId)) return false;
-  
-  return ['case-officer', 'social-worker', 'cafcass-officer', 'adopter'].includes(user.role);
-}
-
-export function canViewDocument(documentType: string, documentUploadedBy: string, user?: AuthenticatedUser): boolean {
+export function canViewDocument(documentType: string, documentUploadedBy: string, user?: SessionUser): boolean {
   if (!user) return false;
 
-  if (['case-officer', 'social-worker', 'cafcass-officer'].includes(user.role)) {
+  if (['HMCTS_CASE_OFFICER', 'LA_SOCIAL_WORKER', 'CAFCASS_OFFICER', 'VAA_WORKER', 'JUDGE_LEGAL_ADVISER'].includes(user.role)) {
     return true;
   }
 
-  if (user.role === 'adopter') {
-    return documentUploadedBy === user.id;
+  if (user.role === 'ADOPTER') {
+    return documentUploadedBy === user.userId;
   }
 
   return false;
 }
 
-export function canDownloadDocument(documentType: string, documentUploadedBy: string, virusStatus: string, user?: AuthenticatedUser): boolean {
+export function canDownloadDocument(documentType: string, documentUploadedBy: string, virusStatus: string, user?: SessionUser): boolean {
   if (virusStatus === 'infected') return false;
   return canViewDocument(documentType, documentUploadedBy, user);
 }
 
-export function requireCaseAccess(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+export async function requireCaseAccess(req: AuthenticatedRequest, res: Response, next: NextFunction) {
   const caseId = req.params.caseId;
-  
-  if (process.env.NODE_ENV === 'test' && !req.user) {
-    req.user = {
-      id: 'test-user',
-      role: 'case-officer',
-      assignedCases: [caseId],
-      organisation: 'Test'
-    };
+  const sessionUser = req.session.user;
+
+  if (!sessionUser) {
+    return res.status(401).json({ error: 'Authentication required' });
   }
-  
-  if (!canAccessCase(caseId, req.user)) {
+
+  const caseData = await caseService.getCase(caseId);
+  if (!caseData) {
+    return res.status(404).json({ error: 'Case not found' });
+  }
+
+  const assignments = await caseService.getAssignments(caseId);
+  const hasAccess = caseService.checkCaseAccess(sessionUser, caseData, assignments);
+
+  if (!hasAccess) {
     return res.status(403).json({ error: 'Access denied: You are not assigned to this case' });
   }
-  
+
+  req.user = {
+    userId: sessionUser.userId,
+    role: sessionUser.role,
+    sessionId: req.sessionID
+  };
+
   next();
 }
 
 export function requireUploadPermission(req: AuthenticatedRequest, res: Response, next: NextFunction) {
-  const caseId = req.params.caseId;
-  
-  if (process.env.NODE_ENV === 'test' && !req.user) {
-    req.user = {
-      id: 'test-user',
-      role: 'case-officer',
-      assignedCases: [caseId],
-      organisation: 'Test'
-    };
+  const sessionUser = req.session.user;
+
+  if (!sessionUser) {
+    return res.status(401).json({ error: 'Authentication required' });
   }
-  
-  if (!canUploadToCase(caseId, req.user)) {
+
+  if (!canUploadToCase(sessionUser)) {
     return res.status(403).json({ error: 'Access denied: You cannot upload to this case' });
   }
-  
+
+  if (!req.user) {
+    req.user = {
+      userId: sessionUser.userId,
+      role: sessionUser.role,
+      sessionId: req.sessionID
+    };
+  }
+
   next();
 }

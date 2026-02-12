@@ -1,7 +1,8 @@
 import { Request, Response } from 'express';
 import { DocumentService } from '../services/documentService.js';
-import { AuthenticatedRequest } from '../middleware/permissions.js';
+import { AuthenticatedRequest, canViewDocument } from '../middleware/permissions.js';
 import { DocumentType, DOCUMENT_TYPES, DOCUMENT_TYPE_LABELS, DOCUMENT_TYPE_HELP_TEXT } from '@adoption/shared/constants/documentTypes.js';
+import * as caseService from '../services/caseService.js';
 
 export class DocumentController {
   constructor(private documentService: DocumentService) {}
@@ -35,7 +36,7 @@ export class DocumentController {
       caseId,
       file,
       documentType as DocumentType,
-      req.user!.id,
+      req.user!.userId,
       description,
       req.ip
     );
@@ -87,7 +88,7 @@ export class DocumentController {
       caseId,
       files,
       documentTypes,
-      req.user!.id,
+      req.user!.userId,
       descriptions,
       req.ip
     );
@@ -120,7 +121,7 @@ export class DocumentController {
         uploadedBy: uploadedBy as string | undefined
       },
       req.user?.role,
-      req.user?.id
+      req.user?.userId
     );
 
     res.json({ documents });
@@ -128,10 +129,27 @@ export class DocumentController {
 
   getDocument = async (req: AuthenticatedRequest, res: Response) => {
     const { documentId } = req.params;
+    const sessionUser = req.session.user;
+
+    if (!sessionUser) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
 
     const document = await this.documentService.getDocument(documentId);
     if (!document) {
       return res.status(404).json({ error: 'Document not found' });
+    }
+
+    const caseData = await caseService.getCase(document.caseId);
+    if (!caseData) {
+      return res.status(404).json({ error: 'Case not found' });
+    }
+
+    const assignments = await caseService.getAssignments(document.caseId);
+    const hasAccess = caseService.checkCaseAccess(sessionUser, caseData, assignments);
+
+    if (!hasAccess || !canViewDocument(document.documentType, document.uploadedBy, sessionUser)) {
+      return res.status(403).json({ error: 'Access denied' });
     }
 
     res.json({ document });
@@ -139,6 +157,11 @@ export class DocumentController {
 
   downloadDocument = async (req: AuthenticatedRequest, res: Response) => {
     const { documentId } = req.params;
+    const sessionUser = req.session.user;
+
+    if (!sessionUser) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
 
     try {
       const document = await this.documentService.getDocument(documentId);
@@ -146,9 +169,21 @@ export class DocumentController {
         return res.status(404).json({ error: 'Document not found' });
       }
 
+      const caseData = await caseService.getCase(document.caseId);
+      if (!caseData) {
+        return res.status(404).json({ error: 'Case not found' });
+      }
+
+      const assignments = await caseService.getAssignments(document.caseId);
+      const hasAccess = caseService.checkCaseAccess(sessionUser, caseData, assignments);
+
+      if (!hasAccess || !canViewDocument(document.documentType, document.uploadedBy, sessionUser)) {
+        return res.status(403).json({ error: 'Access denied' });
+      }
+
       const buffer = await this.documentService.downloadDocument(
         documentId,
-        req.user!.id,
+        sessionUser.userId,
         req.ip
       );
 

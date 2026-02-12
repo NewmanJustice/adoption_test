@@ -154,7 +154,7 @@ export class DocumentService {
       documents = documents.filter(d => d.uploadedBy === filter.uploadedBy);
     }
 
-    if (userRole === 'adopter' && userId) {
+    if (userRole === 'ADOPTER' && userId) {
       documents = documents.filter(d => d.uploadedBy === userId);
     }
 
