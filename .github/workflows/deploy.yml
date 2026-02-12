@@ -40,6 +40,8 @@ jobs:
         run: |
           mkdir -p server/dist/public
           cp -r client/dist/* server/dist/public/
+          # Copy prototype-annotator overlay.js to public root as prototype-annotator.js
+          cp packages/prototype-annotator/client/dist/overlay.js server/dist/public/prototype-annotator.js
 
       - name: Prepare deployment package
         run: |
