@@ -45,6 +45,15 @@ As an **authorised user**, I want **to transition a case through its lifecycle s
 - Then only valid transitions from the current state are shown,
 - And invalid transitions are not selectable.
 
+**AC-2a — API returns valid transitions in case permissions**
+- Given a GET request to `/api/cases/{id}`,
+- When the response includes permissions,
+- Then the permissions object MUST contain a `validTransitions` array,
+- And the array contains only status values valid from the current state,
+- And the array is filtered by the user's role permissions,
+- And for terminal statuses, the array is empty,
+- And for users without update permission, the array is empty.
+
 **AC-3 — Transition validation matrix**
 - Given a case with current status,
 - When determining valid transitions,
@@ -164,6 +173,25 @@ As an **authorised user**, I want **to transition a case through its lifecycle s
 ## API Request/Response
 
 ```js
+// GET /api/cases/{id}
+// Response - includes permissions with validTransitions
+{
+  "id": "550e8400-e29b-41d4-a716-446655440000",
+  "caseNumber": "BFC/2026/00001",
+  "caseType": "AGENCY_ADOPTION",
+  "status": "APPLICATION",
+  "assignedCourt": "Birmingham Family Court",
+  "createdAt": "2026-02-01T10:00:00Z",
+  "updatedAt": "2026-02-01T10:00:00Z",
+  "permissions": {
+    "canEdit": true,
+    "canUpdateStatus": true,
+    "canDelete": true,
+    "canViewAudit": true,
+    "validTransitions": ["DIRECTIONS", "ON_HOLD", "APPLICATION_WITHDRAWN"]  // CRITICAL: Required for AC-2a
+  }
+}
+
 // PATCH /api/cases/{id}/status
 // Request
 {
@@ -276,3 +304,62 @@ As an **authorised user**, I want **to transition a case through its lifecycle s
 - Consider visual indication of transition impact (e.g., "This will close the case")
 - Reason textarea should use GOV.UK character count component
 - Success notification should use GOV.UK notification banner
+
+---
+
+## Test Scenarios
+
+### Critical Path Tests
+
+**Test 1: HMCTS Officer views status update page for APPLICATION case**
+- Setup: Case in APPLICATION status, user is HMCTS_CASE_OFFICER
+- Navigate to `/cases/{id}/status`
+- Assert: Page displays 3 radio buttons: DIRECTIONS, ON_HOLD, APPLICATION_WITHDRAWN
+- Assert: Current status shows "Application"
+
+**Test 2: Judge views status update page for FINAL_HEARING case**
+- Setup: Case in FINAL_HEARING status, user is JUDGE_LEGAL_ADVISER
+- Navigate to `/cases/{id}/status`
+- Assert: Page displays 4 radio buttons including ORDER_GRANTED, APPLICATION_REFUSED
+- Assert: HMCTS officer would NOT see ORDER_GRANTED, APPLICATION_REFUSED options
+
+**Test 3: Terminal case has no transitions**
+- Setup: Case in ORDER_GRANTED status
+- GET `/api/cases/{id}`
+- Assert: `permissions.validTransitions` is an empty array `[]`
+- Navigate to `/cases/{id}/status` (if allowed)
+- Assert: No radio buttons displayed OR page redirects back to case detail
+
+**Test 4: API permissions object includes validTransitions**
+- Setup: Case in APPLICATION status, user is HMCTS_CASE_OFFICER
+- GET `/api/cases/{id}`
+- Assert: Response includes:
+  ```json
+  {
+    "id": "...",
+    "status": "APPLICATION",
+    "permissions": {
+      "canEdit": true,
+      "canUpdateStatus": true,
+      "canDelete": true,
+      "canViewAudit": true,
+      "validTransitions": ["DIRECTIONS", "ON_HOLD", "APPLICATION_WITHDRAWN"]
+    }
+  }
+  ```
+
+### Regression Tests
+
+**Regression Test 1: validTransitions missing from API (Bug Fix 2026-02-12)**
+- **Bug:** Status update page showed no radio buttons because backend wasn't returning `validTransitions`
+- **Test:** GET `/api/cases/{id}` for non-terminal case with authorized user
+- **Assert:** Response MUST include `permissions.validTransitions` array
+- **Assert:** Array is not undefined or null
+- **Related AC:** AC-2a
+
+**Regression Test 2: validTransitions filtered by role**
+- **Bug Prevention:** Ensure judicial-only transitions aren't shown to HMCTS officers
+- **Test:** GET `/api/cases/{id}` where case is in FINAL_HEARING status
+  - As HMCTS_CASE_OFFICER: `validTransitions` should NOT include ORDER_GRANTED or APPLICATION_REFUSED
+  - As JUDGE_LEGAL_ADVISER: `validTransitions` SHOULD include ORDER_GRANTED and APPLICATION_REFUSED
+- **Related AC:** AC-4

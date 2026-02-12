@@ -94,6 +94,7 @@ export interface CasePermissions {
   canUpdateStatus: boolean;
   canDelete: boolean;
   canViewAudit: boolean;
+  validTransitions?: CaseStatus[];
 }
 
 export interface CaseResponse extends Case {

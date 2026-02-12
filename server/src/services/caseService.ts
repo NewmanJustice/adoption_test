@@ -58,11 +58,22 @@ export function getPermissions(user: SessionUser, caseData: Case): CasePermissio
   const isJudge = user.role === 'JUDGE_LEGAL_ADVISER';
   const isAdopter = user.role === 'ADOPTER';
 
+  const canUpdateStatus = isHMCTS || isJudge;
+  let validTransitions: CaseStatus[] = [];
+
+  if (canUpdateStatus && !isTerminalStatus(caseData.status)) {
+    const possibleTransitions = STATUS_TRANSITIONS[caseData.status] || [];
+    validTransitions = possibleTransitions.filter((toStatus) =>
+      canRolePerformTransition(user.role, toStatus)
+    );
+  }
+
   return {
     canEdit: isHMCTS,
-    canUpdateStatus: isHMCTS || isJudge,
+    canUpdateStatus,
     canDelete: isHMCTS,
     canViewAudit: isHMCTS || isJudge,
+    validTransitions,
   };
 }
 

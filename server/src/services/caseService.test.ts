@@ -110,6 +110,8 @@ describe('caseService', () => {
       expect(permissions.canUpdateStatus).toBe(true);
       expect(permissions.canDelete).toBe(true);
       expect(permissions.canViewAudit).toBe(true);
+      expect(permissions.validTransitions).toBeDefined();
+      expect(permissions.validTransitions).toEqual(['DIRECTIONS', 'ON_HOLD', 'APPLICATION_WITHDRAWN']);
     });
 
     it('grants limited permissions to JUDGE', () => {
@@ -124,6 +126,8 @@ describe('caseService', () => {
       expect(permissions.canUpdateStatus).toBe(true);
       expect(permissions.canDelete).toBe(false);
       expect(permissions.canViewAudit).toBe(true);
+      expect(permissions.validTransitions).toBeDefined();
+      expect(permissions.validTransitions).toEqual(['DIRECTIONS', 'ON_HOLD', 'APPLICATION_WITHDRAWN']);
     });
 
     it('grants no permissions to ADOPTER', () => {
@@ -138,6 +142,7 @@ describe('caseService', () => {
       expect(permissions.canUpdateStatus).toBe(false);
       expect(permissions.canDelete).toBe(false);
       expect(permissions.canViewAudit).toBe(false);
+      expect(permissions.validTransitions).toEqual([]);
     });
   });
 
