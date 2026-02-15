@@ -8,6 +8,10 @@ type AppEnvironment = 'LOCAL' | 'DEV' | 'TEST' | 'PROD';
 const appEnv = (process.env.APP_ENV as AppEnvironment) || 'LOCAL';
 
 const getDatabaseUrl = (): string => {
+  if (process.env.DATABASE_URL) {
+    return process.env.DATABASE_URL;
+  }
+
   switch (appEnv) {
     case 'LOCAL':
       return process.env.LOCAL_DATABASE_URL || 'postgresql://adoption:adoption@localhost:5432/adoption';
@@ -44,6 +48,10 @@ export const config = {
  * Validate required environment variables based on APP_ENV
  */
 export function validateEnv(): void {
+  if (process.env.DATABASE_URL) {
+    return;
+  }
+
   const envDbVarMap: Record<AppEnvironment, string> = {
     LOCAL: 'LOCAL_DATABASE_URL',
     DEV: 'DEV_DATABASE_URL',

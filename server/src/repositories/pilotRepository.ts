@@ -28,14 +28,112 @@ type AuditFilters = {
 };
 
 export class PilotRepository {
+  private schemaEnsured: Promise<void> | null = null;
+
   constructor(private pool: Pool) {}
 
+  private ensureSchema(): Promise<void> {
+    if (this.schemaEnsured) return this.schemaEnsured;
+
+    const ddl = `
+      CREATE TABLE IF NOT EXISTS pilot_configuration (
+        id VARCHAR(50) PRIMARY KEY,
+        domain_scope TEXT NOT NULL,
+        experiment_type VARCHAR(20) NOT NULL,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        created_by VARCHAR(100) NOT NULL
+      );
+
+      CREATE TABLE IF NOT EXISTS pilot_phase_state (
+        id VARCHAR(50) PRIMARY KEY,
+        config_id VARCHAR(50) REFERENCES pilot_configuration(id) ON DELETE CASCADE,
+        current_phase VARCHAR(20) NOT NULL,
+        spec_freeze_at TIMESTAMP WITH TIME ZONE,
+        stability_confirmed_at TIMESTAMP WITH TIME ZONE,
+        last_transition_at TIMESTAMP WITH TIME ZONE,
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        updated_by VARCHAR(100)
+      );
+
+      CREATE TABLE IF NOT EXISTS pilot_metric_entries (
+        id VARCHAR(50) PRIMARY KEY,
+        metric_key VARCHAR(100) NOT NULL,
+        metric_type VARCHAR(20) NOT NULL,
+        value NUMERIC NOT NULL,
+        unit VARCHAR(20) NOT NULL,
+        date DATE NOT NULL,
+        phase VARCHAR(20) NOT NULL,
+        loop_number INT NOT NULL DEFAULT 1,
+        experiment_type VARCHAR(20) NOT NULL,
+        role VARCHAR(50) NOT NULL,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        created_by VARCHAR(100) NOT NULL,
+        updated_at TIMESTAMP WITH TIME ZONE
+      );
+
+      CREATE TABLE IF NOT EXISTS pilot_metric_history (
+        id VARCHAR(50) PRIMARY KEY,
+        metric_entry_id VARCHAR(50) REFERENCES pilot_metric_entries(id) ON DELETE CASCADE,
+        value NUMERIC NOT NULL,
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        updated_by VARCHAR(100) NOT NULL
+      );
+
+      CREATE TABLE IF NOT EXISTS pilot_metric_notes (
+        id VARCHAR(50) PRIMARY KEY,
+        metric_entry_id VARCHAR(50) REFERENCES pilot_metric_entries(id) ON DELETE CASCADE,
+        note TEXT NOT NULL,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        created_by VARCHAR(100) NOT NULL
+      );
+
+      CREATE TABLE IF NOT EXISTS pilot_deviations (
+        id VARCHAR(50) PRIMARY KEY,
+        description TEXT NOT NULL,
+        metric_key VARCHAR(100),
+        phase VARCHAR(20) NOT NULL,
+        experiment_type VARCHAR(20) NOT NULL,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        created_by VARCHAR(100) NOT NULL
+      );
+
+      CREATE TABLE IF NOT EXISTS pilot_audit_log (
+        id VARCHAR(50) PRIMARY KEY,
+        action VARCHAR(50) NOT NULL,
+        actor_id VARCHAR(100) NOT NULL,
+        actor_role VARCHAR(50) NOT NULL,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        metadata JSONB
+      );
+
+      CREATE INDEX IF NOT EXISTS idx_pilot_metric_entries_key_date ON pilot_metric_entries(metric_key, date);
+      CREATE INDEX IF NOT EXISTS idx_pilot_metric_entries_phase ON pilot_metric_entries(phase);
+      CREATE INDEX IF NOT EXISTS idx_pilot_metric_entries_experiment ON pilot_metric_entries(experiment_type);
+      CREATE INDEX IF NOT EXISTS idx_pilot_metric_history_entry ON pilot_metric_history(metric_entry_id);
+      CREATE INDEX IF NOT EXISTS idx_pilot_metric_notes_entry ON pilot_metric_notes(metric_entry_id);
+      CREATE INDEX IF NOT EXISTS idx_pilot_deviations_created_at ON pilot_deviations(created_at);
+      CREATE INDEX IF NOT EXISTS idx_pilot_audit_log_created_at ON pilot_audit_log(created_at);
+    `;
+
+    this.schemaEnsured = this.pool
+      .query(ddl)
+      .then(() => undefined)
+      .catch((err) => {
+        this.schemaEnsured = null;
+        throw err;
+      });
+
+    return this.schemaEnsured;
+  }
+
   async getConfig(): Promise<PilotConfiguration | null> {
+    await this.ensureSchema();
     const result = await this.pool.query('SELECT * FROM pilot_configuration LIMIT 1');
     return result.rows[0] ? this.mapConfig(result.rows[0]) : null;
   }
 
   async createConfig(config: PilotConfiguration): Promise<PilotConfiguration> {
+    await this.ensureSchema();
     const result = await this.pool.query(
       `INSERT INTO pilot_configuration (id, domain_scope, experiment_type, created_at, created_by)
        VALUES ($1, $2, $3, $4, $5)
@@ -46,6 +144,7 @@ export class PilotRepository {
   }
 
   async getPhaseState(): Promise<PilotLifecycleState | null> {
+    await this.ensureSchema();
     const result = await this.pool.query('SELECT * FROM pilot_phase_state LIMIT 1');
     return result.rows[0] ? this.mapPhase(result.rows[0]) : null;
   }
@@ -60,6 +159,7 @@ export class PilotRepository {
     stabilityConfirmedAt?: string;
     updatedBy?: string;
   }): Promise<PilotLifecycleState> {
+    await this.ensureSchema();
     const result = await this.pool.query(
       `INSERT INTO pilot_phase_state (
         id, config_id, current_phase, spec_freeze_at, stability_confirmed_at,
@@ -89,6 +189,7 @@ export class PilotRepository {
   }
 
   async listMetricEntries(filters: MetricEntryFilters): Promise<PilotMetricEntry[]> {
+    await this.ensureSchema();
     const { clause, values } = this.buildMetricFilters(filters);
     const result = await this.pool.query(
       `SELECT * FROM pilot_metric_entries ${clause}
@@ -99,6 +200,7 @@ export class PilotRepository {
   }
 
   async getMetricEntry(entryId: string): Promise<PilotMetricEntry | null> {
+    await this.ensureSchema();
     const result = await this.pool.query(
       'SELECT * FROM pilot_metric_entries WHERE id = $1',
       [entryId]
@@ -107,6 +209,7 @@ export class PilotRepository {
   }
 
   async createMetricEntry(entry: PilotMetricEntry): Promise<PilotMetricEntry> {
+    await this.ensureSchema();
     const result = await this.pool.query(
       `INSERT INTO pilot_metric_entries (
         id, metric_key, metric_type, value, unit, date, phase,
@@ -145,6 +248,7 @@ export class PilotRepository {
       role: string;
     }
   ): Promise<PilotMetricEntry> {
+    await this.ensureSchema();
     const result = await this.pool.query(
       `UPDATE pilot_metric_entries
        SET value = $1, unit = $2, date = $3, phase = $4, loop_number = $5,
@@ -167,6 +271,7 @@ export class PilotRepository {
   }
 
   async createMetricHistory(history: PilotMetricHistory): Promise<void> {
+    await this.ensureSchema();
     await this.pool.query(
       `INSERT INTO pilot_metric_history (id, metric_entry_id, value, updated_at, updated_by)
        VALUES ($1, $2, $3, $4, $5)`,
@@ -175,6 +280,7 @@ export class PilotRepository {
   }
 
   async createMetricNote(note: PilotMetricNote): Promise<PilotMetricNote> {
+    await this.ensureSchema();
     const result = await this.pool.query(
       `INSERT INTO pilot_metric_notes (id, metric_entry_id, note, created_at, created_by)
        VALUES ($1, $2, $3, $4, $5)
@@ -185,6 +291,7 @@ export class PilotRepository {
   }
 
   async listDeviations(filters: MetricEntryFilters): Promise<PilotDeviation[]> {
+    await this.ensureSchema();
     const { clause, values } = this.buildMetricFilters(filters, 'pilot_deviations');
     const result = await this.pool.query(
       `SELECT * FROM pilot_deviations ${clause}
@@ -195,6 +302,7 @@ export class PilotRepository {
   }
 
   async createDeviation(deviation: PilotDeviation): Promise<PilotDeviation> {
+    await this.ensureSchema();
     const result = await this.pool.query(
       `INSERT INTO pilot_deviations (
         id, description, metric_key, phase, experiment_type, created_at, created_by
@@ -214,6 +322,7 @@ export class PilotRepository {
   }
 
   async createAuditLog(log: PilotAuditLog): Promise<void> {
+    await this.ensureSchema();
     await this.pool.query(
       `INSERT INTO pilot_audit_log (id, action, actor_id, actor_role, created_at, metadata)
        VALUES ($1, $2, $3, $4, $5, $6)`,
@@ -222,6 +331,7 @@ export class PilotRepository {
   }
 
   async listAuditLogs(filters: AuditFilters): Promise<PilotAuditLog[]> {
+    await this.ensureSchema();
     const clauses: string[] = [];
     const values: Array<string> = [];
 
