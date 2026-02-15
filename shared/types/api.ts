@@ -86,3 +86,135 @@ export interface CaseDashboardResponse {
   cases: CaseDashboardCase[];
   pagination: PaginationMeta;
 }
+
+export type PilotExperimentType = 'pilot' | 'control';
+
+export type PilotPhase = 'PHASE_1' | 'PHASE_2' | 'PHASE_3';
+
+export type PilotMetricType = 'percent' | 'score' | 'count' | 'time';
+
+export interface PilotConfiguration {
+  id: string;
+  domainScope: string;
+  experimentType: PilotExperimentType;
+  createdAt: string;
+  createdBy: string;
+}
+
+export interface PilotLifecycleState {
+  phase: PilotPhase;
+  phaseLabel: string;
+  lastTransitionAt?: string;
+  specFreezeAt?: string;
+  stabilityConfirmedAt?: string;
+}
+
+export interface PilotMetricEntry {
+  id: string;
+  metricKey: string;
+  metricType: PilotMetricType;
+  value: number;
+  unit: string;
+  date: string;
+  phase: PilotPhase;
+  loop: number;
+  experimentType: PilotExperimentType;
+  role: string;
+  createdAt: string;
+  createdBy: string;
+  updatedAt?: string;
+}
+
+export interface PilotMetricHistory {
+  id: string;
+  metricEntryId: string;
+  value: number;
+  updatedAt: string;
+  updatedBy: string;
+}
+
+export interface PilotMetricNote {
+  id: string;
+  metricEntryId: string;
+  note: string;
+  createdAt: string;
+  createdBy: string;
+}
+
+export interface PilotTrendPoint {
+  bucket: string;
+  startDate: string;
+  endDate: string;
+  value: number | null;
+}
+
+export interface PilotMetricSummary {
+  metricKey: string;
+  metricType: PilotMetricType;
+  unit: string;
+  value: number | null;
+  latestAt?: string;
+  incomplete?: boolean;
+}
+
+export interface PilotTrendSeries {
+  metricKey: string;
+  metricType: PilotMetricType;
+  unit: string;
+  points: PilotTrendPoint[];
+}
+
+export interface PilotCompareSummary {
+  metricKey: string;
+  metricType: PilotMetricType;
+  unit: string;
+  pilotValue: number | null;
+  controlValue: number | null;
+  delta: number | null;
+  direction: 'up' | 'down' | 'flat' | null;
+}
+
+export interface PilotDeviation {
+  id: string;
+  metricKey?: string;
+  description: string;
+  createdAt: string;
+  createdBy: string;
+  phase: PilotPhase;
+  experimentType: PilotExperimentType;
+}
+
+export interface PilotAuditLog {
+  id: string;
+  action: string;
+  actorId: string;
+  actorRole: string;
+  createdAt: string;
+  metadata?: Record<string, unknown>;
+}
+
+export interface PilotDashboardFilters {
+  dateFrom?: string;
+  dateTo?: string;
+  phase?: PilotPhase;
+  loop?: number;
+  experimentType?: PilotExperimentType;
+  compare?: boolean;
+}
+
+export interface PilotDashboardResponse {
+  filters: PilotDashboardFilters;
+  summary: PilotMetricSummary[];
+  trends: PilotTrendSeries[];
+  completeness: {
+    score: number;
+    missingMetricKeys: string[];
+  };
+  deviations: PilotDeviation[];
+  compare?: {
+    enabled: boolean;
+    warning?: string;
+    summaries?: PilotCompareSummary[];
+    trends?: PilotTrendSeries[];
+  };
+}

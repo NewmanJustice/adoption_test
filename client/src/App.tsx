@@ -12,6 +12,9 @@ const CaseDetailPage = lazy(() => import('./pages/CaseDetailPage'));
 const CreateCasePage = lazy(() => import('./pages/CreateCasePage'));
 const UpdateStatusPage = lazy(() => import('./pages/UpdateStatusPage'));
 const DocumentUploadPage = lazy(() => import('./pages/DocumentUploadPage'));
+const PilotDashboardPage = lazy(() => import('./pages/PilotDashboardPage'));
+const PilotConfigPage = lazy(() => import('./pages/PilotConfigPage'));
+const PilotMetricEntryPage = lazy(() => import('./pages/PilotMetricEntryPage'));
 
 // Notify prototype-annotator of route changes
 function AnnotatorRouteSync() {
@@ -64,6 +67,9 @@ function AppRoutes() {
           <Route path="/cases/:id" element={<CaseDetailPage />} />
           <Route path="/cases/:id/status" element={<UpdateStatusPage />} />
           <Route path="/cases/:id/upload-document" element={<DocumentUploadPage />} />
+          <Route path="/pilot" element={<PilotDashboardPage />} />
+          <Route path="/pilot/config" element={<PilotConfigPage />} />
+          <Route path="/pilot/metrics" element={<PilotMetricEntryPage />} />
         </Routes>
       </Suspense>
     </SiteAccessGuard>

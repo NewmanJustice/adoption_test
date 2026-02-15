@@ -17,6 +17,10 @@ import { DocumentRepository } from './repositories/documentRepository.js';
 import { DocumentService } from './services/documentService.js';
 import { OcrService } from './services/ocrService.js';
 import { DocumentController } from './controllers/documentController.js';
+import { PilotRepository } from './repositories/pilotRepository.js';
+import { PilotService } from './services/pilotService.js';
+import { PilotController } from './controllers/pilotController.js';
+import { createPilotRoutes } from './routes/pilot.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { notFoundHandler } from './middleware/notFound.js';
 
@@ -213,6 +217,13 @@ const documentService = new DocumentService(documentRepository, ocrService);
 const documentController = new DocumentController(documentService);
 const documentRoutes = createDocumentRoutes(documentController);
 app.use('/api', documentRoutes);
+
+// Pilot metrics routes
+const pilotRepository = new PilotRepository(pool);
+const pilotService = new PilotService(pilotRepository);
+const pilotController = new PilotController(pilotService);
+const pilotRoutes = createPilotRoutes(pilotController);
+app.use('/api', pilotRoutes);
 
 // Serve static files from client build (production)
 if (process.env.NODE_ENV === 'production') {

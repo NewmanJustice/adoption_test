@@ -10,7 +10,11 @@ export type UserRole =
   | 'CAFCASS_OFFICER'
   | 'LA_SOCIAL_WORKER'
   | 'VAA_WORKER'
-  | 'ADOPTER';
+  | 'ADOPTER'
+  | 'PILOT_BUILDER'
+  | 'PILOT_SME'
+  | 'PILOT_DELIVERY_LEAD'
+  | 'PILOT_OBSERVER';
 
 /**
  * User data stored in session

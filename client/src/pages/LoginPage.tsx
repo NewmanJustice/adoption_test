@@ -13,6 +13,10 @@ const ROLES = [
   { value: 'LA_SOCIAL_WORKER', label: 'Local Authority Social Worker' },
   { value: 'VAA_WORKER', label: 'Voluntary Adoption Agency Worker' },
   { value: 'ADOPTER', label: 'Adopter' },
+  { value: 'PILOT_BUILDER', label: 'Pilot Builder' },
+  { value: 'PILOT_SME', label: 'Pilot SME' },
+  { value: 'PILOT_DELIVERY_LEAD', label: 'Pilot Delivery Lead' },
+  { value: 'PILOT_OBSERVER', label: 'Pilot Observer' },
 ];
 
 const LoginPage: React.FC = () => {

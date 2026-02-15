@@ -10,6 +10,10 @@ export const VALID_ROLES: UserRole[] = [
   'LA_SOCIAL_WORKER',
   'VAA_WORKER',
   'ADOPTER',
+  'PILOT_BUILDER',
+  'PILOT_SME',
+  'PILOT_DELIVERY_LEAD',
+  'PILOT_OBSERVER',
 ];
 
 /**
@@ -22,6 +26,10 @@ export const ROLE_REDIRECTS: Record<UserRole, string> = {
   LA_SOCIAL_WORKER: '/dashboard',
   VAA_WORKER: '/dashboard',
   ADOPTER: '/my-cases',
+  PILOT_BUILDER: '/pilot',
+  PILOT_SME: '/pilot',
+  PILOT_DELIVERY_LEAD: '/pilot',
+  PILOT_OBSERVER: '/pilot',
 };
 
 /**
