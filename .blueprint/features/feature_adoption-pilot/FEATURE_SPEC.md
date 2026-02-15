@@ -19,6 +19,7 @@
 - Record pilot lifecycle milestones, including Spec Freeze timestamp
 - Capture MetricEntry records for pilot metrics (structural integrity, predictability, NFR posture, SME alignment, governance)
 - Deterministic aggregation for latest values and trend series (time bucketing by date range)
+- Strict type enforcement for error codes, metric keys, and user roles to ensure type safety in all pilot APIs
 - Dashboard views with filters for date range, phase, loop number, and experiment type (pilot/control/compare)
 - Compare-mode calculations (pilot vs control deltas and summaries)
 - Audit trail for metric creation/updates and pilot phase transitions

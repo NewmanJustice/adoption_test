@@ -435,7 +435,7 @@ function normalizeFilters(filters: PilotDashboardFilters): PilotDashboardFilters
 
 function getMetricKeys(entries: PilotMetricEntry[]): string[] {
   const keys = new Set(REQUIRED_METRIC_KEYS);
-  entries.forEach((entry) => keys.add(entry.metricKey));
+  entries.forEach((entry) => keys.add(entry.metricKey as typeof REQUIRED_METRIC_KEYS[number]));
   return Array.from(keys).sort();
 }
 

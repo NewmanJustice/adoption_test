@@ -32,6 +32,9 @@ As a Delivery Lead or Observer, I want a metrics dashboard with filters so that 
 - When I view the dashboard,
 - Then no create or edit controls are available.
 
+## Technical Notes
+- All metric keys and error codes are strictly type-checked in the backend for safety and maintainability.
+
 ## Out of scope
 - External reporting integrations or export tooling
 - Displaying live adoption case data

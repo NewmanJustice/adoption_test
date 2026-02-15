@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { PilotController } from '../controllers/pilotController.js';
 import { requireAuth } from '../middleware/authMiddleware.js';
 
-const PILOT_ROLES = ['PILOT_BUILDER', 'PILOT_SME', 'PILOT_DELIVERY_LEAD', 'PILOT_OBSERVER'] as const;
+const PILOT_ROLES: UserRole[] = ['PILOT_BUILDER', 'PILOT_SME', 'PILOT_DELIVERY_LEAD', 'PILOT_OBSERVER'];
 
 export function createPilotRoutes(controller: PilotController): Router {
   const router = Router();
