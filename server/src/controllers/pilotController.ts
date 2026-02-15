@@ -22,7 +22,7 @@ export class PilotController {
       req.session.user!
     );
     if (!result.success) {
-      return this.sendError(res, result.error, result.code);
+      return this.sendError(res, result.error, result.code as ErrorCode);
     }
     res.status(201).json({ phase: result.data });
   };
@@ -30,7 +30,7 @@ export class PilotController {
   setSpecFreeze = async (req: AuthRequest, res: Response) => {
     const result = await this.pilotService.setSpecFreeze(req.session.user!);
     if (!result.success) {
-      return this.sendError(res, result.error, result.code);
+      return this.sendError(res, result.error, result.code as ErrorCode);
     }
     res.json({ phase: result.data });
   };
@@ -42,7 +42,7 @@ export class PilotController {
       req.session.user!
     );
     if (!result.success) {
-      return this.sendError(res, result.error, result.code);
+      return this.sendError(res, result.error, result.code as ErrorCode);
     }
     res.json({ phase: result.data });
   };
@@ -50,7 +50,7 @@ export class PilotController {
   createMetricEntry = async (req: AuthRequest, res: Response) => {
     const result = await this.pilotService.createMetricEntry(req.body, req.session.user!);
     if (!result.success) {
-      return this.sendError(res, result.error, result.code);
+      return this.sendError(res, result.error, result.code as ErrorCode);
     }
     res.status(201).json({ entry: result.data });
   };
@@ -62,7 +62,7 @@ export class PilotController {
       req.session.user!
     );
     if (!result.success) {
-      return this.sendError(res, result.error, result.code);
+      return this.sendError(res, result.error, result.code as ErrorCode);
     }
     res.json({ entry: result.data });
   };
@@ -74,7 +74,7 @@ export class PilotController {
       req.session.user!
     );
     if (!result.success) {
-      return this.sendError(res, result.error, result.code);
+      return this.sendError(res, result.error, result.code as ErrorCode);
     }
     res.status(201).json({ note: result.data });
   };
@@ -82,7 +82,7 @@ export class PilotController {
   recordDeviation = async (req: AuthRequest, res: Response) => {
     const result = await this.pilotService.recordDeviation(req.body, req.session.user!);
     if (!result.success) {
-      return this.sendError(res, result.error, result.code);
+      return this.sendError(res, result.error, result.code as ErrorCode);
     }
     res.status(201).json({ deviation: result.data });
   };
@@ -91,7 +91,7 @@ export class PilotController {
     const filters = parseDashboardFilters(req.query);
     const result = await this.pilotService.getDashboard(filters, req.session.user!);
     if (!result.success) {
-      return this.sendError(res, result.error, result.code);
+      return this.sendError(res, result.error, result.code as ErrorCode);
     }
     res.json(result.data);
   };

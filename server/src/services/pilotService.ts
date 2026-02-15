@@ -461,7 +461,7 @@ function buildSummary(grouped: Record<string, PilotMetricEntry[]>, metricKeys: s
       unit: latest?.unit || definition.unit,
       value: latest?.value ?? null,
       latestAt: latest?.createdAt,
-      incomplete: REQUIRED_METRIC_KEYS.includes(key) && !latest,
+      incomplete: REQUIRED_METRIC_KEYS.includes(key as (typeof REQUIRED_METRIC_KEYS)[number]) && !latest,
     };
   });
 }

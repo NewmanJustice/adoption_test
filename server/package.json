@@ -6,7 +6,7 @@
   "main": "src/index.ts",
   "scripts": {
     "dev": "nodemon --exec tsx src/index.ts",
-    "build": "tsc",
+    "build": "(cd .. && npm run build --workspace=shared) && tsc",
     "start": "node dist/index.js",
     "test": "jest",
     "typecheck": "tsc --noEmit",

@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { PilotController } from '../controllers/pilotController.js';
 import { requireAuth } from '../middleware/authMiddleware.js';
+import { UserRole } from '../types/auth.js';
 
 const PILOT_ROLES: UserRole[] = ['PILOT_BUILDER', 'PILOT_SME', 'PILOT_DELIVERY_LEAD', 'PILOT_OBSERVER'];
 
