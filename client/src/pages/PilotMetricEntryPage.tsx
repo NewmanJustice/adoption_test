@@ -15,7 +15,7 @@ const PilotMetricEntryPage: React.FC = () => {
   const [unit, setUnit] = useState('score');
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
   const [phase, setPhase] = useState<PilotPhase>('PHASE_1');
-  const [experimentType, setExperimentType] = useState('pilot');
+
   const [loop, setLoop] = useState(1);
   const [noteEntryId, setNoteEntryId] = useState('');
   const [note, setNote] = useState('');
@@ -40,7 +40,7 @@ const PilotMetricEntryPage: React.FC = () => {
         unit,
         date,
         phase,
-        experimentType,
+
         loop,
       }),
     });
@@ -124,21 +124,10 @@ const PilotMetricEntryPage: React.FC = () => {
                 >
                   <option value="PHASE_1">Phase 1 – Structural Foundation</option>
                   <option value="PHASE_2">Phase 2 – Agentic Specification Loops</option>
-                  <option value="PHASE_3">Phase 3 – Controlled Implementation</option>
+  
                 </select>
               </div>
-              <div className="govuk-form-group">
-                <label className="govuk-label" htmlFor="experimentType">Experiment type</label>
-                <select
-                  className="govuk-select"
-                  id="experimentType"
-                  value={experimentType}
-                  onChange={(event) => setExperimentType(event.target.value)}
-                >
-                  <option value="pilot">Pilot</option>
-                  <option value="control">Control</option>
-                </select>
-              </div>
+
               <div className="govuk-form-group">
                 <label className="govuk-label" htmlFor="loop">Loop</label>
                 <input

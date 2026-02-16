@@ -9,15 +9,14 @@ import PilotSummaryCards from '../components/pilot/PilotSummaryCards';
 import PilotTrendTable from '../components/pilot/PilotTrendTable';
 import PilotCompletenessIndicator from '../components/pilot/PilotCompletenessIndicator';
 import { useSession } from '../context/SessionContext';
-import { PilotDashboardFilters, PilotDashboardResponse, PilotCompareSummary } from '@adoption/shared';
+import { PilotDashboardFilters, PilotDashboardResponse } from '@adoption/shared';
 
 const defaultFilters: PilotDashboardFilters = {
   dateFrom: '',
   dateTo: '',
   phase: undefined,
   loop: 1,
-  experimentType: 'pilot',
-  compare: false,
+
 };
 
 const PilotDashboardPage: React.FC = () => {
@@ -117,20 +116,8 @@ const PilotDashboardPage: React.FC = () => {
                 missingMetricKeys={dashboard.completeness.missingMetricKeys}
               />
               <PilotSummaryCards summaries={dashboard.summary} />
-              {dashboard.compare?.warning && (
-                <p className="govuk-body govuk-!-margin-top-3">{dashboard.compare.warning}</p>
-              )}
-              {dashboard.compare?.summaries && (
-                <CompareSummaryTable summaries={dashboard.compare.summaries} />
-              )}
               <h2 className="govuk-heading-l govuk-!-margin-top-6">Pilot trends</h2>
               <PilotTrendTable trends={dashboard.trends} />
-              {dashboard.compare?.trends && (
-                <section className="govuk-!-margin-top-6">
-                  <h3 className="govuk-heading-m">Control trends</h3>
-                  <PilotTrendTable trends={dashboard.compare.trends} />
-                </section>
-              )}
               {dashboard.deviations.length > 0 && (
                 <section className="govuk-!-margin-top-6">
                   <h2 className="govuk-heading-m">Spec Freeze deviations</h2>
@@ -152,30 +139,6 @@ const PilotDashboardPage: React.FC = () => {
   );
 };
 
-const CompareSummaryTable: React.FC<{ summaries: PilotCompareSummary[] }> = ({ summaries }) => {
-  return (
-    <table className="govuk-table govuk-!-margin-top-4">
-      <thead className="govuk-table__head">
-        <tr className="govuk-table__row">
-          <th className="govuk-table__header">Metric</th>
-          <th className="govuk-table__header">Pilot</th>
-          <th className="govuk-table__header">Control</th>
-          <th className="govuk-table__header">Delta</th>
-        </tr>
-      </thead>
-      <tbody className="govuk-table__body">
-        {summaries.map((summary) => (
-          <tr key={summary.metricKey} className="govuk-table__row">
-            <td className="govuk-table__cell">{summary.metricKey.replace(/_/g, ' ')}</td>
-            <td className="govuk-table__cell">{formatValue(summary.pilotValue, summary.unit)}</td>
-            <td className="govuk-table__cell">{formatValue(summary.controlValue, summary.unit)}</td>
-            <td className="govuk-table__cell">{formatDelta(summary.delta, summary.direction)}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  );
-};
 
 function buildQuery(filters: PilotDashboardFilters): string {
   const params = new URLSearchParams();
@@ -183,19 +146,9 @@ function buildQuery(filters: PilotDashboardFilters): string {
   if (filters.dateTo) params.set('dateTo', filters.dateTo);
   if (filters.phase) params.set('phase', filters.phase);
   if (filters.loop) params.set('loop', String(filters.loop));
-  if (filters.experimentType) params.set('experimentType', filters.experimentType);
-  if (filters.compare) params.set('compare', 'true');
+
   return params.toString();
 }
 
-function formatValue(value: number | null, unit: string): string {
-  return value === null ? '—' : `${value} ${unit}`;
-}
-
-function formatDelta(delta: number | null, direction: string | null): string {
-  if (delta === null) return '—';
-  const indicator = direction === 'up' ? '↑' : direction === 'down' ? '↓' : '→';
-  return `${indicator} ${delta}`;
-}
 
 export default PilotDashboardPage;

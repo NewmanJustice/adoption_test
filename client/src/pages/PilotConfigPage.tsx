@@ -13,7 +13,7 @@ const PilotConfigPage: React.FC = () => {
   const [config, setConfig] = useState<PilotConfiguration | null>(null);
   const [phase, setPhase] = useState<PilotLifecycleState | null>(null);
   const [domainScope, setDomainScope] = useState('');
-  const [experimentType, setExperimentType] = useState('pilot');
+
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
@@ -53,7 +53,7 @@ const PilotConfigPage: React.FC = () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ domainScope, experimentType }),
+        body: JSON.stringify({ domainScope }),
       });
       if (!response.ok) {
         const data = await response.json();
@@ -102,7 +102,7 @@ const PilotConfigPage: React.FC = () => {
             <div className="govuk-summary-card">
               <div className="govuk-summary-card__content">
                 <p className="govuk-body"><strong>Domain scope:</strong> {config.domainScope}</p>
-                <p className="govuk-body"><strong>Experiment type:</strong> {config.experimentType}</p>
+
                 {phase && (
                   <p className="govuk-body">
                     <strong>Phase:</strong> {phase.phaseLabel} {phase.specFreezeAt ? '(Spec Freeze set)' : ''}
@@ -125,18 +125,7 @@ const PilotConfigPage: React.FC = () => {
                   onChange={(event) => setDomainScope(event.target.value)}
                 />
               </div>
-              <div className="govuk-form-group">
-                <label className="govuk-label" htmlFor="experimentType">Experiment type</label>
-                <select
-                  className="govuk-select"
-                  id="experimentType"
-                  value={experimentType}
-                  onChange={(event) => setExperimentType(event.target.value)}
-                >
-                  <option value="pilot">Pilot</option>
-                  <option value="control">Control</option>
-                </select>
-              </div>
+
               <button className="govuk-button" type="submit" disabled={saving}>
                 {saving ? 'Saving...' : 'Save configuration'}
               </button>
