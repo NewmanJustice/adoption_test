@@ -22,8 +22,9 @@
 - Strict type enforcement for error codes, metric keys, and user roles to ensure type safety in all pilot APIs
 - Dashboard views with filters for date range, phase, loop number, and experiment type (pilot/control/compare)
 - Audit trail for metric creation/updates and pilot phase transitions
-- Displaying the content in .business_context/Specification-Led-Agentic-Delivery-Pilot.md so users can navigate the information to understand the ask and the process of the pilot 
-- Guidence on how the dashboard behaviour works, and what steps they need to take, tailered to the current Actor   
+- Displaying the content in .business_context/Specification-Led-Agentic-Delivery-Pilot.md as navigable React pages, with each top-level section accessible via the sidebar under /pilot/about
+- Sidebar navigation dynamically lists all pilot guidance sections, allowing users to jump directly to each section as a native page
+- Guidance on how the dashboard behaviour works, and what steps they need to take, tailored to the current Actor
 
 ### Out of Scope
 - Production adoption case workflows or live case data
