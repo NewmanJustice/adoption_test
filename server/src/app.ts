@@ -196,6 +196,18 @@ function injectAnnotatorScript(html: string): string {
 // API routes
 app.use('/api', healthRouter);
 
+// Serve pilot specification markdown for About the Pilot section
+app.get('/api/static/pilot-spec', (_req: Request, res: Response) => {
+  const specPath = path.join(__dirname, '../../.business_context/Specification-Led-Agentic-Delivery-Pilot.md');
+  fs.readFile(specPath, 'utf8', (err, data) => {
+    if (err) {
+      res.status(404).send('Not found');
+    } else {
+      res.type('text/markdown').send(data);
+    }
+  });
+});
+
 // Public health endpoint (accessible without auth)
 app.get('/api/public/health', (_req, res) => {
   res.json({ status: 'ok' });

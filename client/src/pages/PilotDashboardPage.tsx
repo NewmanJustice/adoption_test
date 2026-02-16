@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import PilotSidebar from '../components/pilot/PilotSidebar';
 import SkipLink from '../components/SkipLink';
 import Header from '../components/Header';
 import PhaseBanner from '../components/PhaseBanner';
@@ -81,9 +82,13 @@ const PilotDashboardPage: React.FC = () => {
     <>
       <SkipLink />
       <Header />
-      <div className="govuk-width-container">
-        <PhaseBanner />
-        <main className="govuk-main-wrapper" id="main-content" role="main">
+      <div className="govuk-width-container govuk-grid-row">
+        <div className="govuk-grid-column-one-quarter">
+          <PilotSidebar />
+        </div>
+        <div className="govuk-grid-column-three-quarters">
+          <PhaseBanner />
+          <main className="govuk-main-wrapper" id="main-content" role="main">
           <h1 className="govuk-heading-xl">Adoption Pilot Dashboard</h1>
           <p className="govuk-body">Signed in as {user?.username} ({user?.role}).</p>
           <div className="govuk-button-group">
@@ -133,6 +138,7 @@ const PilotDashboardPage: React.FC = () => {
             </>
           )}
         </main>
+        </div>
       </div>
       <Footer />
     </>
