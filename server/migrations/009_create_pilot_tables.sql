@@ -4,7 +4,6 @@
 CREATE TABLE IF NOT EXISTS pilot_configuration (
   id VARCHAR(50) PRIMARY KEY,
   domain_scope TEXT NOT NULL,
-  experiment_type VARCHAR(20) NOT NULL,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   created_by VARCHAR(100) NOT NULL
 );
@@ -29,7 +28,6 @@ CREATE TABLE IF NOT EXISTS pilot_metric_entries (
   date DATE NOT NULL,
   phase VARCHAR(20) NOT NULL,
   loop_number INT NOT NULL DEFAULT 1,
-  experiment_type VARCHAR(20) NOT NULL,
   role VARCHAR(50) NOT NULL,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   created_by VARCHAR(100) NOT NULL,
@@ -57,7 +55,6 @@ CREATE TABLE IF NOT EXISTS pilot_deviations (
   description TEXT NOT NULL,
   metric_key VARCHAR(100),
   phase VARCHAR(20) NOT NULL,
-  experiment_type VARCHAR(20) NOT NULL,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   created_by VARCHAR(100) NOT NULL
 );
@@ -71,10 +68,20 @@ CREATE TABLE IF NOT EXISTS pilot_audit_log (
   metadata JSONB
 );
 
+CREATE TABLE IF NOT EXISTS user_preferences (
+  id VARCHAR(50) PRIMARY KEY,
+  user_id VARCHAR(100) NOT NULL,
+  preference_key VARCHAR(100) NOT NULL,
+  preference_value TEXT NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE,
+  UNIQUE(user_id, preference_key)
+);
+
 CREATE INDEX IF NOT EXISTS idx_pilot_metric_entries_key_date ON pilot_metric_entries(metric_key, date);
 CREATE INDEX IF NOT EXISTS idx_pilot_metric_entries_phase ON pilot_metric_entries(phase);
-CREATE INDEX IF NOT EXISTS idx_pilot_metric_entries_experiment ON pilot_metric_entries(experiment_type);
 CREATE INDEX IF NOT EXISTS idx_pilot_metric_history_entry ON pilot_metric_history(metric_entry_id);
 CREATE INDEX IF NOT EXISTS idx_pilot_metric_notes_entry ON pilot_metric_notes(metric_entry_id);
 CREATE INDEX IF NOT EXISTS idx_pilot_deviations_created_at ON pilot_deviations(created_at);
 CREATE INDEX IF NOT EXISTS idx_pilot_audit_log_created_at ON pilot_audit_log(created_at);
+CREATE INDEX IF NOT EXISTS idx_user_preferences_user ON user_preferences(user_id);

@@ -1,12 +1,10 @@
 import { randomUUID } from 'node:crypto';
 import {
   PilotAuditLog,
-  PilotCompareSummary,
   PilotConfiguration,
   PilotDashboardFilters,
   PilotDashboardResponse,
   PilotDeviation,
-  PilotExperimentType,
   PilotLifecycleState,
   PilotMetricEntry,
   PilotMetricNote,
@@ -15,6 +13,8 @@ import {
   PilotPhase,
   PilotTrendPoint,
   PilotTrendSeries,
+  GuidanceResponse,
+  UserPreference,
 } from '@adoption/shared';
 import { SessionUser, UserRole } from '../types/auth.js';
 import { PilotRepository } from '../repositories/pilotRepository.js';
@@ -25,7 +25,6 @@ const PILOT_PHASE_ID = 'pilot-phase';
 const PHASE_LABELS: Record<PilotPhase, string> = {
   PHASE_1: 'Phase 1 – Structural Foundation',
   PHASE_2: 'Phase 2 – Agentic Specification Loops',
-  PHASE_3: 'Phase 3 – Controlled Implementation',
 };
 
 const METRIC_DEFINITIONS = [
@@ -46,13 +45,11 @@ type MetricInput = {
   unit?: string;
   date?: string;
   phase?: PilotPhase;
-  experimentType?: PilotExperimentType;
   loop?: number;
 };
 
 type ConfigInput = {
   domainScope?: string;
-  experimentType?: PilotExperimentType;
 };
 
 type Bucket = { bucket: string; start: Date; end: Date };
@@ -81,11 +78,10 @@ export class PilotService {
     if (!isBuilder(user.role)) {
       return { success: false, error: 'Access denied', code: 'FORBIDDEN' };
     }
-    if (!input.domainScope || !input.experimentType || !isExperimentType(input.experimentType)) {
+    if (!input.domainScope) {
       return { success: false, error: 'Missing required fields', code: 'VALIDATION' };
     }
     const domainScope = input.domainScope;
-    const experimentType = input.experimentType;
     const existing = await this.repository.getConfig();
     if (existing) {
       return { success: false, error: 'Pilot already configured', code: 'CONFLICT' };
@@ -93,7 +89,6 @@ export class PilotService {
     const config: PilotConfiguration = {
       id: PILOT_CONFIG_ID,
       domainScope,
-      experimentType,
       createdAt: new Date().toISOString(),
       createdBy: user.userId,
     };
@@ -183,7 +178,6 @@ export class PilotService {
       date: parsed.data.date,
       phase: parsed.data.phase,
       loop: parsed.data.loop,
-      experimentType: parsed.data.experimentType,
       role: user.role,
       createdAt: new Date().toISOString(),
       createdBy: user.userId,
@@ -211,7 +205,6 @@ export class PilotService {
       unit: input.unit ?? current.unit,
       date: input.date ?? current.date,
       phase: input.phase ?? current.phase,
-      experimentType: input.experimentType ?? current.experimentType,
       loop: input.loop ?? current.loop,
     });
     if (!parsed.success) {
@@ -231,7 +224,6 @@ export class PilotService {
       date: parsed.data.date,
       phase: parsed.data.phase,
       loop: parsed.data.loop,
-      experimentType: parsed.data.experimentType,
       metricType: definition.type,
       role: user.role,
     });
@@ -261,7 +253,7 @@ export class PilotService {
   }
 
   async recordDeviation(
-    input: { description?: string; metricKey?: string; phase?: PilotPhase; experimentType?: PilotExperimentType },
+    input: { description?: string; metricKey?: string; phase?: PilotPhase },
     user: SessionUser
   ): Promise<ServiceResult<PilotDeviation | null>> {
     if (!isBuilder(user.role)) {
@@ -271,7 +263,7 @@ export class PilotService {
     if (!state?.specFreezeAt) {
       return { success: true, data: null };
     }
-    if (!input.description || !input.phase || !input.experimentType) {
+    if (!input.description || !input.phase) {
       return { success: false, error: 'Missing required fields', code: 'VALIDATION' };
     }
     const stored = await this.repository.createDeviation({
@@ -279,7 +271,6 @@ export class PilotService {
       description: input.description,
       metricKey: input.metricKey,
       phase: input.phase,
-      experimentType: input.experimentType,
       createdAt: new Date().toISOString(),
       createdBy: user.userId,
     });
@@ -304,9 +295,6 @@ export class PilotService {
       completeness: aggregate.completeness,
       deviations,
     };
-    if (parsedFilters.compare) {
-      response.compare = await this.buildCompare(parsedFilters, buckets, metricKeys);
-    }
     return { success: true, data: response };
   }
 
@@ -314,25 +302,35 @@ export class PilotService {
     return this.repository.listAuditLogs(filters);
   }
 
-  private async buildCompare(filters: PilotDashboardFilters, buckets: Bucket[], metricKeys: string[]) {
-    const pilotEntries = await this.repository.listMetricEntries({
-      ...filters,
-      experimentType: 'pilot',
-    });
-    const controlEntries = await this.repository.listMetricEntries({
-      ...filters,
-      experimentType: 'control',
-    });
-    const pilotAgg = buildAggregation(pilotEntries, metricKeys, buckets);
-    const controlAgg = buildAggregation(controlEntries, metricKeys, buckets);
-    const summaries = buildCompareSummaries(pilotAgg.summary, controlAgg.summary);
-    const hasControl = controlEntries.length > 0;
-    return {
-      enabled: true,
-      warning: hasControl ? undefined : 'Control data not available for selected range',
-      summaries: hasControl ? summaries : undefined,
-      trends: hasControl ? controlAgg.trends : undefined,
-    };
+  async getBusinessContextGuidance(user: SessionUser): Promise<ServiceResult<GuidanceResponse>> {
+    if (!canViewDashboard(user.role)) {
+      return { success: false, error: 'Access denied', code: 'FORBIDDEN' };
+    }
+    const fs = await import('node:fs/promises');
+    const path = await import('node:path');
+    const businessContextPath = path.resolve('.business_context/Specification-Led-Agentic-Delivery-Pilot.md');
+    try {
+      const content = await fs.readFile(businessContextPath, 'utf-8');
+      return { success: true, data: { content } };
+    } catch (err) {
+      return { success: false, error: 'Business context document not found', code: 'NOT_FOUND' };
+    }
+  }
+
+  async getActorGuidance(user: SessionUser): Promise<ServiceResult<GuidanceResponse>> {
+    if (!canViewDashboard(user.role)) {
+      return { success: false, error: 'Access denied', code: 'FORBIDDEN' };
+    }
+    const content = getActorGuidanceText(user.role);
+    return { success: true, data: { content, role: user.role } };
+  }
+
+  async getUserPreference(userId: string, key: string): Promise<UserPreference | null> {
+    return this.repository.getUserPreference(userId, key);
+  }
+
+  async setUserPreference(pref: UserPreference): Promise<UserPreference> {
+    return this.repository.setUserPreference(pref);
   }
 
   private async logAudit(action: string, user: SessionUser, metadata?: Record<string, unknown>) {
@@ -351,12 +349,8 @@ export class PilotService {
   }
 }
 
-function isExperimentType(value: string): value is PilotExperimentType {
-  return value === 'pilot' || value === 'control';
-}
-
 function isPhase(value: string): value is PilotPhase {
-  return value === 'PHASE_1' || value === 'PHASE_2' || value === 'PHASE_3';
+  return value === 'PHASE_1' || value === 'PHASE_2';
 }
 
 function isBuilder(role: UserRole): boolean {
@@ -383,21 +377,15 @@ function getPhaseGateError(state: PilotLifecycleState, target: PilotPhase, stabi
   if (target === 'PHASE_2' && !state.specFreezeAt) {
     return 'Spec Freeze must be set before Phase 2';
   }
-  if (target === 'PHASE_3' && !stabilityConfirmed) {
-    return 'Stability confirmation required before Phase 3';
-  }
   return null;
 }
 
 function validateMetricInput(input: MetricInput): ServiceResult<Required<MetricInput>> {
-  if (!input.metricKey || input.value === undefined || !input.unit || !input.date || !input.phase || !input.experimentType) {
+  if (!input.metricKey || input.value === undefined || !input.unit || !input.date || !input.phase) {
     return { success: false, error: 'Missing required fields' };
   }
   if (!isPhase(input.phase)) {
     return { success: false, error: 'Invalid phase' };
-  }
-  if (!isExperimentType(input.experimentType)) {
-    return { success: false, error: 'Invalid experiment type' };
   }
   if (Number.isNaN(Number(input.value))) {
     return { success: false, error: 'Invalid value' };
@@ -410,7 +398,6 @@ function validateMetricInput(input: MetricInput): ServiceResult<Required<MetricI
       unit: input.unit,
       date: input.date,
       phase: input.phase,
-      experimentType: input.experimentType,
       loop: input.loop ?? 1,
     },
   };
@@ -429,7 +416,6 @@ function normalizeFilters(filters: PilotDashboardFilters): PilotDashboardFilters
     dateFrom,
     dateTo,
     loop: filters.loop ?? 1,
-    experimentType: filters.experimentType || 'pilot',
   };
 }
 
@@ -482,32 +468,6 @@ function buildTrends(
     }));
     return { metricKey: key, metricType: definition.type, unit: definition.unit, points };
   });
-}
-
-function buildCompareSummaries(pilot: PilotMetricSummary[], control: PilotMetricSummary[]): PilotCompareSummary[] {
-  const controlMap = new Map(control.map((summary) => [summary.metricKey, summary]));
-  return pilot.map((summary) => {
-    const controlSummary = controlMap.get(summary.metricKey);
-    const delta = computeDelta(summary.value, controlSummary?.value ?? null);
-    return {
-      metricKey: summary.metricKey,
-      metricType: summary.metricType,
-      unit: summary.unit,
-      pilotValue: summary.value,
-      controlValue: controlSummary?.value ?? null,
-      delta: delta.value,
-      direction: delta.direction,
-    };
-  });
-}
-
-function computeDelta(pilot: number | null, control: number | null): { value: number | null; direction: 'up' | 'down' | 'flat' | null } {
-  if (pilot === null || control === null) {
-    return { value: null, direction: null };
-  }
-  const value = Number((pilot - control).toFixed(2));
-  const direction = value === 0 ? 'flat' : value > 0 ? 'up' : 'down';
-  return { value, direction };
 }
 
 function groupByMetric(entries: PilotMetricEntry[]): Record<string, PilotMetricEntry[]> {
@@ -610,4 +570,38 @@ function parseDate(value: string): Date {
 
 function formatDate(date: Date): string {
   return date.toISOString().slice(0, 10);
+}
+
+function getActorGuidanceText(role: string): string {
+  const guidance = {
+    PILOT_BUILDER: `# Builder Dashboard Guide
+
+- **Phase transitions**: Use the phase control to move between Phase 1 and Phase 2
+- **Metric entry**: Add and update metrics for your pilot domain
+- **Spec Freeze**: Set the specification freeze before transitioning to Phase 2
+- **Deviations**: Log any post-freeze deviations from the agreed specification`,
+
+    PILOT_SME: `# SME Dashboard Guide
+
+- **Metric review**: Review metrics entered by Builders and Delivery Leads
+- **Add context**: Provide contextual notes on metric entries to explain nuances
+- **Trend analysis**: Monitor metric trends to identify patterns and issues
+- **Dashboard filters**: Use phase and date filters to focus your review`,
+
+    PILOT_DELIVERY_LEAD: `# Delivery Lead Dashboard Guide
+
+- **Progress monitoring**: Track metric progress against targets
+- **Metric entry**: Record metrics for your delivery activities
+- **Team coordination**: Review metrics across phases and loops
+- **Filters**: Use dashboard filters to analyze specific time periods or phases`,
+
+    PILOT_OBSERVER: `# Observer Dashboard Guide
+
+- **Read-only access**: View all metrics and trends without editing capability
+- **Completeness monitoring**: Check metric completeness scores
+- **Deviation tracking**: Review logged deviations from specifications
+- **Export insights**: Use filters to generate views for reporting`,
+  };
+
+  return guidance[role as keyof typeof guidance] || guidance.PILOT_OBSERVER;
 }

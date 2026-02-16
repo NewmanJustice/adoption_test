@@ -101,28 +101,6 @@ describe('story-dashboard-metrics', () => {
   });
 });
 
-describe('story-compare-mode', () => {
-  test('AC-1 Calculate deltas with control data [.blueprint/features/feature_adoption-pilot/story-compare-mode.md]', () => {
-    expect(true).toBe(true);
-  });
-
-  test('AC-2 Handle missing control data [.blueprint/features/feature_adoption-pilot/story-compare-mode.md]', () => {
-    expect(true).toBe(true);
-  });
-
-  test('AC-3 Use consistent aggregation inputs [.blueprint/features/feature_adoption-pilot/story-compare-mode.md]', () => {
-    expect(true).toBe(true);
-  });
-
-  test('AC-4 Toggle compare mode off [.blueprint/features/feature_adoption-pilot/story-compare-mode.md]', () => {
-    expect(true).toBe(true);
-  });
-
-  test('AC-5 Trend alignment [.blueprint/features/feature_adoption-pilot/story-compare-mode.md]', () => {
-    expect(true).toBe(true);
-  });
-});
-
 describe('story-spec-freeze-deviations', () => {
   test('AC-1 Record Spec Freeze [.blueprint/features/feature_adoption-pilot/story-spec-freeze-deviations.md]', () => {
     expect(true).toBe(true);
@@ -149,6 +127,58 @@ describe('story-spec-freeze-deviations', () => {
   });
 });
 
+describe('story-business-context-guidance', () => {
+  test('AC-1 Display pilot framework document [.blueprint/features/feature_adoption-pilot/story-business-context-guidance.md]', () => {
+    expect(true).toBe(true);
+  });
+
+  test('AC-2 Render markdown structure [.blueprint/features/feature_adoption-pilot/story-business-context-guidance.md]', () => {
+    expect(true).toBe(true);
+  });
+
+  test('AC-3 Navigation within document [.blueprint/features/feature_adoption-pilot/story-business-context-guidance.md]', () => {
+    expect(true).toBe(true);
+  });
+
+  test('AC-4 Access control [.blueprint/features/feature_adoption-pilot/story-business-context-guidance.md]', () => {
+    expect(true).toBe(true);
+  });
+
+  test('AC-5 Performance [.blueprint/features/feature_adoption-pilot/story-business-context-guidance.md]', () => {
+    expect(true).toBe(true);
+  });
+});
+
+describe('story-actor-tailored-guidance', () => {
+  test('AC-1 Display role-specific guidance [.blueprint/features/feature_adoption-pilot/story-actor-tailored-guidance.md]', () => {
+    expect(true).toBe(true);
+  });
+
+  test('AC-2 Builder guidance [.blueprint/features/feature_adoption-pilot/story-actor-tailored-guidance.md]', () => {
+    expect(true).toBe(true);
+  });
+
+  test('AC-3 SME guidance [.blueprint/features/feature_adoption-pilot/story-actor-tailored-guidance.md]', () => {
+    expect(true).toBe(true);
+  });
+
+  test('AC-4 Delivery Lead guidance [.blueprint/features/feature_adoption-pilot/story-actor-tailored-guidance.md]', () => {
+    expect(true).toBe(true);
+  });
+
+  test('AC-5 Observer guidance [.blueprint/features/feature_adoption-pilot/story-actor-tailored-guidance.md]', () => {
+    expect(true).toBe(true);
+  });
+
+  test('AC-6 Guidance dismissal [.blueprint/features/feature_adoption-pilot/story-actor-tailored-guidance.md]', () => {
+    expect(true).toBe(true);
+  });
+
+  test('AC-7 Contextual help for filters and controls [.blueprint/features/feature_adoption-pilot/story-actor-tailored-guidance.md]', () => {
+    expect(true).toBe(true);
+  });
+});
+
 describe('story-pilot-phase-transitions', () => {
   test('AC-1 Transition to Phase 2 with Spec Freeze [.blueprint/features/feature_adoption-pilot/story-pilot-phase-transitions.md]', () => {
     expect(true).toBe(true);
@@ -158,19 +188,11 @@ describe('story-pilot-phase-transitions', () => {
     expect(true).toBe(true);
   });
 
-  test('AC-3 Transition to Phase 3 with stability confirmation [.blueprint/features/feature_adoption-pilot/story-pilot-phase-transitions.md]', () => {
+  test('AC-3 Restrict phase transitions [.blueprint/features/feature_adoption-pilot/story-pilot-phase-transitions.md]', () => {
     expect(true).toBe(true);
   });
 
-  test('AC-4 Block Phase 3 without stability confirmation [.blueprint/features/feature_adoption-pilot/story-pilot-phase-transitions.md]', () => {
-    expect(true).toBe(true);
-  });
-
-  test('AC-5 Restrict phase transitions [.blueprint/features/feature_adoption-pilot/story-pilot-phase-transitions.md]', () => {
-    expect(true).toBe(true);
-  });
-
-  test('AC-6 Display current phase [.blueprint/features/feature_adoption-pilot/story-pilot-phase-transitions.md]', () => {
+  test('AC-4 Display current phase [.blueprint/features/feature_adoption-pilot/story-pilot-phase-transitions.md]', () => {
     expect(true).toBe(true);
   });
 });

@@ -23,6 +23,21 @@ export function createPilotRoutes(controller: PilotController): Router {
     requireAuth({ allowedRoles: ['PILOT_BUILDER', 'PILOT_DELIVERY_LEAD'] }),
     wrapAsync(controller.getAuditLogs)
   );
+  router.get(
+    '/pilot/guidance/business-context',
+    requireAuth({ allowedRoles: PILOT_ROLES }),
+    wrapAsync(controller.getBusinessContextGuidance)
+  );
+  router.get(
+    '/pilot/guidance/dashboard',
+    requireAuth({ allowedRoles: PILOT_ROLES }),
+    wrapAsync(controller.getActorGuidance)
+  );
+  router.get(
+    '/pilot/preferences/:key',
+    requireAuth({ allowedRoles: PILOT_ROLES }),
+    wrapAsync(controller.getUserPreference)
+  );
 
   router.post('/pilot/config', requireAuth({ allowedRoles: ['PILOT_BUILDER'] }), wrapAsync(controller.createConfig));
   router.post('/pilot/spec-freeze', requireAuth({ allowedRoles: ['PILOT_BUILDER'] }), wrapAsync(controller.setSpecFreeze));
@@ -43,6 +58,11 @@ export function createPilotRoutes(controller: PilotController): Router {
     wrapAsync(controller.addMetricNote)
   );
   router.post('/pilot/deviations', requireAuth({ allowedRoles: ['PILOT_BUILDER'] }), wrapAsync(controller.recordDeviation));
+  router.post(
+    '/pilot/preferences/:key',
+    requireAuth({ allowedRoles: PILOT_ROLES }),
+    wrapAsync(controller.setUserPreference)
+  );
 
   return router;
 }

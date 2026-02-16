@@ -15,14 +15,15 @@
 
 ## 2. Scope
 ### In Scope
-- Define pilot configuration: domain scope, pilot vs control experiment type, and phase tracking
+- Define pilot configuration: domain scope, pilot, and phase tracking
 - Record pilot lifecycle milestones, including Spec Freeze timestamp
 - Capture MetricEntry records for pilot metrics (structural integrity, predictability, NFR posture, SME alignment, governance)
 - Deterministic aggregation for latest values and trend series (time bucketing by date range)
 - Strict type enforcement for error codes, metric keys, and user roles to ensure type safety in all pilot APIs
 - Dashboard views with filters for date range, phase, loop number, and experiment type (pilot/control/compare)
-- Compare-mode calculations (pilot vs control deltas and summaries)
 - Audit trail for metric creation/updates and pilot phase transitions
+- Displaying the content in .business_context/Specification-Led-Agentic-Delivery-Pilot.md so users can navigate the information to understand the ask and the process of the pilot 
+- Guidence on how the dashboard behaviour works, and what steps they need to take, tailered to the current Actor   
 
 ### Out of Scope
 - Production adoption case workflows or live case data
@@ -58,7 +59,7 @@
 **What the feature does, conceptually.**
 
 ### Happy Path
-1. Delivery Lead configures pilot scope and confirms experiment type (pilot/control)
+1. Delivery Lead configures pilot scope and confirms experiment type (pilot)
 2. Phase 1 begins; pilot artefacts are produced and Spec Freeze is recorded
 3. Metric entries are captured during phases (manual or automated sources)
 4. Dashboard aggregates latest values and trend series using deterministic rules
@@ -91,7 +92,6 @@ This feature manages a pilot-specific lifecycle (distinct from adoption case sta
 |-------|-------------|-----------------|
 | **Phase 1 – Structural Foundation** | Outcome, domain, state, event models, NFR envelope defined | Pilot configured |
 | **Phase 2 – Agentic Specification Loops** | Prototype generation, SME feedback, spec mutation cycles | Spec Freeze timestamp set |
-| **Phase 3 – Controlled Implementation** | Build execution with traceability and deviation logging | Structural stability confirmed |
 
 ### Feature Classification
 - **State-creating:** Yes — creates pilot configuration and Spec Freeze records
@@ -130,12 +130,6 @@ This feature manages a pilot-specific lifecycle (distinct from adoption case sta
   - Percent/Score metrics → AVG(value)
   - Count metrics → SUM(value)
   - Time metrics → AVG(value)
-
-### Rule: Compare Mode Delta
-- **Description:** Pilot vs control deltas computed on summary values for the same period
-- **Inputs:** Pilot summary value, control summary value, metric type
-- **Outputs:** Delta (P − C) and directional indicator
-- **Type:** Deterministic
 
 ### Rule: Spec Freeze Deviation Logging
 - **Description:** Any post-freeze structural change must create a deviation record
@@ -227,10 +221,9 @@ This feature **stretches but does not contradict** the system specification:
 2. **Metric Entry Capture:** Create and validate MetricEntry records
 3. **Aggregation Engine:** Implement deterministic bucketing and summary logic
 4. **Dashboard Views:** Summary cards, trend charts, and filter controls
-5. **Compare Mode:** Pilot vs control delta calculations
-6. **Spec Freeze & Deviations:** Record freeze timestamp and post-freeze deviations
-7. **Role-Based Access:** Permissions for Builder, SME, Delivery Lead, Observer
-8. **Audit Logging:** Immutable metric and phase change records
+5. **Spec Freeze & Deviations:** Record freeze timestamp and post-freeze deviations
+6. **Role-Based Access:** Permissions for Builder, SME, Delivery Lead, Observer
+7. **Audit Logging:** Immutable metric and phase change records
 
 ### Expected Story Boundaries
 - Aggregation logic should be a backend-focused story with clear acceptance criteria
@@ -239,7 +232,6 @@ This feature **stretches but does not contradict** the system specification:
 
 ### Areas Needing Careful Story Framing
 - **Determinism:** Acceptance criteria must assert reproducible results for a fixed data set
-- **Compare Mode Edge Cases:** Stories should cover missing control data behaviour
 - **Access Control:** Explicit tests for write vs read permissions per role
 
 ---

@@ -1,7 +1,7 @@
 import { Response } from 'express';
 import { PilotService } from '../services/pilotService.js';
 import { AuthRequest } from '../types/auth.js';
-import { PilotDashboardFilters, PilotExperimentType, PilotPhase } from '@adoption/shared';
+import { PilotDashboardFilters, PilotPhase } from '@adoption/shared';
 
 type ErrorCode = 'FORBIDDEN' | 'NOT_FOUND' | 'CONFLICT' | 'VALIDATION';
 
@@ -17,7 +17,6 @@ export class PilotController {
     const result = await this.pilotService.createConfig(
       {
         domainScope: req.body.domainScope,
-        experimentType: req.body.experimentType,
       },
       req.session.user!
     );
@@ -105,6 +104,47 @@ export class PilotController {
     res.json({ logs });
   };
 
+  getBusinessContextGuidance = async (req: AuthRequest, res: Response) => {
+    const result = await this.pilotService.getBusinessContextGuidance(req.session.user!);
+    if (!result.success) {
+      return this.sendError(res, result.error, result.code as ErrorCode);
+    }
+    res.json(result.data);
+  };
+
+  getActorGuidance = async (req: AuthRequest, res: Response) => {
+    const result = await this.pilotService.getActorGuidance(req.session.user!);
+    if (!result.success) {
+      return this.sendError(res, result.error, result.code as ErrorCode);
+    }
+    res.json(result.data);
+  };
+
+  getUserPreference = async (req: AuthRequest, res: Response) => {
+    const { key } = req.params;
+    const userId = req.session.user!.userId;
+    const preference = await this.pilotService.getUserPreference(userId, key);
+    if (!preference) {
+      return res.status(404).json({ error: 'Preference not found' });
+    }
+    res.json(preference);
+  };
+
+  setUserPreference = async (req: AuthRequest, res: Response) => {
+    const { key } = req.params;
+    const { value } = req.body;
+    const userId = req.session.user!.userId;
+    const preference = await this.pilotService.setUserPreference({
+      id: `${userId}-${key}`,
+      userId,
+      preferenceKey: key,
+      preferenceValue: value,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    });
+    res.json(preference);
+  };
+
   private sendError(res: Response, error: string, code?: ErrorCode) {
     const status = mapErrorStatus(code);
     res.status(status).json({ error, code });
@@ -112,22 +152,12 @@ export class PilotController {
 }
 
 function parseDashboardFilters(query: Record<string, unknown>): PilotDashboardFilters {
-  const experimentType = parseExperimentType(query.experimentType);
   return {
     dateFrom: query.dateFrom as string | undefined,
     dateTo: query.dateTo as string | undefined,
     phase: query.phase as PilotPhase | undefined,
     loop: query.loop ? Number(query.loop) : undefined,
-    experimentType,
-    compare: query.compare === 'true',
   };
-}
-
-function parseExperimentType(value: unknown): PilotExperimentType | undefined {
-  if (value === 'pilot' || value === 'control') {
-    return value;
-  }
-  return undefined;
 }
 
 function mapErrorStatus(code?: ErrorCode): number {

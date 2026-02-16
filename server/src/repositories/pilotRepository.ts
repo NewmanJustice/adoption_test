@@ -3,13 +3,13 @@ import {
   PilotAuditLog,
   PilotConfiguration,
   PilotDeviation,
-  PilotExperimentType,
   PilotLifecycleState,
   PilotMetricEntry,
   PilotMetricHistory,
   PilotMetricNote,
   PilotMetricType,
   PilotPhase,
+  UserPreference,
 } from '@adoption/shared';
 
 type MetricEntryFilters = {
@@ -17,7 +17,6 @@ type MetricEntryFilters = {
   dateTo?: string;
   phase?: PilotPhase;
   loop?: number;
-  experimentType?: PilotExperimentType;
   metricKey?: string;
 };
 
@@ -39,7 +38,6 @@ export class PilotRepository {
       CREATE TABLE IF NOT EXISTS pilot_configuration (
         id VARCHAR(50) PRIMARY KEY,
         domain_scope TEXT NOT NULL,
-        experiment_type VARCHAR(20) NOT NULL,
         created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
         created_by VARCHAR(100) NOT NULL
       );
@@ -64,7 +62,6 @@ export class PilotRepository {
         date DATE NOT NULL,
         phase VARCHAR(20) NOT NULL,
         loop_number INT NOT NULL DEFAULT 1,
-        experiment_type VARCHAR(20) NOT NULL,
         role VARCHAR(50) NOT NULL,
         created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
         created_by VARCHAR(100) NOT NULL,
@@ -92,7 +89,6 @@ export class PilotRepository {
         description TEXT NOT NULL,
         metric_key VARCHAR(100),
         phase VARCHAR(20) NOT NULL,
-        experiment_type VARCHAR(20) NOT NULL,
         created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
         created_by VARCHAR(100) NOT NULL
       );
@@ -106,13 +102,23 @@ export class PilotRepository {
         metadata JSONB
       );
 
+      CREATE TABLE IF NOT EXISTS user_preferences (
+        id VARCHAR(50) PRIMARY KEY,
+        user_id VARCHAR(100) NOT NULL,
+        preference_key VARCHAR(100) NOT NULL,
+        preference_value TEXT NOT NULL,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        updated_at TIMESTAMP WITH TIME ZONE,
+        UNIQUE(user_id, preference_key)
+      );
+
       CREATE INDEX IF NOT EXISTS idx_pilot_metric_entries_key_date ON pilot_metric_entries(metric_key, date);
       CREATE INDEX IF NOT EXISTS idx_pilot_metric_entries_phase ON pilot_metric_entries(phase);
-      CREATE INDEX IF NOT EXISTS idx_pilot_metric_entries_experiment ON pilot_metric_entries(experiment_type);
       CREATE INDEX IF NOT EXISTS idx_pilot_metric_history_entry ON pilot_metric_history(metric_entry_id);
       CREATE INDEX IF NOT EXISTS idx_pilot_metric_notes_entry ON pilot_metric_notes(metric_entry_id);
       CREATE INDEX IF NOT EXISTS idx_pilot_deviations_created_at ON pilot_deviations(created_at);
       CREATE INDEX IF NOT EXISTS idx_pilot_audit_log_created_at ON pilot_audit_log(created_at);
+      CREATE INDEX IF NOT EXISTS idx_user_preferences_user ON user_preferences(user_id);
     `;
 
     this.schemaEnsured = this.pool
@@ -135,10 +141,10 @@ export class PilotRepository {
   async createConfig(config: PilotConfiguration): Promise<PilotConfiguration> {
     await this.ensureSchema();
     const result = await this.pool.query(
-      `INSERT INTO pilot_configuration (id, domain_scope, experiment_type, created_at, created_by)
-       VALUES ($1, $2, $3, $4, $5)
+      `INSERT INTO pilot_configuration (id, domain_scope, created_at, created_by)
+       VALUES ($1, $2, $3, $4)
        RETURNING *`,
-      [config.id, config.domainScope, config.experimentType, config.createdAt, config.createdBy]
+      [config.id, config.domainScope, config.createdAt, config.createdBy]
     );
     return this.mapConfig(result.rows[0]);
   }
@@ -213,8 +219,8 @@ export class PilotRepository {
     const result = await this.pool.query(
       `INSERT INTO pilot_metric_entries (
         id, metric_key, metric_type, value, unit, date, phase,
-        loop_number, experiment_type, role, created_at, created_by, updated_at
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+        loop_number, role, created_at, created_by, updated_at
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
       RETURNING *`,
       [
         entry.id,
@@ -225,7 +231,6 @@ export class PilotRepository {
         entry.date,
         entry.phase,
         entry.loop,
-        entry.experimentType,
         entry.role,
         entry.createdAt,
         entry.createdBy,
@@ -243,7 +248,6 @@ export class PilotRepository {
       date: string;
       phase: PilotPhase;
       loop: number;
-      experimentType: PilotExperimentType;
       metricType: PilotMetricType;
       role: string;
     }
@@ -252,8 +256,8 @@ export class PilotRepository {
     const result = await this.pool.query(
       `UPDATE pilot_metric_entries
        SET value = $1, unit = $2, date = $3, phase = $4, loop_number = $5,
-           experiment_type = $6, metric_type = $7, role = $8, updated_at = NOW()
-       WHERE id = $9
+           metric_type = $6, role = $7, updated_at = NOW()
+       WHERE id = $8
        RETURNING *`,
       [
         updates.value,
@@ -261,7 +265,6 @@ export class PilotRepository {
         updates.date,
         updates.phase,
         updates.loop,
-        updates.experimentType,
         updates.metricType,
         updates.role,
         entryId,
@@ -305,15 +308,14 @@ export class PilotRepository {
     await this.ensureSchema();
     const result = await this.pool.query(
       `INSERT INTO pilot_deviations (
-        id, description, metric_key, phase, experiment_type, created_at, created_by
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7)
+        id, description, metric_key, phase, created_at, created_by
+      ) VALUES ($1, $2, $3, $4, $5, $6)
       RETURNING *`,
       [
         deviation.id,
         deviation.description,
         deviation.metricKey || null,
         deviation.phase,
-        deviation.experimentType,
         deviation.createdAt,
         deviation.createdBy,
       ]
@@ -360,7 +362,6 @@ export class PilotRepository {
     return {
       id: row.id,
       domainScope: row.domain_scope,
-      experimentType: row.experiment_type,
       createdAt: row.created_at,
       createdBy: row.created_by,
     };
@@ -386,7 +387,6 @@ export class PilotRepository {
       date: row.date,
       phase: row.phase,
       loop: row.loop_number,
-      experimentType: row.experiment_type,
       role: row.role,
       createdAt: row.created_at,
       createdBy: row.created_by,
@@ -410,7 +410,6 @@ export class PilotRepository {
       description: row.description,
       metricKey: row.metric_key || undefined,
       phase: row.phase,
-      experimentType: row.experiment_type,
       createdAt: row.created_at,
       createdBy: row.created_by,
     };
@@ -448,10 +447,6 @@ export class PilotRepository {
       values.push(filters.loop);
       clauses.push(`loop_number = $${values.length}`);
     }
-    if (filters.experimentType) {
-      values.push(filters.experimentType);
-      clauses.push(`experiment_type = $${values.length}`);
-    }
     if (filters.metricKey) {
       values.push(filters.metricKey);
       clauses.push(`metric_key = $${values.length}`);
@@ -460,5 +455,38 @@ export class PilotRepository {
     const where = clauses.length ? `WHERE ${clauses.join(' AND ')}` : '';
     const clause = table === 'pilot_deviations' ? where : where;
     return { clause, values };
+  }
+
+  async getUserPreference(userId: string, key: string): Promise<UserPreference | null> {
+    await this.ensureSchema();
+    const result = await this.pool.query(
+      'SELECT * FROM user_preferences WHERE user_id = $1 AND preference_key = $2',
+      [userId, key]
+    );
+    return result.rows[0] ? this.mapUserPreference(result.rows[0]) : null;
+  }
+
+  async setUserPreference(pref: UserPreference): Promise<UserPreference> {
+    await this.ensureSchema();
+    const result = await this.pool.query(
+      `INSERT INTO user_preferences (id, user_id, preference_key, preference_value, created_at, updated_at)
+       VALUES ($1, $2, $3, $4, $5, $6)
+       ON CONFLICT (user_id, preference_key)
+       DO UPDATE SET preference_value = $4, updated_at = $6
+       RETURNING *`,
+      [pref.id, pref.userId, pref.preferenceKey, pref.preferenceValue, pref.createdAt, pref.updatedAt || null]
+    );
+    return this.mapUserPreference(result.rows[0]);
+  }
+
+  private mapUserPreference(row: any): UserPreference {
+    return {
+      id: row.id,
+      userId: row.user_id,
+      preferenceKey: row.preference_key,
+      preferenceValue: row.preference_value,
+      createdAt: row.created_at,
+      updatedAt: row.updated_at || undefined,
+    };
   }
 }

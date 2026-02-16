@@ -87,16 +87,13 @@ export interface CaseDashboardResponse {
   pagination: PaginationMeta;
 }
 
-export type PilotExperimentType = 'pilot' | 'control';
-
-export type PilotPhase = 'PHASE_1' | 'PHASE_2' | 'PHASE_3';
+export type PilotPhase = 'PHASE_1' | 'PHASE_2';
 
 export type PilotMetricType = 'percent' | 'score' | 'count' | 'time';
 
 export interface PilotConfiguration {
   id: string;
   domainScope: string;
-  experimentType: PilotExperimentType;
   createdAt: string;
   createdBy: string;
 }
@@ -118,7 +115,6 @@ export interface PilotMetricEntry {
   date: string;
   phase: PilotPhase;
   loop: number;
-  experimentType: PilotExperimentType;
   role: string;
   createdAt: string;
   createdBy: string;
@@ -164,16 +160,6 @@ export interface PilotTrendSeries {
   points: PilotTrendPoint[];
 }
 
-export interface PilotCompareSummary {
-  metricKey: string;
-  metricType: PilotMetricType;
-  unit: string;
-  pilotValue: number | null;
-  controlValue: number | null;
-  delta: number | null;
-  direction: 'up' | 'down' | 'flat' | null;
-}
-
 export interface PilotDeviation {
   id: string;
   metricKey?: string;
@@ -181,7 +167,6 @@ export interface PilotDeviation {
   createdAt: string;
   createdBy: string;
   phase: PilotPhase;
-  experimentType: PilotExperimentType;
 }
 
 export interface PilotAuditLog {
@@ -198,8 +183,20 @@ export interface PilotDashboardFilters {
   dateTo?: string;
   phase?: PilotPhase;
   loop?: number;
-  experimentType?: PilotExperimentType;
-  compare?: boolean;
+}
+
+export interface GuidanceResponse {
+  content: string;
+  role?: string;
+}
+
+export interface UserPreference {
+  id: string;
+  userId: string;
+  preferenceKey: string;
+  preferenceValue: string;
+  createdAt: string;
+  updatedAt?: string;
 }
 
 export interface PilotDashboardResponse {
@@ -211,10 +208,4 @@ export interface PilotDashboardResponse {
     missingMetricKeys: string[];
   };
   deviations: PilotDeviation[];
-  compare?: {
-    enabled: boolean;
-    warning?: string;
-    summaries?: PilotCompareSummary[];
-    trends?: PilotTrendSeries[];
-  };
 }
