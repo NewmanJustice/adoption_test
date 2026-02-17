@@ -1,9 +1,9 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { parseMarkdownSections, MarkdownSectionNode } from '../../pages/markdownSectionUtils';
+import { pilotSpecificationData, PilotSection } from '../../data/pilotSpecification';
 
 function renderSectionLinks(
-  nodes: MarkdownSectionNode[],
+  nodes: PilotSection[],
   location: ReturnType<typeof useLocation>,
   parentPath = '/pilot/about',
   depth = 0
@@ -30,18 +30,9 @@ function renderSectionLinks(
 
 export const AboutSectionLinks: React.FC = () => {
   const location = useLocation();
-  const [sections, setSections] = React.useState<MarkdownSectionNode[]>([]);
 
-  React.useEffect(() => {
-    fetch('/api/static/pilot-spec')
-      .then((res) => res.text())
-      .then((md) => {
-        setSections(parseMarkdownSections(md));
-      });
-  }, []);
+  if (!pilotSpecificationData.length) return null;
 
-  if (!sections.length) return null;
-
-  return <>{renderSectionLinks(sections, location)}</>;
+  return <>{renderSectionLinks(pilotSpecificationData, location)}</>;
 };
 
