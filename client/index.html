@@ -11,8 +11,7 @@
       document.body.className += ' js-enabled' + ('noModule' in HTMLScriptElement.prototype ? ' govuk-frontend-supported' : '');
     </script>
     <div id="root"></div>
-    <!-- Inject prototype-annotator for annotation feature -->
-    <script src="/prototype-annotator.js"></script>
     <script type="module" src="/src/index.tsx"></script>
+    <!-- Prototype annotator config and script injected by Vite plugin -->
   </body>
 </html>

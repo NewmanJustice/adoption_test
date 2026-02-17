@@ -50,6 +50,18 @@ docker compose up -d
 
 Connection string: `postgresql://adoption:adoption@localhost:5432/adoption`
 
+## Development vs Production
+
+**IMPORTANT:** Several features are development-only and must be replaced before production deployment:
+
+- **Mock Authentication** - Currently accepts any username/role without password validation
+- **In-Memory Storage** - Cases, documents, and audit logs stored in memory (not PostgreSQL)
+- **Local File Storage** - Documents saved to `./uploads` instead of Azure Blob Storage
+- **Mock Antivirus** - Always returns "clean" without actual scanning
+- **Prototype Annotator** - Feedback overlay tool injected into all pages
+
+See `DEV_TO_PROD_CHECKLIST.md` for complete migration requirements.
+
 ## Architecture
 
 ### Monorepo Structure
@@ -70,9 +82,10 @@ Connection string: `postgresql://adoption:adoption@localhost:5432/adoption`
 
 - **Entry:** `client/src/main.tsx` → `client/src/App.tsx`
 - **Routing:** React Router v7 (pages in `client/src/pages/`)
-- **Dev proxy:** Vite proxies `/api/*` to `localhost:3001`
+- **Dev proxy:** Vite proxies `/api/*` and `/__prototype-annotator/*` to `localhost:3001`
 - **Design system:** GOV.UK Frontend v5 (SASS in `client/src/styles/`)
 - **Accessibility:** GOV.UK Frontend accessibility standards are required
+- **Prototype Annotator:** Development-only feedback tool (remove before production)
 
 ### Shared Types
 
@@ -102,6 +115,30 @@ Jest multi-project config in `jest.config.js` with five test suites:
 - **GOV.UK patterns:** Follow GOV.UK Design System patterns for UI components
 - **Layered architecture:** Server follows Repository → Service → Controller → Route pattern
 - **Security:** Helmet CSP configured for React SPA + GOV.UK Frontend (see `server/src/app.ts`)
+
+## User Roles
+
+The system supports the following roles (defined in `server/src/config/roles.ts`):
+
+**Court & Legal:**
+- `HMCTS_CASE_OFFICER` - Courts and Tribunals case officer
+- `JUDGE_LEGAL_ADVISER` - Judge or legal adviser
+
+**Social Services:**
+- `CAFCASS_OFFICER` - Children and Family Court Advisory officer
+- `LA_SOCIAL_WORKER` - Local Authority social worker
+- `VAA_WORKER` - Voluntary Adoption Agency worker
+
+**Adopters:**
+- `ADOPTER` - Prospective or approved adopter
+
+**Pilot Team:**
+- `PILOT_BUILDER` - Technical builder
+- `PILOT_SME` - Subject matter expert
+- `PILOT_DELIVERY_LEAD` - Delivery lead
+- `PILOT_OBSERVER` - Observer role
+
+Each role has specific redirect URLs after login (e.g., `ADOPTER` → `/my-cases`, others → `/dashboard` or `/pilot`).
 
 ## Feature Implementation Pipeline
 
