@@ -22,8 +22,9 @@
 - Strict type enforcement for error codes, metric keys, and user roles to ensure type safety in all pilot APIs
 - Dashboard views with filters for date range, phase, loop number, and experiment type (pilot/control/compare)
 - Audit trail for metric creation/updates and pilot phase transitions
-- Displaying the content in .business_context/Specification-Led-Agentic-Delivery-Pilot.md as navigable React pages, with each top-level section accessible via the sidebar under /pilot/about
+- Displaying the pilot specification content as navigable React pages, with sections structured as TypeScript data and rendered under /pilot/about
 - Sidebar navigation dynamically lists all pilot guidance sections, allowing users to jump directly to each section as a native page
+- Content stored in client/src/data/pilotSpecification.ts as structured TypeScript data with proper typing
 - Guidance on how the dashboard behaviour works, and what steps they need to take, tailored to the current Actor
 
 ### Out of Scope
@@ -241,3 +242,4 @@ This feature **stretches but does not contradict** the system specification:
 | Date | Change | Reason | Raised By |
 |------|--------|--------|-----------|
 | 2026-02-05 | Initial feature specification created | Define bounded adoption pilot for Specification-Led Agentic Delivery | Alex |
+| 2026-02-17 | Updated pilot spec content delivery approach | Changed from API-fetched markdown to native React data structure for better performance and type safety | Developer |
