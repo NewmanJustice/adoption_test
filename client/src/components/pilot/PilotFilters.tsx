@@ -29,6 +29,7 @@ const PilotFilters: React.FC<PilotFiltersProps> = ({ filters, onChange, onApply,
       <div className="govuk-grid-row">
         <div className="govuk-grid-column-one-third">
           <label className="govuk-label" htmlFor="pilot-date-from">From</label>
+          <div className="govuk-hint">Filter metrics by the date they were recorded</div>
           <input
             className="govuk-input"
             id="pilot-date-from"
@@ -39,6 +40,7 @@ const PilotFilters: React.FC<PilotFiltersProps> = ({ filters, onChange, onApply,
         </div>
         <div className="govuk-grid-column-one-third">
           <label className="govuk-label" htmlFor="pilot-date-to">To</label>
+          <div className="govuk-hint">Filter metrics by the date they were recorded</div>
           <input
             className="govuk-input"
             id="pilot-date-to"
@@ -49,6 +51,7 @@ const PilotFilters: React.FC<PilotFiltersProps> = ({ filters, onChange, onApply,
         </div>
         <div className="govuk-grid-column-one-third">
           <label className="govuk-label" htmlFor="pilot-phase">Phase</label>
+          <div className="govuk-hint">Show metrics from a specific pilot phase (1 or 2)</div>
           <select
             className="govuk-select"
             id="pilot-phase"

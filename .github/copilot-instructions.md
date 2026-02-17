@@ -89,11 +89,19 @@ See `DEV_TO_PROD_CHECKLIST.md` for complete migration requirements.
 
 ### Shared Types
 
-- `shared/types/api.ts` - API request/response types (`ApiResponse<T>`, `ApiError`, `HealthResponse`)
+- `shared/types/api.ts` - API request/response types (`ApiResponse<T>`, `ApiError`, `HealthResponse`, case/pilot types)
 - `shared/constants/app.ts` - Application constants
 - `shared/utils/format.ts` - Formatting utilities
 
-All API responses must use types from `shared/types/api.ts`. Responses should follow the `ApiResponse<T>` wrapper pattern with `data` or `error` fields.
+**API Response Pattern:**
+All API responses must use types from `shared/types/api.ts`. Responses should follow the `ApiResponse<T>` wrapper pattern:
+```typescript
+// Success
+{ data: T }
+
+// Error
+{ error: { code: string, message: string } }
+```
 
 ## Test Configuration
 
@@ -105,16 +113,23 @@ Jest multi-project config in `jest.config.js` with five test suites:
 - **client** - Frontend tests in `client/**/*.test.tsx|ts` (jsdom environment)
 - **shared** - Shared library tests in `shared/**/*.test.ts`
 
+Run specific test suites or tests:
+```bash
+npx jest --selectProjects=server path/to/file.test.ts  # Run specific file in server suite
+npx jest --testNamePattern="test name"                 # Run tests matching pattern
+```
+
 ## Key Conventions
 
 - **TypeScript strict mode** enforced across all workspaces
-- **Workspace imports:** Use `@adoption/shared` alias for shared package imports
+- **Workspace imports:** Use `@adoption/shared` alias for shared package imports (e.g., `import { ApiResponse } from '@adoption/shared/types/api.js'`)
 - **Module resolution:** `.js` extensions in imports are mapped to `.ts` files (ESM style, TypeScript will resolve)
-- **Server ESM modules:** Server package uses `"type": "module"` - all imports need `.js` extensions
+- **Server ESM modules:** Server package uses `"type": "module"` - all imports must include `.js` extensions
 - **Session-based auth:** All protected routes require authentication middleware
-- **GOV.UK patterns:** Follow GOV.UK Design System patterns for UI components
+- **GOV.UK patterns:** Follow GOV.UK Design System patterns for UI components (see `client/src/styles/`)
 - **Layered architecture:** Server follows Repository → Service → Controller → Route pattern
 - **Security:** Helmet CSP configured for React SPA + GOV.UK Frontend (see `server/src/app.ts`)
+- **Error handling:** Use `ApiError` type for all API errors with consistent error codes
 
 ## User Roles
 

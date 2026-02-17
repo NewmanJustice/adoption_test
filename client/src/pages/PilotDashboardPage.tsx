@@ -9,8 +9,9 @@ import PilotFilters from '../components/pilot/PilotFilters';
 import PilotSummaryCards from '../components/pilot/PilotSummaryCards';
 import PilotTrendTable from '../components/pilot/PilotTrendTable';
 import PilotCompletenessIndicator from '../components/pilot/PilotCompletenessIndicator';
+import PilotGuidancePanel from '../components/pilot/PilotGuidancePanel';
 import { useSession } from '../context/SessionContext';
-import { PilotDashboardFilters, PilotDashboardResponse } from '@adoption/shared';
+import { PilotDashboardFilters, PilotDashboardResponse, PilotRole } from '@adoption/shared';
 
 const defaultFilters: PilotDashboardFilters = {
   dateFrom: '',
@@ -69,6 +70,12 @@ const PilotDashboardPage: React.FC = () => {
 
   const canWrite = user?.role === 'PILOT_BUILDER' || user?.role === 'PILOT_DELIVERY_LEAD';
   const isBuilder = user?.role === 'PILOT_BUILDER';
+  
+  const isPilotRole = (role: string): role is PilotRole => {
+    return ['PILOT_BUILDER', 'PILOT_SME', 'PILOT_DELIVERY_LEAD', 'PILOT_OBSERVER'].includes(role);
+  };
+  
+  const pilotRole = user?.role && isPilotRole(user.role) ? user.role : undefined;
 
   if (loading) {
     return (
@@ -103,6 +110,8 @@ const PilotDashboardPage: React.FC = () => {
               </Link>
             )}
           </div>
+
+          <PilotGuidancePanel role={pilotRole} />
 
           <PilotFilters
             filters={filters}

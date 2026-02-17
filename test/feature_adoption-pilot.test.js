@@ -3,6 +3,17 @@ const assert = require('node:assert/strict');
 
 const expect = (actual) => ({
   toBe: (expected) => assert.strictEqual(actual, expected),
+  toBeDefined: () => assert.notStrictEqual(actual, undefined),
+  toBeTruthy: () => assert.ok(actual),
+  toContain: (expected) => {
+    if (Array.isArray(actual)) {
+      assert.ok(actual.includes(expected), `Expected array to contain ${expected}`);
+    } else if (typeof actual === 'string') {
+      assert.ok(actual.includes(expected), `Expected string to contain ${expected}`);
+    } else {
+      throw new Error('toContain requires an array or string');
+    }
+  },
 });
 
 describe('story-pilot-configuration', () => {
@@ -151,31 +162,94 @@ describe('story-business-context-guidance', () => {
 
 describe('story-actor-tailored-guidance', () => {
   test('AC-1 Display role-specific guidance [.blueprint/features/feature_adoption-pilot/story-actor-tailored-guidance.md]', () => {
-    expect(true).toBe(true);
+    // Verify PILOT_GUIDANCE data file exists and contains all required roles
+    const fs = require('fs');
+    const guidanceSource = fs.readFileSync('./client/src/data/pilotGuidance.ts', 'utf8');
+    
+    const requiredRoles = ['PILOT_BUILDER', 'PILOT_SME', 'PILOT_DELIVERY_LEAD', 'PILOT_OBSERVER'];
+    requiredRoles.forEach(role => {
+      expect(guidanceSource).toContain(role);
+      expect(guidanceSource).toContain('title:');
+      expect(guidanceSource).toContain('description:');
+      expect(guidanceSource).toContain('actions:');
+    });
   });
 
   test('AC-2 Builder guidance [.blueprint/features/feature_adoption-pilot/story-actor-tailored-guidance.md]', () => {
-    expect(true).toBe(true);
+    // Verify Builder guidance contains expected content
+    const fs = require('fs');
+    const guidanceSource = fs.readFileSync('./client/src/data/pilotGuidance.ts', 'utf8');
+    
+    expect(guidanceSource).toContain('Builder guidance');
+    expect(guidanceSource).toContain('configuring the pilot');
+    expect(guidanceSource).toContain('Configure pilot scope and domain boundaries');
+    expect(guidanceSource).toContain('Confirm Spec Freeze before transitioning to Phase 2');
+    expect(guidanceSource).toContain('Review metrics and deviation trends');
+    expect(guidanceSource).toContain('Identify structural integrity issues');
   });
 
   test('AC-3 SME guidance [.blueprint/features/feature_adoption-pilot/story-actor-tailored-guidance.md]', () => {
-    expect(true).toBe(true);
+    // Verify SME guidance contains expected content
+    const fs = require('fs');
+    const guidanceSource = fs.readFileSync('./client/src/data/pilotGuidance.ts', 'utf8');
+    
+    expect(guidanceSource).toContain('Subject Matter Expert guidance');
+    expect(guidanceSource).toContain('domain expertise');
+    expect(guidanceSource).toContain('Provide feedback inputs on metrics');
+    expect(guidanceSource).toContain('Review prototype outcomes');
+    expect(guidanceSource).toContain('Add contextual notes to metric entries');
   });
 
   test('AC-4 Delivery Lead guidance [.blueprint/features/feature_adoption-pilot/story-actor-tailored-guidance.md]', () => {
-    expect(true).toBe(true);
+    // Verify Delivery Lead guidance contains expected content
+    const fs = require('fs');
+    const guidanceSource = fs.readFileSync('./client/src/data/pilotGuidance.ts', 'utf8');
+    
+    expect(guidanceSource).toContain('Delivery Lead guidance');
+    expect(guidanceSource).toContain('manage pilot phases');
+    expect(guidanceSource).toContain('Manage pilot phase transitions');
+    expect(guidanceSource).toContain('Ensure metric entry coverage across all dimensions');
+    expect(guidanceSource).toContain('Use filters to identify gaps');
+    expect(guidanceSource).toContain('Review completeness indicators');
   });
 
   test('AC-5 Observer guidance [.blueprint/features/feature_adoption-pilot/story-actor-tailored-guidance.md]', () => {
-    expect(true).toBe(true);
+    // Verify Observer guidance contains expected content
+    const fs = require('fs');
+    const guidanceSource = fs.readFileSync('./client/src/data/pilotGuidance.ts', 'utf8');
+    
+    expect(guidanceSource).toContain('Observer guidance');
+    expect(guidanceSource).toContain('read-only access');
+    expect(guidanceSource).toContain('View metric summaries and trends');
+    expect(guidanceSource).toContain('Interpret summary cards');
+    expect(guidanceSource).toContain('Use filters to explore pilot progress');
+    expect(guidanceSource).toContain('Track deviations from the baseline');
   });
 
   test('AC-6 Guidance dismissal [.blueprint/features/feature_adoption-pilot/story-actor-tailored-guidance.md]', () => {
-    expect(true).toBe(true);
+    // Verify localStorage hook exists for preference persistence
+    const fs = require('fs');
+    const hookSource = fs.readFileSync('./client/src/hooks/useLocalStorage.ts', 'utf8');
+    
+    expect(hookSource).toContain('useLocalStorage');
+    expect(hookSource).toContain('localStorage');
+    expect(hookSource).toContain('getItem');
+    expect(hookSource).toContain('setItem');
+    
+    // Verify PilotGuidancePanel component uses collapse state
+    const panelSource = fs.readFileSync('./client/src/components/pilot/PilotGuidancePanel.tsx', 'utf8');
+    expect(panelSource).toContain('useLocalStorage');
+    expect(panelSource).toContain('pilotGuidanceCollapsed');
   });
 
   test('AC-7 Contextual help for filters and controls [.blueprint/features/feature_adoption-pilot/story-actor-tailored-guidance.md]', () => {
-    expect(true).toBe(true);
+    // Verify PilotFilters component contains hint text for controls
+    const fs = require('fs');
+    const filtersSource = fs.readFileSync('./client/src/components/pilot/PilotFilters.tsx', 'utf8');
+    
+    expect(filtersSource).toContain('govuk-hint');
+    expect(filtersSource).toContain('Filter metrics by the date they were recorded');
+    expect(filtersSource).toContain('Show metrics from a specific pilot phase');
   });
 });
 
