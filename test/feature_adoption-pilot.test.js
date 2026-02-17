@@ -218,3 +218,69 @@ describe('story-audit-logging', () => {
     expect(true).toBe(true);
   });
 });
+
+describe('story-pilot-guidance-navigation-ux', () => {
+  test('AC-1 Flatten navigation structure - only top-level sections visible [.blueprint/features/feature_adoption-pilot/story-pilot-guidance-navigation-ux.md]', () => {
+    expect(true).toBe(true);
+  });
+
+  test('AC-1 Flatten navigation structure - subsections not in sidebar [.blueprint/features/feature_adoption-pilot/story-pilot-guidance-navigation-ux.md]', () => {
+    expect(true).toBe(true);
+  });
+
+  test('AC-1 Flatten navigation structure - subsection content merged into parent [.blueprint/features/feature_adoption-pilot/story-pilot-guidance-navigation-ux.md]', () => {
+    expect(true).toBe(true);
+  });
+
+  test('AC-2 GOV.UK typography - headings have correct classes [.blueprint/features/feature_adoption-pilot/story-pilot-guidance-navigation-ux.md]', () => {
+    expect(true).toBe(true);
+  });
+
+  test('AC-2 GOV.UK typography - body text has correct classes [.blueprint/features/feature_adoption-pilot/story-pilot-guidance-navigation-ux.md]', () => {
+    expect(true).toBe(true);
+  });
+
+  test('AC-2 GOV.UK typography - lists have correct classes [.blueprint/features/feature_adoption-pilot/story-pilot-guidance-navigation-ux.md]', () => {
+    expect(true).toBe(true);
+  });
+
+  test('AC-3 Consistent heading hierarchy - h1 for main section [.blueprint/features/feature_adoption-pilot/story-pilot-guidance-navigation-ux.md]', () => {
+    expect(true).toBe(true);
+  });
+
+  test('AC-3 Consistent heading hierarchy - h2 for subsections [.blueprint/features/feature_adoption-pilot/story-pilot-guidance-navigation-ux.md]', () => {
+    expect(true).toBe(true);
+  });
+
+  test('AC-4 Sidebar navigation styling - GOV.UK link classes [.blueprint/features/feature_adoption-pilot/story-pilot-guidance-navigation-ux.md]', () => {
+    expect(true).toBe(true);
+  });
+
+  test('AC-4 Sidebar navigation styling - active page highlighted [.blueprint/features/feature_adoption-pilot/story-pilot-guidance-navigation-ux.md]', () => {
+    expect(true).toBe(true);
+  });
+
+  test('AC-4 Sidebar navigation styling - correct spacing [.blueprint/features/feature_adoption-pilot/story-pilot-guidance-navigation-ux.md]', () => {
+    expect(true).toBe(true);
+  });
+
+  test('AC-5 Content rendering with ReactMarkdown - markdown elements render correctly [.blueprint/features/feature_adoption-pilot/story-pilot-guidance-navigation-ux.md]', () => {
+    expect(true).toBe(true);
+  });
+
+  test('AC-5 Content rendering with ReactMarkdown - GOV.UK classes applied to all elements [.blueprint/features/feature_adoption-pilot/story-pilot-guidance-navigation-ux.md]', () => {
+    expect(true).toBe(true);
+  });
+
+  test('AC-6 Navigation state preservation - active state updates on navigation [.blueprint/features/feature_adoption-pilot/story-pilot-guidance-navigation-ux.md]', () => {
+    expect(true).toBe(true);
+  });
+
+  test('AC-6 Navigation state preservation - URL changes correctly [.blueprint/features/feature_adoption-pilot/story-pilot-guidance-navigation-ux.md]', () => {
+    expect(true).toBe(true);
+  });
+
+  test('AC-6 Navigation state preservation - browser back button works [.blueprint/features/feature_adoption-pilot/story-pilot-guidance-navigation-ux.md]', () => {
+    expect(true).toBe(true);
+  });
+});

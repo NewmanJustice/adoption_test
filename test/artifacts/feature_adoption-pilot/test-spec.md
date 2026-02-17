@@ -64,6 +64,13 @@
 | story-audit-logging.md | AC-4 | TC-AP-048 |
 | story-audit-logging.md | AC-5 | TC-AP-049 |
 
+| story-pilot-guidance-navigation-ux.md | AC-1 | TC-AP-050 |
+| story-pilot-guidance-navigation-ux.md | AC-2 | TC-AP-051 |
+| story-pilot-guidance-navigation-ux.md | AC-3 | TC-AP-052 |
+| story-pilot-guidance-navigation-ux.md | AC-4 | TC-AP-053 |
+| story-pilot-guidance-navigation-ux.md | AC-5 | TC-AP-054 |
+| story-pilot-guidance-navigation-ux.md | AC-6 | TC-AP-055 |
+
 ## Key assumptions
 - Pilot roles are authenticated and mapped to Builder/Delivery Lead/SME/Observer.
 - Metric key taxonomy and metric-type mapping are predefined for the pilot.
@@ -71,3 +78,6 @@
 - Business context document at .business_context/Specification-Led-Agentic-Delivery-Pilot.md exists.
 - Guidance dismissal preference persists across user sessions.
 - Audit log storage is immutable for non-admin roles.
+- Pilot specification data structure in client/src/data/pilotSpecification.ts has been flattened (subsections merged into parent sections).
+- ReactMarkdown component is configured with GOV.UK class mappings.
+- Navigation active state is managed via React Router.

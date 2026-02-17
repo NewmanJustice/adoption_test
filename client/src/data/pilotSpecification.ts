@@ -83,12 +83,11 @@ This pilot tests whether structural maturity + agentic acceleration produces mea
     title: '3. Structural Preconditions for Stable Agentic Delivery',
     content: `Agentic tooling reduces iteration cost. It does not reduce the need for structure.
 
-The pilot operates explicitly against four Structural Preconditions.`,
-    children: [
-      {
-        id: 'clear-authority',
-        title: '3.1 Clear Authority and Accountability',
-        content: `Delivery requires a named human technical authority ("Builder") accountable for:
+The pilot operates explicitly against four Structural Preconditions.
+
+## 3.1 Clear Authority and Accountability
+
+Delivery requires a named human technical authority ("Builder") accountable for:
 
 - Architectural coherence
 - Lifecycle integrity
@@ -103,12 +102,11 @@ The pilot operates explicitly against four Structural Preconditions.`,
 - Escalations logged and measured
 
 Agents augment.  
-Authority remains human.`
-      },
-      {
-        id: 'service-intent',
-        title: '3.2 Explicit Service Intent and Boundaries',
-        content: `Before generation begins:
+Authority remains human.
+
+## 3.2 Explicit Service Intent and Boundaries
+
+Before generation begins:
 
 - Outcome statement agreed
 - Service boundary defined
@@ -117,12 +115,11 @@ Authority remains human.`
 
 Prototype generation is prohibited until stable.
 
-Without boundary clarity, acceleration amplifies misdirection.`
-      },
-      {
-        id: 'lifecycle-modelling',
-        title: '3.3 Explicit Lifecycle and Operational Modelling',
-        content: `Before implementation:
+Without boundary clarity, acceleration amplifies misdirection.
+
+## 3.3 Explicit Lifecycle and Operational Modelling
+
+Before implementation:
 
 - Domain model defined
 - State model defined
@@ -133,12 +130,11 @@ Without boundary clarity, acceleration amplifies misdirection.`
 
 UI generation is driven from lifecycle artefacts.
 
-States exist before screens.`
-      },
-      {
-        id: 'architectural-discipline',
-        title: '3.4 Architectural and Dependency Discipline',
-        content: `Before implementation:
+States exist before screens.
+
+## 3.4 Architectural and Dependency Discipline
+
+Before implementation:
 
 - NFR envelope defined
 - Dependencies enumerated
@@ -148,18 +144,13 @@ States exist before screens.`
 Acceleration without guardrails increases fragility.
 
 Architectural discipline ensures safe acceleration.`
-      }
-    ]
   },
   {
     id: 'specification-based-development',
     title: '4. Specification-Based Development in an Agentic World',
-    content: '',
-    children: [
-      {
-        id: 'structural-shift',
-        title: '4.1 The Structural Shift',
-        content: `Traditional delivery often follows:
+    content: `## 4.1 The Structural Shift
+
+Traditional delivery often follows:
 
 \`Idea → Stories → Code → Rework\`
 
@@ -169,12 +160,11 @@ Specification-Led Agentic Delivery reframes the sequence:
 
 \`Outcome → Domain Model → State Model → Event Model → Specification → Prototype → SME Feedback → Code\`
 
-Iteration remains. But lifecycle clarity precedes implementation.`
-      },
-      {
-        id: 'stage-by-stage',
-        title: '4.2 Stage-by-Stage Model',
-        content: `**Outcome** - Defines success conditions, transformation intent, and boundaries.
+Iteration remains. But lifecycle clarity precedes implementation.
+
+## 4.2 Stage-by-Stage Model
+
+**Outcome** - Defines success conditions, transformation intent, and boundaries.
 
 **Domain Model** - Defines actors, entities, invariants, constraints.
 
@@ -190,12 +180,11 @@ Iteration remains. But lifecycle clarity precedes implementation.`
 
 **Code** - Expression of stable intent.
 
-Rework shifts left — before code exists.`
-      },
-      {
-        id: 'role-of-agents',
-        title: '4.3 The Role of Agents',
-        content: `Agents accelerate:
+Rework shifts left — before code exists.
+
+## 4.3 The Role of Agents
+
+Agents accelerate:
 
 - Domain consistency checks
 - State integrity validation
@@ -211,8 +200,6 @@ Agents do not:
 - Infer ambiguous operational behaviour
 
 Acceleration follows clarity.`
-      }
-    ]
   },
   {
     id: 'pilot-scope',
@@ -231,12 +218,9 @@ No platform-critical domain will be used.`
   {
     id: 'operating-model',
     title: '6. Operating Model',
-    content: '',
-    children: [
-      {
-        id: 'phase-1',
-        title: 'Phase 1 – Structural Foundation (Week 1)',
-        content: `Deliver:
+    content: `## Phase 1 – Structural Foundation (Week 1)
+
+Deliver:
 
 - Outcome statement
 - Domain model
@@ -247,12 +231,11 @@ No platform-critical domain will be used.`
 
 No implementation begins.
 
-Spec Freeze timestamp defined.`
-      },
-      {
-        id: 'phase-2',
-        title: 'Phase 2 – Agentic Specification Loops (Weeks 2–3)',
-        content: `Loop cycle (≤48 hours):
+Spec Freeze timestamp defined.
+
+## Phase 2 – Agentic Specification Loops (Weeks 2–3)
+
+Loop cycle (≤48 hours):
 
 1. Generate prototype
 2. SME annotate
@@ -260,102 +243,82 @@ Spec Freeze timestamp defined.`
 4. Regenerate
 5. Builder coherence validation
 
-Goal: structural stability before implementation.`
-      },
-      {
-        id: 'phase-3',
-        title: 'Phase 3 – Controlled Implementation (Week 4+)',
-        content: `- Implementation scaffold generated from stable specification
+Goal: structural stability before implementation.
+
+## Phase 3 – Controlled Implementation (Week 4+)
+
+- Implementation scaffold generated from stable specification
 - Traceability matrix maintained
 - Deviations logged
 - Structural mutation tracked post-freeze
 
 Parallel control sprint run for comparison.`
-      }
-    ]
   },
   {
     id: 'evaluation-framework',
     title: '7. Evaluation Framework',
-    content: '',
-    children: [
-      {
-        id: 'structural-maturity',
-        title: '7.1 Structural Maturity Metrics',
-        content: `**Lifecycle Stability Index** - ≥80% state model stable pre-build.
+    content: `## 7.1 Structural Maturity Metrics
+
+**Lifecycle Stability Index** - ≥80% state model stable pre-build.
 
 **Exceptional Path Discovery Timing** - ≥75% identified pre-build.
 
-**Boundary Drift Rate** - ≤2 structural reinterpretations.`
-      },
-      {
-        id: 'delivery-predictability',
-        title: '7.2 Delivery Predictability Metrics',
-        content: `**Spec-to-Build Variance** - <10% untraceable behaviours.
+**Boundary Drift Rate** - ≤2 structural reinterpretations.
+
+## 7.2 Delivery Predictability Metrics
+
+**Spec-to-Build Variance** - <10% untraceable behaviours.
 
 **Post-Implementation Rework** - ≥40% reduction vs control sprint.
 
-**Delivery Confidence Score** - Upward trend across pilot.`
-      },
-      {
-        id: 'nfr-assurance',
-        title: '7.3 Non-Functional Assurance Metrics',
-        content: `**NFR Defect Density** - ≥30% reduction vs control sprint.
+**Delivery Confidence Score** - Upward trend across pilot.
 
-**Dependency Shock Events** - Zero major post-build invalidations.`
-      },
-      {
-        id: 'sme-alignment',
-        title: '7.4 SME Alignment Metrics',
-        content: `**SME Clarity Score** - Upward trend across loops.
+## 7.3 Non-Functional Assurance Metrics
 
-**Feedback Cycle Time** - ≤48 hours average.`
-      },
-      {
-        id: 'governance-authority',
-        title: '7.5 Governance & Authority Metrics',
-        content: `**Decision Latency** - ≤72 hours.
+**NFR Defect Density** - ≥30% reduction vs control sprint.
+
+**Dependency Shock Events** - Zero major post-build invalidations.
+
+## 7.4 SME Alignment Metrics
+
+**SME Clarity Score** - Upward trend across loops.
+
+**Feedback Cycle Time** - ≤48 hours average.
+
+## 7.5 Governance & Authority Metrics
+
+**Decision Latency** - ≤72 hours.
 
 **Escalation Count** - ≤2 during pilot.`
-      }
-    ]
   },
   {
     id: 'dashboard-structure',
     title: '8. Dashboard Structure',
-    content: '',
-    children: [
-      {
-        id: 'quadrant-1',
-        title: 'Quadrant 1 – Structural Integrity',
-        content: `- Lifecycle Stability %
+    content: `## Quadrant 1 – Structural Integrity
+
+- Lifecycle Stability %
 - Exceptional Path Pre-Discovery %
 - Boundary Drift Count
-- State Mutation Count`
-      },
-      {
-        id: 'quadrant-2',
-        title: 'Quadrant 2 – Predictability',
-        content: `- Spec-to-Build Variance
+- State Mutation Count
+
+## Quadrant 2 – Predictability
+
+- Spec-to-Build Variance
 - Rework Count
 - Delivery Confidence
-- Escalation Count`
-      },
-      {
-        id: 'quadrant-3',
-        title: 'Quadrant 3 – Non-Functional Posture',
-        content: `- NFR Defect Density
+- Escalation Count
+
+## Quadrant 3 – Non-Functional Posture
+
+- NFR Defect Density
 - Dependency Shock Events
-- NFR Coverage %`
-      },
-      {
-        id: 'quadrant-4',
-        title: 'Quadrant 4 – SME Alignment',
-        content: `- Clarity Score Trend
+- NFR Coverage %
+
+## Quadrant 4 – SME Alignment
+
+- Clarity Score Trend
 - Feedback Cycle Time
 - Exceptional Path Timing`
-      }
-    ]
   },
   {
     id: 'risk-mitigation',
