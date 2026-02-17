@@ -150,33 +150,26 @@ Acceleration without guardrails increases fragility.
 Architectural discipline ensures safe acceleration.`
       }
     ]
-  }
-];
+  },
   {
     id: 'specification-based-development',
     title: '4. Specification-Based Development in an Agentic World',
-    content: ``,
+    content: '',
     children: [
       {
         id: 'structural-shift',
         title: '4.1 The Structural Shift',
         content: `Traditional delivery often follows:
 
-\`\`\`
-Idea → Stories → Code → Rework
-\`\`\`
+\`Idea → Stories → Code → Rework\`
 
-Understanding emerges during implementation.  
-Rework stabilises ambiguity.
+Understanding emerges during implementation. Rework stabilises ambiguity.
 
 Specification-Led Agentic Delivery reframes the sequence:
 
-\`\`\`
-Outcome → Domain Model → State Model → Event Model → Specification → Prototype → SME Feedback → Code
-\`\`\`
+\`Outcome → Domain Model → State Model → Event Model → Specification → Prototype → SME Feedback → Code\`
 
-Iteration remains.  
-But lifecycle clarity precedes implementation.`
+Iteration remains. But lifecycle clarity precedes implementation.`
       },
       {
         id: 'stage-by-stage',
@@ -238,7 +231,7 @@ No platform-critical domain will be used.`
   {
     id: 'operating-model',
     title: '6. Operating Model',
-    content: ``,
+    content: '',
     children: [
       {
         id: 'phase-1',
@@ -284,7 +277,7 @@ Parallel control sprint run for comparison.`
   {
     id: 'evaluation-framework',
     title: '7. Evaluation Framework',
-    content: ``,
+    content: '',
     children: [
       {
         id: 'structural-maturity',
@@ -330,7 +323,7 @@ Parallel control sprint run for comparison.`
   {
     id: 'dashboard-structure',
     title: '8. Dashboard Structure',
-    content: ``,
+    content: '',
     children: [
       {
         id: 'quadrant-1',
