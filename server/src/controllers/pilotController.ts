@@ -66,6 +66,23 @@ export class PilotController {
     res.json({ entry: result.data });
   };
 
+  listMetricEntries = async (req: AuthRequest, res: Response) => {
+    const filters = parseDashboardFilters(req.query);
+    const result = await this.pilotService.listMetricEntries(filters);
+    if (!result.success) {
+      return this.sendError(res, result.error, result.code as ErrorCode);
+    }
+    res.json({ entries: result.data });
+  };
+
+  getMetricNotes = async (req: AuthRequest, res: Response) => {
+    const result = await this.pilotService.getMetricNotes(req.params.entryId);
+    if (!result.success) {
+      return this.sendError(res, result.error, result.code as ErrorCode);
+    }
+    res.json({ notes: result.data });
+  };
+
   addMetricNote = async (req: AuthRequest, res: Response) => {
     const result = await this.pilotService.addMetricNote(
       req.params.entryId,

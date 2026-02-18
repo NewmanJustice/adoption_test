@@ -282,6 +282,15 @@ export class PilotRepository {
     );
   }
 
+  async getMetricNotes(entryId: string): Promise<PilotMetricNote[]> {
+    await this.ensureSchema();
+    const result = await this.pool.query(
+      'SELECT * FROM pilot_metric_notes WHERE metric_entry_id = $1 ORDER BY created_at ASC',
+      [entryId]
+    );
+    return result.rows.map((row) => this.mapMetricNote(row));
+  }
+
   async createMetricNote(note: PilotMetricNote): Promise<PilotMetricNote> {
     await this.ensureSchema();
     const result = await this.pool.query(

@@ -69,6 +69,7 @@ const PilotDashboardPage: React.FC = () => {
   };
 
   const canWrite = user?.role === 'PILOT_BUILDER' || user?.role === 'PILOT_DELIVERY_LEAD';
+  const isSME = user?.role === 'PILOT_SME';
   const isBuilder = user?.role === 'PILOT_BUILDER';
   
   const isPilotRole = (role: string): role is PilotRole => {
@@ -104,7 +105,7 @@ const PilotDashboardPage: React.FC = () => {
                 Configure pilot
               </Link>
             )}
-            {canWrite && (
+            {(canWrite || isSME) && (
               <Link to="/pilot/metrics" className="govuk-button govuk-button--secondary">
                 Add metric entry
               </Link>

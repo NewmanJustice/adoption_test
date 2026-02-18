@@ -252,6 +252,27 @@ export class PilotService {
     return { success: true, data: stored };
   }
 
+  async listMetricEntries(
+    filters: PilotDashboardFilters
+  ): Promise<ServiceResult<PilotMetricEntry[]>> {
+    const entries = await this.repository.listMetricEntries({
+      dateFrom: filters.dateFrom,
+      dateTo: filters.dateTo,
+      phase: filters.phase,
+      loop: filters.loop,
+    });
+    return { success: true, data: entries };
+  }
+
+  async getMetricNotes(entryId: string): Promise<ServiceResult<PilotMetricNote[]>> {
+    const entry = await this.repository.getMetricEntry(entryId);
+    if (!entry) {
+      return { success: false, error: 'Metric entry not found', code: 'NOT_FOUND' };
+    }
+    const notes = await this.repository.getMetricNotes(entryId);
+    return { success: true, data: notes };
+  }
+
   async recordDeviation(
     input: { description?: string; metricKey?: string; phase?: PilotPhase },
     user: SessionUser

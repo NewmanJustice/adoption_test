@@ -18,6 +18,12 @@ export function createPilotRoutes(controller: PilotController): Router {
 
   router.get('/pilot/overview', requireAuth({ allowedRoles: PILOT_ROLES }), wrapAsync(controller.getOverview));
   router.get('/pilot/dashboard', requireAuth({ allowedRoles: PILOT_ROLES }), wrapAsync(controller.getDashboard));
+  router.get('/pilot/metrics', requireAuth({ allowedRoles: PILOT_ROLES }), wrapAsync(controller.listMetricEntries));
+  router.get(
+    '/pilot/metrics/:entryId/notes',
+    requireAuth({ allowedRoles: PILOT_ROLES }),
+    wrapAsync(controller.getMetricNotes)
+  );
   router.get(
     '/pilot/audit',
     requireAuth({ allowedRoles: ['PILOT_BUILDER', 'PILOT_DELIVERY_LEAD'] }),
