@@ -130,6 +130,12 @@ npx jest --testNamePattern="test name"                 # Run tests matching patt
 - **Layered architecture:** Server follows Repository → Service → Controller → Route pattern
 - **Security:** Helmet CSP configured for React SPA + GOV.UK Frontend (see `server/src/app.ts`)
 - **Error handling:** Use `ApiError` type for all API errors with consistent error codes
+- **Route protection:** Use `requireAuth()` middleware factory from `authMiddleware.ts`; pass `allowedRoles` array or `'*'` for any authenticated user:
+  ```typescript
+  router.get('/resource', requireAuth({ allowedRoles: ['HMCTS_CASE_OFFICER', 'JUDGE_LEGAL_ADVISER'] }), handler);
+  ```
+- **Controller request type:** Use `AuthRequest` (from `server/src/types/auth.ts`) instead of `Request` to access `req.session.user` in authenticated controllers
+- **Accessibility testing:** `jest-axe` is configured globally in client tests — use `expect(await axe(container)).toHaveNoViolations()` in component tests
 
 ## User Roles
 

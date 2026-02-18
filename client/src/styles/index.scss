@@ -2,3 +2,17 @@
 @use 'govuk-frontend' as *;
 
 // Custom styles can be added below
+
+// Equal-height card grid rows
+.app-grid-row--equal-height {
+  display: flex;
+  flex-wrap: wrap;
+
+  > [class*="govuk-grid-column"] {
+    display: flex;
+
+    .govuk-summary-card {
+      flex: 1;
+    }
+  }
+}
