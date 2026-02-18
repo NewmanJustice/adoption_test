@@ -10,6 +10,7 @@ import PilotSummaryCards from '../components/pilot/PilotSummaryCards';
 import PilotTrendTable from '../components/pilot/PilotTrendTable';
 import PilotCompletenessIndicator from '../components/pilot/PilotCompletenessIndicator';
 import PilotGuidancePanel from '../components/pilot/PilotGuidancePanel';
+import PilotOutcomeSummaryPanel from '../components/pilot/PilotOutcomeSummary';
 import { useSession } from '../context/SessionContext';
 import { PilotDashboardFilters, PilotDashboardResponse, PilotRole } from '@adoption/shared';
 
@@ -144,6 +145,9 @@ const PilotDashboardPage: React.FC = () => {
                     ))}
                   </ul>
                 </section>
+              )}
+              {dashboard.outcomeSummary?.length > 0 && (
+                <PilotOutcomeSummaryPanel outcomes={dashboard.outcomeSummary} />
               )}
             </>
           )}

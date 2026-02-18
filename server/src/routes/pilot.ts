@@ -70,5 +70,12 @@ export function createPilotRoutes(controller: PilotController): Router {
     wrapAsync(controller.setUserPreference)
   );
 
+  router.post('/pilot/outcomes', requireAuth({ allowedRoles: ['PILOT_SME'] }), wrapAsync(controller.createOutcome));
+  router.get('/pilot/outcomes', requireAuth({ allowedRoles: PILOT_ROLES }), wrapAsync(controller.listOutcomes));
+  router.get('/pilot/outcomes/:id', requireAuth({ allowedRoles: PILOT_ROLES }), wrapAsync(controller.getOutcome));
+  router.put('/pilot/outcomes/:id', (_req: Request, res: Response) => res.status(405).json({ error: 'Method Not Allowed' }));
+  router.patch('/pilot/outcomes/:id', (_req: Request, res: Response) => res.status(405).json({ error: 'Method Not Allowed' }));
+  router.delete('/pilot/outcomes/:id', (_req: Request, res: Response) => res.status(405).json({ error: 'Method Not Allowed' }));
+
   return router;
 }

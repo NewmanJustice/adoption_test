@@ -5,7 +5,7 @@ import Header from '../components/Header';
 import PhaseBanner from '../components/PhaseBanner';
 import Footer from '../components/Footer';
 import { useSession } from '../context/SessionContext';
-import { PilotMetricEntry, PilotMetricNote, PilotPhase } from '@adoption/shared';
+import { PilotMetricEntry, PilotMetricNote, PilotPhase, PilotArtefactType } from '@adoption/shared';
 
 const SmeNotesViewer: React.FC<{ entries: PilotMetricEntry[] }> = ({ entries }) => {
   const [selectedId, setSelectedId] = useState('');
@@ -69,6 +69,15 @@ const PilotMetricEntryPage: React.FC = () => {
   const [metricEntries, setMetricEntries] = useState<PilotMetricEntry[]>([]);
   const [entryNotes, setEntryNotes] = useState<PilotMetricNote[]>([]);
 
+  // Outcome form state
+  const [outcomeLoop, setOutcomeLoop] = useState(1);
+  const [outcomePhase, setOutcomePhase] = useState<PilotPhase>('PHASE_2');
+  const [outcomeArtefactType, setOutcomeArtefactType] = useState<PilotArtefactType>('spec_artefact');
+  const [outcomeStatus, setOutcomeStatus] = useState<'met' | 'not-met' | 'partial'>('met');
+  const [outcomeRating, setOutcomeRating] = useState(3);
+  const [outcomeFeedback, setOutcomeFeedback] = useState('');
+  const [outcomeMessage, setOutcomeMessage] = useState<string | null>(null);
+
   useEffect(() => {
     if (!loading && !isAuthenticated) {
       navigate('/login');
@@ -126,6 +135,31 @@ const PilotMetricEntryPage: React.FC = () => {
       setEntryNotes(notesData.notes ?? []);
     } else {
       setMessage(data.error || 'Unable to save note');
+    }
+  };
+
+  const handleOutcomeSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setOutcomeMessage(null);
+    const response = await fetch('/api/pilot/outcomes', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({
+        loop: outcomeLoop,
+        phase: outcomePhase,
+        artefactType: outcomeArtefactType,
+        status: outcomeStatus,
+        rating: outcomeRating,
+        feedback: outcomeFeedback,
+      }),
+    });
+    const data = await response.json();
+    if (response.ok) {
+      setOutcomeMessage('Prototype outcome recorded.');
+      setOutcomeFeedback('');
+    } else {
+      setOutcomeMessage(data.error || 'Unable to record outcome');
     }
   };
 
@@ -209,8 +243,8 @@ const PilotMetricEntryPage: React.FC = () => {
           )}
 
           {canNote && (
+            <>
             <form onSubmit={handleNoteSubmit}>
-              <h2 className="govuk-heading-m">Add contextual note</h2>
               <div className="govuk-form-group">
                 <label className="govuk-label" htmlFor="noteEntryId">Metric entry</label>
                 {metricEntries.length > 0 ? (
@@ -255,6 +289,48 @@ const PilotMetricEntryPage: React.FC = () => {
               </div>
               <button className="govuk-button" type="submit" disabled={!noteEntryId}>Save note</button>
             </form>
+
+            <form onSubmit={handleOutcomeSubmit} className="govuk-!-margin-top-6">
+              <h2 className="govuk-heading-m">Record prototype outcome</h2>
+              {outcomeMessage && <p className="govuk-body">{outcomeMessage}</p>}
+              <div className="govuk-form-group">
+                <label className="govuk-label" htmlFor="outcomeLoop">Loop number</label>
+                <input className="govuk-input govuk-input--width-5" id="outcomeLoop" type="number" min={1} value={outcomeLoop} onChange={(e) => setOutcomeLoop(Number(e.target.value))} />
+              </div>
+              <div className="govuk-form-group">
+                <label className="govuk-label" htmlFor="outcomePhase">Phase</label>
+                <select className="govuk-select" id="outcomePhase" value={outcomePhase} onChange={(e) => setOutcomePhase(e.target.value as PilotPhase)}>
+                  <option value="PHASE_2">Phase 2 – Agentic Specification Loops</option>
+                </select>
+              </div>
+              <div className="govuk-form-group">
+                <label className="govuk-label" htmlFor="outcomeArtefactType">Artefact type</label>
+                <select className="govuk-select" id="outcomeArtefactType" value={outcomeArtefactType} onChange={(e) => setOutcomeArtefactType(e.target.value as PilotArtefactType)}>
+                  <option value="spec_artefact">Spec artefact</option>
+                  <option value="code_stub">Code stub</option>
+                  <option value="test_suite">Test suite</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div className="govuk-form-group">
+                <label className="govuk-label" htmlFor="outcomeStatus">Status</label>
+                <select className="govuk-select" id="outcomeStatus" value={outcomeStatus} onChange={(e) => setOutcomeStatus(e.target.value as 'met' | 'not-met' | 'partial')}>
+                  <option value="met">Met</option>
+                  <option value="partial">Partial</option>
+                  <option value="not-met">Not met</option>
+                </select>
+              </div>
+              <div className="govuk-form-group">
+                <label className="govuk-label" htmlFor="outcomeRating">Rating (1–5)</label>
+                <input className="govuk-input govuk-input--width-5" id="outcomeRating" type="number" min={1} max={5} value={outcomeRating} onChange={(e) => setOutcomeRating(Number(e.target.value))} />
+              </div>
+              <div className="govuk-form-group">
+                <label className="govuk-label" htmlFor="outcomeFeedback">Feedback</label>
+                <textarea className="govuk-textarea" id="outcomeFeedback" value={outcomeFeedback} onChange={(e) => setOutcomeFeedback(e.target.value)} />
+              </div>
+              <button className="govuk-button" type="submit">Record outcome</button>
+            </form>
+            </>
           )}
 
           {canWrite && (

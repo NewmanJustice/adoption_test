@@ -10,7 +10,9 @@ import {
   PilotMetricNote,
   PilotMetricSummary,
   PilotMetricType,
+  PilotOutcomeSummary,
   PilotPhase,
+  PilotPrototypeOutcome,
   PilotTrendPoint,
   PilotTrendSeries,
   GuidanceResponse,
@@ -306,17 +308,74 @@ export class PilotService {
     const parsedFilters = normalizeFilters(filters);
     const entries = await this.repository.listMetricEntries(parsedFilters);
     const deviations = await this.repository.listDeviations(parsedFilters);
+    const outcomes = await this.repository.listOutcomes({});
     const buckets = buildBuckets(parsedFilters.dateFrom, parsedFilters.dateTo);
     const metricKeys = getMetricKeys(entries);
     const aggregate = buildAggregation(entries, metricKeys, buckets);
+    const outcomeSummary = buildOutcomeSummary(outcomes);
     const response: PilotDashboardResponse = {
       filters: parsedFilters,
       summary: aggregate.summary,
       trends: aggregate.trends,
       completeness: aggregate.completeness,
       deviations,
+      outcomeSummary,
     };
     return { success: true, data: response };
+  }
+
+  async createOutcome(
+    input: Partial<PilotPrototypeOutcome>,
+    user: SessionUser
+  ): Promise<ServiceResult<PilotPrototypeOutcome>> {
+    if (!isSME(user.role)) {
+      return { success: false, error: 'Access denied', code: 'FORBIDDEN' };
+    }
+    const state = await this.repository.getPhaseState();
+    if (!state?.specFreezeAt) {
+      return { success: false, error: 'Outcome recording requires Spec Freeze (Phase 2)', code: 'PHASE_GATE' };
+    }
+    const validationError = validateOutcomeInput(input);
+    if (validationError) {
+      return { success: false, error: validationError, code: 'VALIDATION' };
+    }
+    const outcome: PilotPrototypeOutcome = {
+      id: randomUUID(),
+      loop: input.loop!,
+      phase: input.phase!,
+      artefactType: input.artefactType!,
+      artefactDescription: input.artefactDescription!,
+      metExpectations: input.metExpectations!,
+      smeRating: input.smeRating!,
+      smeFeedback: input.smeFeedback,
+      createdAt: new Date().toISOString(),
+      createdBy: user.role,
+    };
+    const stored = await this.repository.createOutcome(outcome);
+    await this.logAudit('OUTCOME_CREATED', user, { entityId: stored.id });
+    return { success: true, data: stored };
+  }
+
+  async listOutcomes(
+    filters: { loop?: number; phase?: PilotPhase },
+    user: SessionUser
+  ): Promise<ServiceResult<PilotPrototypeOutcome[]>> {
+    if (!canViewDashboard(user.role)) {
+      return { success: false, error: 'Access denied', code: 'FORBIDDEN' };
+    }
+    const outcomes = await this.repository.listOutcomes(filters);
+    return { success: true, data: outcomes };
+  }
+
+  async getOutcome(id: string, user: SessionUser): Promise<ServiceResult<PilotPrototypeOutcome>> {
+    if (!canViewDashboard(user.role)) {
+      return { success: false, error: 'Access denied', code: 'FORBIDDEN' };
+    }
+    const outcome = await this.repository.getOutcome(id);
+    if (!outcome) {
+      return { success: false, error: 'Outcome not found', code: 'NOT_FOUND' };
+    }
+    return { success: true, data: outcome };
   }
 
   async getAuditLogs(filters: { dateFrom?: string; dateTo?: string; action?: string }): Promise<PilotAuditLog[]> {
@@ -625,4 +684,32 @@ function getActorGuidanceText(role: string): string {
   };
 
   return guidance[role as keyof typeof guidance] || guidance.PILOT_OBSERVER;
+}
+
+function validateOutcomeInput(input: Partial<PilotPrototypeOutcome>): string | null {
+  if (input.loop === undefined || input.loop === null) return 'Missing required field: loop';
+  if (!input.phase) return 'Missing required field: phase';
+  if (!input.artefactType) return 'Missing required field: artefactType';
+  if (!input.artefactDescription) return 'Missing required field: artefactDescription';
+  if (input.metExpectations === undefined || input.metExpectations === null) return 'Missing required field: metExpectations';
+  if (input.smeRating === undefined || input.smeRating === null) return 'Missing required field: smeRating';
+  if (input.smeRating < 1 || input.smeRating > 5) return 'smeRating must be between 1 and 5';
+  return null;
+}
+
+function buildOutcomeSummary(outcomes: PilotPrototypeOutcome[]): PilotOutcomeSummary[] {
+  const byLoop = new Map<number, PilotPrototypeOutcome[]>();
+  for (const outcome of outcomes) {
+    const existing = byLoop.get(outcome.loop) ?? [];
+    existing.push(outcome);
+    byLoop.set(outcome.loop, existing);
+  }
+  return Array.from(byLoop.entries()).map(([loop, items]) => {
+    const totalOutcomes = items.length;
+    const metExpectationsCount = items.filter((o) => o.metExpectations).length;
+    const averageRating = totalOutcomes > 0
+      ? Number((items.reduce((sum, o) => sum + o.smeRating, 0) / totalOutcomes).toFixed(2))
+      : 0;
+    return { loop, totalOutcomes, metExpectationsCount, averageRating };
+  }).sort((a, b) => a.loop - b.loop);
 }

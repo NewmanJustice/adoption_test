@@ -32,10 +32,12 @@ module.exports = {
         }],
       },
       moduleNameMapper: {
+        '^@adoption/shared/(.+)\\.js$': '<rootDir>/shared/$1',
         '^@adoption/shared/(.*)$': '<rootDir>/shared/$1',
-        '^@adoption/shared$': '<rootDir>/shared',
+        '^@adoption/shared$': '<rootDir>/shared/index.ts',
         '^(\\.{1,2}/.*)\\.js$': '$1',
       },
+      moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
       transformIgnorePatterns: [
         'node_modules/(?!(@adoption)/)',
       ],

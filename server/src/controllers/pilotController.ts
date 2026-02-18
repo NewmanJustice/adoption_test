@@ -3,7 +3,7 @@ import { PilotService } from '../services/pilotService.js';
 import { AuthRequest } from '../types/auth.js';
 import { PilotDashboardFilters, PilotPhase } from '@adoption/shared';
 
-type ErrorCode = 'FORBIDDEN' | 'NOT_FOUND' | 'CONFLICT' | 'VALIDATION';
+type ErrorCode = 'FORBIDDEN' | 'NOT_FOUND' | 'CONFLICT' | 'VALIDATION' | 'PHASE_GATE';
 
 export class PilotController {
   constructor(private pilotService: PilotService) {}
@@ -112,6 +112,34 @@ export class PilotController {
     res.json(result.data);
   };
 
+  createOutcome = async (req: AuthRequest, res: Response) => {
+    const result = await this.pilotService.createOutcome(req.body, req.session.user!);
+    if (!result.success) {
+      return this.sendError(res, result.error, result.code as ErrorCode);
+    }
+    res.status(201).json({ data: result.data });
+  };
+
+  listOutcomes = async (req: AuthRequest, res: Response) => {
+    const filters = {
+      loop: req.query.loop ? Number(req.query.loop) : undefined,
+      phase: req.query.phase as PilotPhase | undefined,
+    };
+    const result = await this.pilotService.listOutcomes(filters, req.session.user!);
+    if (!result.success) {
+      return this.sendError(res, result.error, result.code as ErrorCode);
+    }
+    res.json({ data: result.data });
+  };
+
+  getOutcome = async (req: AuthRequest, res: Response) => {
+    const result = await this.pilotService.getOutcome(req.params.id, req.session.user!);
+    if (!result.success) {
+      return this.sendError(res, result.error, result.code as ErrorCode);
+    }
+    res.json({ data: result.data });
+  };
+
   getAuditLogs = async (req: AuthRequest, res: Response) => {
     const logs = await this.pilotService.getAuditLogs({
       dateFrom: req.query.dateFrom as string | undefined,
@@ -185,6 +213,8 @@ function mapErrorStatus(code?: ErrorCode): number {
       return 404;
     case 'CONFLICT':
       return 409;
+    case 'PHASE_GATE':
+      return 422;
     case 'VALIDATION':
       return 400;
     default:

@@ -217,4 +217,27 @@ export interface PilotDashboardResponse {
     missingMetricKeys: string[];
   };
   deviations: PilotDeviation[];
+  outcomeSummary: PilotOutcomeSummary[];
+}
+
+export type PilotArtefactType = 'spec_artefact' | 'code_stub' | 'test_suite' | 'other';
+
+export interface PilotPrototypeOutcome {
+  id: string;
+  loop: number;
+  phase: PilotPhase;
+  artefactType: PilotArtefactType;
+  artefactDescription: string;
+  metExpectations: boolean;
+  smeRating: number;
+  smeFeedback?: string;
+  createdAt: string;
+  createdBy: string;
+}
+
+export interface PilotOutcomeSummary {
+  loop: number;
+  totalOutcomes: number;
+  metExpectationsCount: number;
+  averageRating: number;
 }

@@ -9,6 +9,7 @@ import {
   PilotMetricNote,
   PilotMetricType,
   PilotPhase,
+  PilotPrototypeOutcome,
   UserPreference,
 } from '@adoption/shared';
 
@@ -112,6 +113,19 @@ export class PilotRepository {
         UNIQUE(user_id, preference_key)
       );
 
+      CREATE TABLE IF NOT EXISTS pilot_prototype_outcomes (
+        id VARCHAR(50) PRIMARY KEY,
+        loop_number INT NOT NULL,
+        phase VARCHAR(20) NOT NULL,
+        artefact_type VARCHAR(30) NOT NULL,
+        artefact_description TEXT NOT NULL,
+        met_expectations BOOLEAN NOT NULL,
+        sme_rating INT NOT NULL,
+        sme_feedback TEXT,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        created_by VARCHAR(100) NOT NULL
+      );
+
       CREATE INDEX IF NOT EXISTS idx_pilot_metric_entries_key_date ON pilot_metric_entries(metric_key, date);
       CREATE INDEX IF NOT EXISTS idx_pilot_metric_entries_phase ON pilot_metric_entries(phase);
       CREATE INDEX IF NOT EXISTS idx_pilot_metric_history_entry ON pilot_metric_history(metric_entry_id);
@@ -119,6 +133,7 @@ export class PilotRepository {
       CREATE INDEX IF NOT EXISTS idx_pilot_deviations_created_at ON pilot_deviations(created_at);
       CREATE INDEX IF NOT EXISTS idx_pilot_audit_log_created_at ON pilot_audit_log(created_at);
       CREATE INDEX IF NOT EXISTS idx_user_preferences_user ON user_preferences(user_id);
+      CREATE INDEX IF NOT EXISTS idx_pilot_outcomes_loop ON pilot_prototype_outcomes(loop_number, phase);
     `;
 
     this.schemaEnsured = this.pool
@@ -466,6 +481,59 @@ export class PilotRepository {
     return { clause, values };
   }
 
+  async createOutcome(outcome: PilotPrototypeOutcome): Promise<PilotPrototypeOutcome> {
+    await this.ensureSchema();
+    const result = await this.pool.query(
+      `INSERT INTO pilot_prototype_outcomes (
+        id, loop_number, phase, artefact_type, artefact_description,
+        met_expectations, sme_rating, sme_feedback, created_at, created_by
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+      RETURNING *`,
+      [
+        outcome.id,
+        outcome.loop,
+        outcome.phase,
+        outcome.artefactType,
+        outcome.artefactDescription,
+        outcome.metExpectations,
+        outcome.smeRating,
+        outcome.smeFeedback || null,
+        outcome.createdAt,
+        outcome.createdBy,
+      ]
+    );
+    return this.mapOutcome(result.rows[0]);
+  }
+
+  async listOutcomes(filters: { loop?: number; phase?: PilotPhase }): Promise<PilotPrototypeOutcome[]> {
+    await this.ensureSchema();
+    const clauses: string[] = [];
+    const values: Array<string | number> = [];
+    if (filters.loop !== undefined) {
+      values.push(filters.loop);
+      clauses.push(`loop_number = $${values.length}`);
+    }
+    if (filters.phase) {
+      values.push(filters.phase);
+      clauses.push(`phase = $${values.length}`);
+    }
+    const where = clauses.length ? `WHERE ${clauses.join(' AND ')}` : '';
+    const result = await this.pool.query(
+      `SELECT * FROM pilot_prototype_outcomes ${where} ORDER BY created_at ASC`,
+      values
+    );
+    return result.rows.map((row) => this.mapOutcome(row));
+  }
+
+  async getOutcome(id: string): Promise<PilotPrototypeOutcome | null> {
+    await this.ensureSchema();
+    const result = await this.pool.query(
+      'SELECT * FROM pilot_prototype_outcomes WHERE id = $1',
+      [id]
+    );
+    return result.rows[0] ? this.mapOutcome(result.rows[0]) : null;
+  }
+
   async getUserPreference(userId: string, key: string): Promise<UserPreference | null> {
     await this.ensureSchema();
     const result = await this.pool.query(
@@ -496,6 +564,21 @@ export class PilotRepository {
       preferenceValue: row.preference_value,
       createdAt: row.created_at,
       updatedAt: row.updated_at || undefined,
+    };
+  }
+
+  private mapOutcome(row: any): PilotPrototypeOutcome {
+    return {
+      id: row.id,
+      loop: row.loop_number,
+      phase: row.phase,
+      artefactType: row.artefact_type,
+      artefactDescription: row.artefact_description,
+      metExpectations: row.met_expectations,
+      smeRating: row.sme_rating,
+      smeFeedback: row.sme_feedback || undefined,
+      createdAt: row.created_at,
+      createdBy: row.created_by,
     };
   }
 }

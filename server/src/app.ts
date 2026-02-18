@@ -4,7 +4,6 @@ import cors from 'cors';
 import helmet from 'helmet';
 import fs from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { config } from './config/index.js';
 import { pool } from './config/database.js';
 import { sessionMiddleware } from './middleware/sessionMiddleware.js';
@@ -23,9 +22,6 @@ import { PilotController } from './controllers/pilotController.js';
 import { createPilotRoutes } from './routes/pilot.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { notFoundHandler } from './middleware/notFound.js';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 const app = express();
 
@@ -227,7 +223,8 @@ app.use('/api', pilotRoutes);
 
 // Serve static files from client build (production)
 if (process.env.NODE_ENV === 'production') {
-  const publicPath = path.join(__dirname, 'public');
+  // Derive app directory from the process entry point (works in both ESM and CJS)
+  const publicPath = path.join(path.dirname(process.argv[1] ?? process.cwd()), 'public');
   const indexHtmlPath = path.join(publicPath, 'index.html');
 
   // Cache both versions of index.html
