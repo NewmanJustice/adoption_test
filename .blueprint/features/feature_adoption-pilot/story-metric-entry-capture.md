@@ -18,9 +18,24 @@ As a Delivery Lead, I want to capture metric entries with required fields so tha
 - Then I see a validation error and the entry is not stored.
 
 **AC-3 — Add SME contextual notes**
-- Given I am authenticated as an SME and a metric entry exists,
-- When I submit a contextual note for that entry,
-- Then the note is stored without altering the metric value.
+- Given I am authenticated as an SME and metric entries exist,
+- When I navigate to the metric entry page,
+- Then I see a dropdown of available metric entries (showing metric key, date, and loop number) so I can select an entry without knowing its ID.
+
+**AC-3a — View existing notes before adding**
+- Given I am an SME and I select a metric entry from the dropdown,
+- When the selection changes,
+- Then any existing notes for that entry are displayed before the note input field.
+
+**AC-3b — Save note and see confirmation**
+- Given I am an SME with a metric entry selected and a note written,
+- When I submit the form,
+- Then the note is stored, the note field is cleared, and the updated notes list is shown immediately.
+
+**AC-3c — SME note visibility to delivery team**
+- Given an SME has added notes to a metric entry,
+- When a Builder or Delivery Lead views the metric entry page,
+- Then they see an "SME notes" section with a dropdown to select any metric entry and read its notes.
 
 **AC-4 — Restrict write access**
 - Given I am an Analyst or Observer,
