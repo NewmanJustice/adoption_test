@@ -26,7 +26,7 @@ const PilotFilters: React.FC<PilotFiltersProps> = ({ filters, onChange, onApply,
         onApply();
       }}
     >
-      <div className="govuk-grid-row">
+      <div className="govuk-grid-row" style={{ display: 'flex', alignItems: 'flex-end' }}>
         <div className="govuk-grid-column-one-third">
           <label className="govuk-label" htmlFor="pilot-date-from">From</label>
           <div className="govuk-hint">Filter metrics by the date they were recorded</div>
