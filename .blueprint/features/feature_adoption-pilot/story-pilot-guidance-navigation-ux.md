@@ -68,6 +68,18 @@
 **And** the URL changes to `/pilot/about/structural-preconditions` → `/pilot/about/specification-based-development`  
 **And** the browser back button works correctly
 
+### AC-7 — Collapsible "About the Pilot" section
+**Given** I am viewing the pilot sidebar  
+**When** the sidebar first renders  
+**Then** the "About the Pilot" section is expanded by default using the GOV.UK Details component (`<details>`/`<summary>`)  
+**And** clicking the "About the Pilot" heading collapses the section, hiding the section links  
+**And** clicking it again expands the section, showing the section links  
+**And** the expanded/collapsed state is persisted in `localStorage` (`pilot-about-section-open`) so it survives navigation and page refresh
+
+**Given** I am on any `/pilot/about/*` page  
+**When** the sidebar renders  
+**Then** the "About the Pilot" section is automatically expanded (regardless of saved state) so the active link is always visible
+
 ---
 
 ## Definition of Done
