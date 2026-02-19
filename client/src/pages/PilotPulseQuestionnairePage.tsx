@@ -1,6 +1,11 @@
 import React, { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSession } from '../context/SessionContext';
+import SkipLink from '../components/SkipLink';
+import Header from '../components/Header';
+import PhaseBanner from '../components/PhaseBanner';
+import Footer from '../components/Footer';
+import PilotSidebar from '../components/pilot/PilotSidebar';
 
 type Answers = Record<string, number | undefined>;
 
@@ -128,9 +133,15 @@ const PilotPulseQuestionnairePage: React.FC = () => {
   };
 
   return (
-    <div className="govuk-width-container">
-      <main className="govuk-main-wrapper" id="main-content" role="main">
-        <h1 className="govuk-heading-xl">Pilot Pulse Questionnaire</h1>
+    <>
+      <SkipLink />
+      <Header />
+      <div className="govuk-width-container govuk-grid-row">
+        <PilotSidebar />
+        <div className="govuk-grid-column-three-quarters">
+          <PhaseBanner />
+          <main className="govuk-main-wrapper" id="main-content" role="main">
+            <h1 className="govuk-heading-xl">Pilot Pulse Questionnaire</h1>
 
         {errors.length > 0 && (
           <div
@@ -219,7 +230,10 @@ const PilotPulseQuestionnairePage: React.FC = () => {
           </button>
         </form>
       </main>
-    </div>
+        </div>
+      </div>
+      <Footer />
+    </>
   );
 };
 

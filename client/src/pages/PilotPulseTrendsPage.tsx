@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSession } from '../context/SessionContext';
+import SkipLink from '../components/SkipLink';
+import Header from '../components/Header';
+import PhaseBanner from '../components/PhaseBanner';
+import Footer from '../components/Footer';
+import PilotSidebar from '../components/pilot/PilotSidebar';
 
 interface SectionTrend {
   section: string;
@@ -82,9 +87,15 @@ const PilotPulseTrendsPage: React.FC = () => {
   const { trendInferenceSuppressed, windows, signals } = trends;
 
   return (
-    <div className="govuk-width-container">
-      <main className="govuk-main-wrapper" id="main-content" role="main">
-        <h1 className="govuk-heading-xl">Structural Trends</h1>
+    <>
+      <SkipLink />
+      <Header />
+      <div className="govuk-width-container govuk-grid-row">
+        <PilotSidebar />
+        <div className="govuk-grid-column-three-quarters">
+          <PhaseBanner />
+          <main className="govuk-main-wrapper" id="main-content" role="main">
+            <h1 className="govuk-heading-xl">Structural Trends</h1>
 
         {signals.length > 0 && (
           <section aria-label="Governance signals">
@@ -143,7 +154,10 @@ const PilotPulseTrendsPage: React.FC = () => {
           </>
         )}
       </main>
-    </div>
+        </div>
+      </div>
+      <Footer />
+    </>
   );
 };
 
