@@ -29,7 +29,7 @@ As a Pilot SME, I want to record a structured outcome for each agentic loop arte
 - Then the submission is rejected with a validation error indicating that outcomes require Phase 2.
 
 **AC-5 — Restrict create access to PILOT_SME**
-- Given I am authenticated as any pilot role other than `PILOT_SME` (Builder, Delivery Lead, or Observer),
+- Given I am authenticated as any pilot role other than `PILOT_SME` (Builder, or Observer),
 - When I attempt to call `POST /api/pilot/outcomes`,
 - Then I receive a `403 Forbidden` response and no outcome is stored.
 

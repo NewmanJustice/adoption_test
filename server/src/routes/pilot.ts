@@ -3,7 +3,7 @@ import { PilotController } from '../controllers/pilotController.js';
 import { requireAuth } from '../middleware/authMiddleware.js';
 import { AuthRequest, UserRole } from '../types/auth.js';
 
-const PILOT_ROLES: UserRole[] = ['PILOT_BUILDER', 'PILOT_SME', 'PILOT_DELIVERY_LEAD', 'PILOT_OBSERVER'];
+const PILOT_ROLES: UserRole[] = ['PILOT_BUILDER', 'PILOT_SME', 'PILOT_OBSERVER'];
 
 type AsyncHandler = (req: AuthRequest, res: Response) => Promise<unknown>;
 
@@ -26,7 +26,7 @@ export function createPilotRoutes(controller: PilotController): Router {
   );
   router.get(
     '/pilot/audit',
-    requireAuth({ allowedRoles: ['PILOT_BUILDER', 'PILOT_DELIVERY_LEAD'] }),
+    requireAuth({ allowedRoles: ['PILOT_BUILDER'] }),
     wrapAsync(controller.getAuditLogs)
   );
   router.get(
@@ -47,15 +47,15 @@ export function createPilotRoutes(controller: PilotController): Router {
 
   router.post('/pilot/config', requireAuth({ allowedRoles: ['PILOT_BUILDER'] }), wrapAsync(controller.createConfig));
   router.post('/pilot/spec-freeze', requireAuth({ allowedRoles: ['PILOT_BUILDER'] }), wrapAsync(controller.setSpecFreeze));
-  router.post('/pilot/phases', requireAuth({ allowedRoles: ['PILOT_DELIVERY_LEAD'] }), wrapAsync(controller.transitionPhase));
+  router.post('/pilot/phases', requireAuth({ allowedRoles: ['PILOT_BUILDER'] }), wrapAsync(controller.transitionPhase));
   router.post(
     '/pilot/metrics',
-    requireAuth({ allowedRoles: ['PILOT_BUILDER', 'PILOT_DELIVERY_LEAD'] }),
+    requireAuth({ allowedRoles: ['PILOT_BUILDER'] }),
     wrapAsync(controller.createMetricEntry)
   );
   router.patch(
     '/pilot/metrics/:entryId',
-    requireAuth({ allowedRoles: ['PILOT_BUILDER', 'PILOT_DELIVERY_LEAD'] }),
+    requireAuth({ allowedRoles: ['PILOT_BUILDER'] }),
     wrapAsync(controller.updateMetricEntry)
   );
   router.post(

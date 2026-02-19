@@ -10,7 +10,7 @@
 
 ## User Context
 
-- **User Role:** Builder, SME, Delivery Lead, or Observer accessing pilot guidance
+- **User Role:** Builder, SME, or Observer accessing pilot guidance
 - **User Goals:** Quickly understand the pilot framework, find specific sections, and read content in a familiar GOV.UK format
 - **Use Case:** Navigating to `/pilot/about` to review pilot specification, context, and evaluation criteria
 

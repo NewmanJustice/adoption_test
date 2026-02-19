@@ -1,7 +1,7 @@
 # Implementation Plan — Actor-Tailored Dashboard Guidance
 
 ## Summary
-Add role-specific guidance panel to PilotDashboardPage showing tailored instructions for Builder, SME, Delivery Lead, and Observer roles. Panel is collapsible with preference persistence using localStorage, and filter/control elements include optional help tooltips.
+Add role-specific guidance panel to PilotDashboardPage showing tailored instructions for Builder, SME, and Observer roles. Panel is collapsible with preference persistence using localStorage, and filter/control elements include optional help tooltips.
 
 ## Files to Create/Modify
 
@@ -17,14 +17,13 @@ Add role-specific guidance panel to PilotDashboardPage showing tailored instruct
 ## Implementation Steps
 
 1. **Create shared types** (`shared/types/pilot.ts`)
-   - Add `PilotRole` type union: `'PILOT_BUILDER' | 'PILOT_SME' | 'PILOT_DELIVERY_LEAD' | 'PILOT_OBSERVER'`
+   - Add `PilotRole` type union: `'PILOT_BUILDER' | 'PILOT_SME' | 'PILOT_OBSERVER'`
    - Define `GuidanceContent` interface with `title`, `description`, `actions` (string array), `tips` (optional string array)
 
 2. **Create guidance data** (`client/src/data/pilotGuidance.ts`)
    - Define `PILOT_GUIDANCE: Record<PilotRole, GuidanceContent>` object
    - Builder: Configure pilot scope, confirm Spec Freeze, review metrics/deviations, identify structural issues
    - SME: Provide feedback, review prototypes, add contextual notes to metrics
-   - Delivery Lead: Manage phases, ensure metric coverage, use filters, review completeness
    - Observer: View metrics, interpret summary cards/trends, explore with filters
 
 3. **Create localStorage hook** (`client/src/hooks/useLocalStorage.ts`)
@@ -57,7 +56,7 @@ Add role-specific guidance panel to PilotDashboardPage showing tailored instruct
 
 ## Risks/Questions
 
-- **Guidance content accuracy:** Content should be validated with actual Builder/SME/Delivery Lead users to ensure it matches their workflow needs
+- **Guidance content accuracy:** Content should be validated with actual Builder/SME users to ensure it matches their workflow needs
 - **Tooltip verbosity:** Help text should be concise to avoid overwhelming users; consider progressive disclosure if more detail needed
 - **User preferences API:** Currently using localStorage; may need migration to server-side user preferences if multi-device persistence required in future
 

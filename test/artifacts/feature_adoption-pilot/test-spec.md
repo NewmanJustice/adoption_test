@@ -54,10 +54,9 @@
 | story-actor-tailored-guidance.md | AC-1 | TC-AP-038 | Role-specific guidance display |
 | story-actor-tailored-guidance.md | AC-2 | TC-AP-039 | Builder guidance content |
 | story-actor-tailored-guidance.md | AC-3 | TC-AP-040 | SME guidance content |
-| story-actor-tailored-guidance.md | AC-4 | TC-AP-041 | Delivery Lead guidance content |
-| story-actor-tailored-guidance.md | AC-5 | TC-AP-042 | Observer guidance content |
-| story-actor-tailored-guidance.md | AC-6 | TC-AP-043 | Guidance dismissal/collapse |
-| story-actor-tailored-guidance.md | AC-7 | TC-AP-044 | Contextual help tooltips |
+| story-actor-tailored-guidance.md | AC-4 | TC-AP-041 | Observer guidance content |
+| story-actor-tailored-guidance.md | AC-5 | TC-AP-042 | Guidance dismissal/collapse |
+| story-actor-tailored-guidance.md | AC-6 | TC-AP-043 | Contextual help tooltips |
 | story-audit-logging.md | AC-1 | TC-AP-045 | Metric creation logging |
 | story-audit-logging.md | AC-2 | TC-AP-046 | Metric update logging |
 | story-audit-logging.md | AC-3 | TC-AP-047 | Phase transition logging |
@@ -71,7 +70,7 @@
 | story-pilot-guidance-navigation-ux.md | AC-6 | TC-AP-055 | Navigation state preservation |
 
 ## Key assumptions
-- Pilot roles are authenticated and mapped to Builder/Delivery Lead/SME/Observer.
+- Pilot roles are authenticated and mapped to Builder/SME/Observer.
 - Metric key taxonomy and metric-type mapping are predefined for the pilot.
 - Dashboard filters map directly to stored metric fields and phase metadata.
 - Business context document at .business_context/Specification-Led-Agentic-Delivery-Pilot.md exists.

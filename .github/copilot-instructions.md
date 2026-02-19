@@ -26,6 +26,7 @@ npx jest --selectProjects=server     # Run only server tests
 npx jest --selectProjects=client     # Run only client tests
 npx jest --selectProjects=shared     # Run only shared tests
 npx jest --selectProjects=scaffold   # Run only integration tests
+npx jest --selectProjects=unit       # Run only unit tests
 
 # Type Checking
 npm run typecheck --workspace=client
@@ -86,11 +87,13 @@ See `DEV_TO_PROD_CHECKLIST.md` for complete migration requirements.
 - **Design system:** GOV.UK Frontend v5 (SASS in `client/src/styles/`)
 - **Accessibility:** GOV.UK Frontend accessibility standards are required
 - **Prototype Annotator:** Development-only feedback tool (remove before production)
+- **Auth state:** `SessionContext` (session user + auth state) and `SiteAccessContext` (site access gate) in `client/src/context/`
 
 ### Shared Types
 
 - `shared/types/api.ts` - API request/response types (`ApiResponse<T>`, `ApiError`, `HealthResponse`, case/pilot types)
 - `shared/constants/app.ts` - Application constants
+- `shared/constants/documentTypes.ts` - Allowed document types and MIME types for file validation
 - `shared/utils/format.ts` - Formatting utilities
 
 **API Response Pattern:**
@@ -156,7 +159,6 @@ The system supports the following roles (defined in `server/src/config/roles.ts`
 **Pilot Team:**
 - `PILOT_BUILDER` - Technical builder
 - `PILOT_SME` - Subject matter expert
-- `PILOT_DELIVERY_LEAD` - Delivery lead
 - `PILOT_OBSERVER` - Observer role
 
 Each role has specific redirect URLs after login (e.g., `ADOPTER` → `/my-cases`, others → `/dashboard` or `/pilot`).

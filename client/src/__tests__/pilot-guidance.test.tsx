@@ -53,12 +53,6 @@ describe('Actor-Tailored Dashboard Guidance', () => {
       expect(screen.getByText('Subject Matter Expert guidance')).toBeInTheDocument();
     });
 
-    it('displays guidance panel for PILOT_DELIVERY_LEAD role', () => {
-      render(<PilotGuidancePanel role="PILOT_DELIVERY_LEAD" />);
-      
-      expect(screen.getByText('Delivery Lead guidance')).toBeInTheDocument();
-    });
-
     it('displays guidance panel for PILOT_OBSERVER role', () => {
       render(<PilotGuidancePanel role="PILOT_OBSERVER" />);
       
@@ -140,38 +134,6 @@ describe('Actor-Tailored Dashboard Guidance', () => {
 
     it('has correct number of tips for SME', () => {
       expect(PILOT_GUIDANCE.PILOT_SME.tips).toHaveLength(2);
-    });
-  });
-
-  describe('AC-4: Delivery Lead guidance content', () => {
-    it('displays Delivery Lead-specific description', () => {
-      render(<PilotGuidancePanel role="PILOT_DELIVERY_LEAD" />);
-      
-      expect(screen.getByText(/manage pilot phases and ensure complete metric coverage/i)).toBeInTheDocument();
-    });
-
-    it('displays all Delivery Lead actions', () => {
-      render(<PilotGuidancePanel role="PILOT_DELIVERY_LEAD" />);
-      
-      expect(screen.getByText('Manage pilot phase transitions')).toBeInTheDocument();
-      expect(screen.getByText('Ensure metric entry coverage across all dimensions')).toBeInTheDocument();
-      expect(screen.getByText('Use filters to identify gaps')).toBeInTheDocument();
-      expect(screen.getByText('Review completeness indicators')).toBeInTheDocument();
-    });
-
-    it('displays Delivery Lead tips', () => {
-      render(<PilotGuidancePanel role="PILOT_DELIVERY_LEAD" />);
-      
-      expect(screen.getByText(/Check the completeness score/i)).toBeInTheDocument();
-      expect(screen.getByText(/Use phase and loop filters/i)).toBeInTheDocument();
-    });
-
-    it('has correct number of actions for Delivery Lead', () => {
-      expect(PILOT_GUIDANCE.PILOT_DELIVERY_LEAD.actions).toHaveLength(4);
-    });
-
-    it('has correct number of tips for Delivery Lead', () => {
-      expect(PILOT_GUIDANCE.PILOT_DELIVERY_LEAD.tips).toHaveLength(2);
     });
   });
 
@@ -368,7 +330,7 @@ describe('Actor-Tailored Dashboard Guidance', () => {
 
   describe('Guidance Data Structure', () => {
     it('all pilot roles have guidance defined', () => {
-      const roles: PilotRole[] = ['PILOT_BUILDER', 'PILOT_SME', 'PILOT_DELIVERY_LEAD', 'PILOT_OBSERVER'];
+      const roles: PilotRole[] = ['PILOT_BUILDER', 'PILOT_SME', 'PILOT_OBSERVER'];
       
       roles.forEach(role => {
         expect(PILOT_GUIDANCE[role]).toBeDefined();

@@ -9,7 +9,7 @@ As a pilot team member, I want to view all submitted prototype outcomes so that 
 ## Acceptance criteria
 
 **AC-1 — List all outcomes**
-- Given I am authenticated as any pilot role (`PILOT_SME`, `PILOT_BUILDER`, `PILOT_DELIVERY_LEAD`, or `PILOT_OBSERVER`),
+- Given I am authenticated as any pilot role (`PILOT_SME`, `PILOT_BUILDER`, or `PILOT_OBSERVER`),
 - When I navigate to the outcomes list view under `/pilot`,
 - Then I see a table of all submitted outcomes showing loop number, artefact type, met/not met, rating, and submission date.
 
@@ -29,7 +29,7 @@ As a pilot team member, I want to view all submitted prototype outcomes so that 
 - Then the full outcome record is returned including all fields defined in `PilotPrototypeOutcome`.
 
 **AC-5 — Read-only for non-SME roles**
-- Given I am authenticated as `PILOT_BUILDER`, `PILOT_DELIVERY_LEAD`, or `PILOT_OBSERVER`,
+- Given I am authenticated as `PILOT_BUILDER`, or `PILOT_OBSERVER`,
 - When I view the outcomes list,
 - Then no create, edit, or delete affordance is presented.
 

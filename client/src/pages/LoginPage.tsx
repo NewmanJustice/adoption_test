@@ -15,7 +15,6 @@ const ROLES = [
   { value: 'ADOPTER', label: 'Adopter' },
   { value: 'PILOT_BUILDER', label: 'Pilot Builder' },
   { value: 'PILOT_SME', label: 'Pilot SME' },
-  { value: 'PILOT_DELIVERY_LEAD', label: 'Pilot Delivery Lead' },
   { value: 'PILOT_OBSERVER', label: 'Pilot Observer' },
 ];
 
@@ -137,7 +136,7 @@ const LoginPage: React.FC = () => {
                       Select your role
                     </legend>
                     <div className="govuk-hint">
-                      Choose the role you want to test
+                      Choose the role you want to navigate through the system with
                     </div>
                     {error && !role && (
                       <p className="govuk-error-message">

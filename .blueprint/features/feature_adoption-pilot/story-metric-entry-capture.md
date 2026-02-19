@@ -1,14 +1,14 @@
 # Story — Metric entry capture
 
 ## User story
-As a Delivery Lead, I want to capture metric entries with required fields so that pilot metrics are consistent and complete.
+As a Builder, I want to capture metric entries with required fields so that pilot metrics are consistent and complete.
 
 ## Context
 - Reference: `.blueprint/features/feature_adoption-pilot/FEATURE_SPEC.md`
 
 ## Acceptance criteria
 **AC-1 — Create a metric entry**
-- Given I am authenticated as a Delivery Lead or Builder,
+- Given I am authenticated as a Builder,
 - When I submit a metric entry with `metricKey`, `value`, `unit`, `date`, `phase`, `experimentType`, and `role`,
 - Then the metric entry is stored successfully.
 
@@ -34,7 +34,7 @@ As a Delivery Lead, I want to capture metric entries with required fields so tha
 
 **AC-3c — SME note visibility to delivery team**
 - Given an SME has added notes to a metric entry,
-- When a Builder or Delivery Lead views the metric entry page,
+- When a Builder or SME views the metric entry page,
 - Then they see an "SME notes" section with a dropdown to select any metric entry and read its notes.
 
 **AC-4 — Restrict write access**
@@ -43,7 +43,7 @@ As a Delivery Lead, I want to capture metric entries with required fields so tha
 - Then access is denied.
 
 **AC-5 — Preserve metric history on updates**
-- Given I am a Delivery Lead or Builder and a metric entry exists,
+- Given I am a Builder and a metric entry exists,
 - When I update the metric value,
 - Then the previous value remains in history and the new value is stored as the latest.
 

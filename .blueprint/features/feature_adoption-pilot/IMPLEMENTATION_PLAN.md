@@ -14,7 +14,7 @@ Update the adoption-pilot feature to remove compare mode functionality and Phase
 | client/src/pages/PilotGuidancePage.tsx | create | New page to render .business_context/Specification-Led-Agentic-Delivery-Pilot.md with TOC navigation |
 | client/src/components/pilot/ActorGuidancePanel.tsx | create | Collapsible guidance panel showing role-specific dashboard instructions |
 | client/src/components/pilot/MarkdownRenderer.tsx | create | Markdown rendering component for business context display |
-| client/src/utils/guidanceContent.ts | create | Map pilot roles to tailored guidance text (Builder, SME, Delivery Lead, Observer instructions) |
+| client/src/utils/guidanceContent.ts | create | Map pilot roles to tailored guidance text (Builder, SME, Observer instructions) |
 | client/src/App.tsx | modify | Add /pilot/guidance route for business context page |
 | test/feature_adoption-pilot.test.js | modify | Remove compare mode tests; update phase transition tests to only cover Phase 1→2; add guidance tests (TC-AP-033 to TC-AP-044) |
 

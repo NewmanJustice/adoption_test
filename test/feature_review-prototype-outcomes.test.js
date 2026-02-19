@@ -9,7 +9,7 @@ const session = require('supertest-session');
 
 const app = require('../server/src/app').default;
 
-const PILOT_ROLES = ['PILOT_BUILDER', 'PILOT_SME', 'PILOT_DELIVERY_LEAD', 'PILOT_OBSERVER'];
+const PILOT_ROLES = ['PILOT_BUILDER', 'PILOT_SME', 'PILOT_OBSERVER'];
 
 const VALID_OUTCOME = {
   loop: 1,
@@ -39,18 +39,15 @@ const ensurePhaseTwo = async (builderSession) => {
 let builderSession;
 let smeSession;
 let observerSession;
-let deliveryLeadSession;
 
 beforeAll(async () => {
   builderSession = session(app);
   smeSession = session(app);
   observerSession = session(app);
-  deliveryLeadSession = session(app);
 
   await loginAs(builderSession, 'builder-user', 'PILOT_BUILDER');
   await loginAs(smeSession, 'sme-user', 'PILOT_SME');
   await loginAs(observerSession, 'observer-user', 'PILOT_OBSERVER');
-  await loginAs(deliveryLeadSession, 'lead-user', 'PILOT_DELIVERY_LEAD');
 
   await ensurePhaseTwo(builderSession);
 });
@@ -129,12 +126,6 @@ describe('story-record-prototype-outcome', () => {
 
   // TC-RPO-005
   it('AC-5: PILOT_OBSERVER attempting POST /api/pilot/outcomes receives 403', async () => {
-    const res = await observerSession.post('/api/pilot/outcomes').send(VALID_OUTCOME);
-    expect(res.status).toBe(403);
-  });
-
-  // TC-RPO-005
-  it('AC-5: PILOT_DELIVERY_LEAD attempting POST /api/pilot/outcomes receives 403', async () => {
     const res = await deliveryLeadSession.post('/api/pilot/outcomes').send(VALID_OUTCOME);
     expect(res.status).toBe(403);
   });
@@ -396,13 +387,6 @@ describe('story-dashboard-outcomes-surface', () => {
   // TC-RPO-019
   it('AC-6: PILOT_OBSERVER can access dashboard and sees outcomeSummary', async () => {
     const res = await observerSession.get('/api/pilot/dashboard');
-    expect(res.status).toBe(200);
-    expect(Array.isArray(res.body.outcomeSummary)).toBe(true);
-  });
-
-  // TC-RPO-019
-  it('AC-6: PILOT_DELIVERY_LEAD can access dashboard and sees outcomeSummary', async () => {
-    const res = await deliveryLeadSession.get('/api/pilot/dashboard');
     expect(res.status).toBe(200);
     expect(Array.isArray(res.body.outcomeSummary)).toBe(true);
   });

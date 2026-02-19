@@ -12,7 +12,6 @@ export const VALID_ROLES: UserRole[] = [
   'ADOPTER',
   'PILOT_BUILDER',
   'PILOT_SME',
-  'PILOT_DELIVERY_LEAD',
   'PILOT_OBSERVER',
 ];
 
@@ -28,7 +27,6 @@ export const ROLE_REDIRECTS: Record<UserRole, string> = {
   ADOPTER: '/my-cases',
   PILOT_BUILDER: '/pilot',
   PILOT_SME: '/pilot',
-  PILOT_DELIVERY_LEAD: '/pilot',
   PILOT_OBSERVER: '/pilot',
 };
 

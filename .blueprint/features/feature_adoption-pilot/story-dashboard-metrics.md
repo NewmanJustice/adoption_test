@@ -1,7 +1,7 @@
 # Story — Metrics dashboard with filters
 
 ## User story
-As a Delivery Lead or Observer, I want a metrics dashboard with filters so that I can review pilot progress and completeness.
+As a Builder or Observer, I want a metrics dashboard with filters so that I can review pilot progress and completeness.
 
 ## Context
 - Reference: `.blueprint/features/feature_adoption-pilot/FEATURE_SPEC.md`

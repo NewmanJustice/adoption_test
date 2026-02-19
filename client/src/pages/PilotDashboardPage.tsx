@@ -69,12 +69,12 @@ const PilotDashboardPage: React.FC = () => {
     setFilters({ ...defaultFilters });
   };
 
-  const canWrite = user?.role === 'PILOT_BUILDER' || user?.role === 'PILOT_DELIVERY_LEAD';
+  const canWrite = user?.role === 'PILOT_BUILDER';
   const isSME = user?.role === 'PILOT_SME';
   const isBuilder = user?.role === 'PILOT_BUILDER';
   
   const isPilotRole = (role: string): role is PilotRole => {
-    return ['PILOT_BUILDER', 'PILOT_SME', 'PILOT_DELIVERY_LEAD', 'PILOT_OBSERVER'].includes(role);
+    return ['PILOT_BUILDER', 'PILOT_SME', 'PILOT_OBSERVER'].includes(role);
   };
   
   const pilotRole = user?.role && isPilotRole(user.role) ? user.role : undefined;

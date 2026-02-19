@@ -18,7 +18,7 @@
 - Define pilot configuration: domain scope, pilot, and phase tracking
 - Record pilot lifecycle milestones, including Spec Freeze timestamp
 - Capture MetricEntry records for pilot metrics (structural integrity, predictability, NFR posture, SME alignment, governance)
-- SME contextual notes on metric entries, with notes retrievable and visible to Builder and Delivery Lead
+- SME contextual notes on metric entries, with notes retrievable and visible to Builder
 - List metric entries endpoint accessible to all pilot roles (required for SME entry selection UX)
 - Deterministic aggregation for latest values and trend series (time bucketing by date range)
 - Strict type enforcement for error codes, metric keys, and user roles to ensure type safety in all pilot APIs
@@ -46,13 +46,9 @@
 - **Cannot do:** Override metric aggregation rules or alter recorded history
 
 ### SME (Domain Expert)
-- **Can do:** Browse available metric entries, add contextual notes to metric entries, view existing notes for a selected entry, share domain insights visible to Builder and Delivery Lead
+- **Can do:** Browse available metric entries, add contextual notes to metric entries, view existing notes for a selected entry, share domain insights visible to Builder
 - **Cannot do:** Change pilot configuration or phase state, create or update metric values
 - **Not yet implemented:** Review prototype outcomes (out of scope for current iteration)
-
-### Delivery Lead / Pilot Coordinator
-- **Can do:** Manage pilot phases, ensure metric entry coverage, view dashboard and compare mode
-- **Cannot do:** Change aggregation logic or delete metric records
 
 ### Analyst / Observer
 - **Can do:** Read dashboard metrics, view trend series, export read-only summaries (if available)
@@ -64,7 +60,7 @@
 **What the feature does, conceptually.**
 
 ### Happy Path
-1. Delivery Lead configures pilot scope and confirms experiment type (pilot)
+1. Builder configures pilot scope and confirms experiment type (pilot)
 2. Phase 1 begins; pilot artefacts are produced and Spec Freeze is recorded
 3. Metric entries are captured during phases (manual or automated sources)
 4. Dashboard aggregates latest values and trend series using deterministic rules
@@ -227,7 +223,7 @@ This feature **stretches but does not contradict** the system specification:
 3. **Aggregation Engine:** Implement deterministic bucketing and summary logic
 4. **Dashboard Views:** Summary cards, trend charts, and filter controls
 5. **Spec Freeze & Deviations:** Record freeze timestamp and post-freeze deviations
-6. **Role-Based Access:** Permissions for Builder, SME, Delivery Lead, Observer
+6. **Role-Based Access:** Permissions for Builder, SME, Observer
 7. **Audit Logging:** Immutable metric and phase change records
 
 ### Expected Story Boundaries
@@ -246,4 +242,4 @@ This feature **stretches but does not contradict** the system specification:
 |------|--------|--------|-----------|
 | 2026-02-05 | Initial feature specification created | Define bounded adoption pilot for Specification-Led Agentic Delivery | Alex |
 | 2026-02-17 | Updated pilot spec content delivery approach | Changed from API-fetched markdown to native React data structure for better performance and type safety | Developer |
-| 2026-02-18 | SME notes gap fixes implemented | SME 'Add metric entry' button was hidden; notes required manual entry ID input; notes had no retrieval route and were invisible to other roles. Fixed: button visibility, metric entry dropdown, GET /pilot/metrics and GET /pilot/metrics/:entryId/notes endpoints, notes viewer for Builder/Delivery Lead | Developer |
+| 2026-02-18 | SME notes gap fixes implemented | SME 'Add metric entry' button was hidden; notes required manual entry ID input; notes had no retrieval route and were invisible to other roles. Fixed: button visibility, metric entry dropdown, GET /pilot/metrics and GET /pilot/metrics/:entryId/notes endpoints, notes viewer for Builder | Developer |

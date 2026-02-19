@@ -1,7 +1,7 @@
 # Story — Pilot phase transitions
 
 ## User story
-As a Delivery Lead, I want to transition the pilot through phases with clear gating so that lifecycle progress is controlled and traceable.
+As a Builder, I want to transition the pilot through phases with clear gating so that lifecycle progress is controlled and traceable.
 
 ## Context
 - Reference: `.blueprint/features/feature_adoption-pilot/FEATURE_SPEC.md`
@@ -18,7 +18,7 @@ As a Delivery Lead, I want to transition the pilot through phases with clear gat
 - Then the transition is blocked with a clear message.
 
 **AC-3 — Restrict phase transitions**
-- Given a user is not a Delivery Lead,
+- Given a user is not a Builder,
 - When they attempt to change the pilot phase,
 - Then access is denied and the phase remains unchanged.
 

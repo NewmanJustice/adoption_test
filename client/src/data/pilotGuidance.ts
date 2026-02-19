@@ -29,20 +29,6 @@ export const PILOT_GUIDANCE: Record<PilotRole, GuidanceContent> = {
       'Contextual notes help explain variations in metric trends',
     ],
   },
-  PILOT_DELIVERY_LEAD: {
-    title: 'Delivery Lead guidance',
-    description: 'As a Delivery Lead, you manage pilot phases and ensure complete metric coverage.',
-    actions: [
-      'Manage pilot phase transitions',
-      'Ensure metric entry coverage across all dimensions',
-      'Use filters to identify gaps',
-      'Review completeness indicators',
-    ],
-    tips: [
-      'Check the completeness score to see which metrics are missing',
-      'Use phase and loop filters to drill into specific iterations',
-    ],
-  },
   PILOT_OBSERVER: {
     title: 'Observer guidance',
     description: 'As an Observer, you have read-only access to monitor pilot progress.',

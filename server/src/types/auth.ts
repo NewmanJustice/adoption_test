@@ -13,7 +13,6 @@ export type UserRole =
   | 'ADOPTER'
   | 'PILOT_BUILDER'
   | 'PILOT_SME'
-  | 'PILOT_DELIVERY_LEAD'
   | 'PILOT_OBSERVER';
 
 /**

@@ -166,7 +166,7 @@ describe('story-actor-tailored-guidance', () => {
     const fs = require('fs');
     const guidanceSource = fs.readFileSync('./client/src/data/pilotGuidance.ts', 'utf8');
     
-    const requiredRoles = ['PILOT_BUILDER', 'PILOT_SME', 'PILOT_DELIVERY_LEAD', 'PILOT_OBSERVER'];
+    const requiredRoles = ['PILOT_BUILDER', 'PILOT_SME', 'PILOT_OBSERVER'];
     requiredRoles.forEach(role => {
       expect(guidanceSource).toContain(role);
       expect(guidanceSource).toContain('title:');
@@ -198,19 +198,6 @@ describe('story-actor-tailored-guidance', () => {
     expect(guidanceSource).toContain('Provide feedback inputs on metrics');
     expect(guidanceSource).toContain('Review prototype outcomes');
     expect(guidanceSource).toContain('Add contextual notes to metric entries');
-  });
-
-  test('AC-4 Delivery Lead guidance [.blueprint/features/feature_adoption-pilot/story-actor-tailored-guidance.md]', () => {
-    // Verify Delivery Lead guidance contains expected content
-    const fs = require('fs');
-    const guidanceSource = fs.readFileSync('./client/src/data/pilotGuidance.ts', 'utf8');
-    
-    expect(guidanceSource).toContain('Delivery Lead guidance');
-    expect(guidanceSource).toContain('manage pilot phases');
-    expect(guidanceSource).toContain('Manage pilot phase transitions');
-    expect(guidanceSource).toContain('Ensure metric entry coverage across all dimensions');
-    expect(guidanceSource).toContain('Use filters to identify gaps');
-    expect(guidanceSource).toContain('Review completeness indicators');
   });
 
   test('AC-5 Observer guidance [.blueprint/features/feature_adoption-pilot/story-actor-tailored-guidance.md]', () => {

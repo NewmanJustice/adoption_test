@@ -91,7 +91,7 @@ export type PilotPhase = 'PHASE_1' | 'PHASE_2';
 
 export type PilotMetricType = 'percent' | 'score' | 'count' | 'time';
 
-export type PilotRole = 'PILOT_BUILDER' | 'PILOT_SME' | 'PILOT_DELIVERY_LEAD' | 'PILOT_OBSERVER';
+export type PilotRole = 'PILOT_BUILDER' | 'PILOT_SME' | 'PILOT_OBSERVER';
 
 export interface GuidanceContent {
   title: string;

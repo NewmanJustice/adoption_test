@@ -24,7 +24,7 @@ As a pilot user, I want to view the pilot framework guidance so that I understan
 - Then a table of contents or anchor links allow navigation to major sections (Purpose, Structural Preconditions, Operating Model, Evaluation Framework, etc.).
 
 **AC-4 — Access control**
-- Given I am authenticated as any pilot role (Builder, SME, Delivery Lead, Observer),
+- Given I am authenticated as any pilot role (Builder, SME, or Observer),
 - When I access the guidance,
 - Then the content is visible without restriction.
 

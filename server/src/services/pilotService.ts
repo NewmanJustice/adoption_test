@@ -137,7 +137,7 @@ export class PilotService {
     stabilityConfirmed: boolean,
     user: SessionUser
   ): Promise<ServiceResult<PilotLifecycleState>> {
-    if (!isDeliveryLead(user.role)) {
+    if (!isBuilder(user.role)) {
       return { success: false, error: 'Access denied', code: 'FORBIDDEN' };
     }
     const state = await this.repository.getPhaseState();
@@ -437,16 +437,12 @@ function isBuilder(role: UserRole): boolean {
   return role === 'PILOT_BUILDER';
 }
 
-function isDeliveryLead(role: UserRole): boolean {
-  return role === 'PILOT_DELIVERY_LEAD';
-}
-
 function isSME(role: UserRole): boolean {
   return role === 'PILOT_SME';
 }
 
 function canWriteMetrics(role: UserRole): boolean {
-  return role === 'PILOT_BUILDER' || role === 'PILOT_DELIVERY_LEAD';
+  return role === 'PILOT_BUILDER';
 }
 
 function canViewDashboard(role: UserRole): boolean {
@@ -663,17 +659,10 @@ function getActorGuidanceText(role: string): string {
 
     PILOT_SME: `# SME Dashboard Guide
 
-- **Metric review**: Review metrics entered by Builders and Delivery Leads
+- **Metric review**: Review metrics entered by Builders
 - **Add context**: Provide contextual notes on metric entries to explain nuances
 - **Trend analysis**: Monitor metric trends to identify patterns and issues
 - **Dashboard filters**: Use phase and date filters to focus your review`,
-
-    PILOT_DELIVERY_LEAD: `# Delivery Lead Dashboard Guide
-
-- **Progress monitoring**: Track metric progress against targets
-- **Metric entry**: Record metrics for your delivery activities
-- **Team coordination**: Review metrics across phases and loops
-- **Filters**: Use dashboard filters to analyze specific time periods or phases`,
 
     PILOT_OBSERVER: `# Observer Dashboard Guide
 

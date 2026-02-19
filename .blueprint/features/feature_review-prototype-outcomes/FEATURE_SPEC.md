@@ -9,7 +9,7 @@
 
 **Problem being addressed:** The SME actor's "Review prototype outcomes" responsibility is documented in pilot guidance (`client/src/data/pilotGuidance.ts`) and the adoption-pilot feature spec (Section 3, SME actor) but has no implementation — no data model, no API routes, no UI. This creates a gap between what the pilot guidance promises SMEs they can do and what the system actually supports.
 
-**User need:** During Phase 2 agentic loops, each loop produces one or more prototype artefacts (a spec section, a code stub, a test suite). SMEs need a structured way to record whether each produced artefact met domain expectations, and to provide qualitative feedback the Builder and Delivery Lead can act on. Without this, SME domain input on loop outputs is informal, untracked, and invisible to the rest of the pilot team.
+**User need:** During Phase 2 agentic loops, each loop produces one or more prototype artefacts (a spec section, a code stub, a test suite). SMEs need a structured way to record whether each produced artefact met domain expectations, and to provide qualitative feedback the Builder can act on. Without this, SME domain input on loop outputs is informal, untracked, and invisible to the rest of the pilot team.
 
 **How this supports the system purpose:** The pilot (per `.business_context/Specification-Led-Agentic-Delivery-Pilot.md` Section 4.2) depends on "Structured, categorised, mapped-back-to-specification" SME feedback. Prototype outcome reviews are the structured vehicle for that feedback. This feature closes the loop between prototype generation and SME-validated specification mutation.
 
@@ -24,7 +24,7 @@
 - List outcomes endpoint: `GET /api/pilot/outcomes` — accessible to all pilot roles
 - Single outcome endpoint: `GET /api/pilot/outcomes/:id` — accessible to all pilot roles
 - UI: SME "Record Outcome" form under `/pilot` (new tab or sub-section)
-- UI: Outcome list view accessible to Builder, Delivery Lead, Observer (read-only)
+- UI: Outcome list view accessible to Builder, Observer (read-only)
 - Dashboard surface: outcome summary counts per loop (met / not met) surfaced alongside existing metric summary cards
 - Shared type: `PilotPrototypeOutcome` added to `shared/types/api.ts`
 - Audit log entry on outcome creation (consistent with existing pilot audit pattern)
@@ -49,10 +49,6 @@
 - **Can do:** View all submitted outcomes; see per-loop outcome summaries on the dashboard
 - **Cannot do:** Create or modify outcomes
 
-### Delivery Lead
-- **Can do:** View all submitted outcomes; use outcome data to assess loop health
-- **Cannot do:** Create or modify outcomes
-
 ### Observer
 - **Can do:** Read-only view of outcome list
 - **Cannot do:** Create outcomes
@@ -67,7 +63,7 @@
 3. SME navigates to the "Record Outcome" form in the pilot UI
 4. SME selects loop number, artefact type, provides a description, rates the output (1–5), states whether it met expectations, and optionally adds free-text feedback
 5. Outcome is stored; confirmation is shown; the outcome is immediately visible in the list view
-6. Builder and Delivery Lead see per-loop outcome summaries on the dashboard (met count / total count per loop)
+6. Builder sees per-loop outcome summaries on the dashboard (met count / total count per loop)
 
 ### Key Alternatives
 

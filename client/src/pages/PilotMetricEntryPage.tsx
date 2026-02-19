@@ -84,7 +84,7 @@ const PilotMetricEntryPage: React.FC = () => {
     }
   }, [loading, isAuthenticated, navigate]);
 
-  const canWrite = user?.role === 'PILOT_BUILDER' || user?.role === 'PILOT_DELIVERY_LEAD';
+  const canWrite = user?.role === 'PILOT_BUILDER';
   const canNote = user?.role === 'PILOT_SME';
 
   useEffect(() => {
