@@ -17,6 +17,8 @@ const PilotConfigPage = lazy(() => import('./pages/PilotConfigPage'));
 const PilotMetricEntryPage = lazy(() => import('./pages/PilotMetricEntryPage'));
 const AboutPilotPage = lazy(() => import('./pages/AboutPilotPage'));
 const AdoptionVisionPage = lazy(() => import('./pages/AdoptionVisionPage'));
+const PilotPulseQuestionnairePage = lazy(() => import('./pages/PilotPulseQuestionnairePage'));
+const PilotPulseTrendsPage = lazy(() => import('./pages/PilotPulseTrendsPage'));
 
 // Notify prototype-annotator of route changes
 function AnnotatorRouteSync() {
@@ -74,6 +76,8 @@ function AppRoutes() {
           <Route path="/pilot/about/:sectionId?" element={<AboutPilotPage />} />
           <Route path="/pilot/config" element={<PilotConfigPage />} />
           <Route path="/pilot/metrics" element={<PilotMetricEntryPage />} />
+          <Route path="/pilot/pulse/questionnaire" element={<PilotPulseQuestionnairePage />} />
+          <Route path="/pilot/pulse/trends" element={<PilotPulseTrendsPage />} />
         </Routes>
       </Suspense>
     </SiteAccessGuard>

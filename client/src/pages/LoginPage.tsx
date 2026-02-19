@@ -143,6 +143,7 @@ const LoginPage: React.FC = () => {
                         <span className="govuk-visually-hidden">Error:</span> Select a role
                       </p>
                     )}
+                    
                     <div className="govuk-radios" data-module="govuk-radios">
                       {ROLES.map((r) => (
                         <div className="govuk-radios__item" key={r.value}>

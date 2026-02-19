@@ -3,9 +3,11 @@ import { Link, useLocation } from 'react-router-dom';
 import { AboutSectionLinks } from './AboutSectionLinks';
 import { VisionSectionLinks } from './VisionSectionLinks';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
+import { useSession } from '../../context/SessionContext';
 
 const PilotSidebar: React.FC = () => {
   const location = useLocation();
+  const { user } = useSession();
   const isOnAboutPage = location.pathname.startsWith('/pilot/about');
   const isOnVisionPage = location.pathname.startsWith('/pilot/vision');
 
@@ -24,6 +26,10 @@ const PilotSidebar: React.FC = () => {
     }
   }, [isOnVisionPage]);
 
+  const role = user?.role;
+  const canSubmitQuestionnaire = role === 'PILOT_BUILDER' || role === 'PILOT_SME';
+  const canViewTrends = role?.startsWith('PILOT_') ?? false;
+
   return (
     <nav className="pilot-sidebar govuk-!-margin-top-6" aria-label="Pilot navigation">
       <ul className="govuk-list govuk-list--spaced">
@@ -32,6 +38,34 @@ const PilotSidebar: React.FC = () => {
             Dashboard
           </Link>
         </li>
+        {canSubmitQuestionnaire && (
+          <li>
+            <Link
+              to="/pilot/pulse/questionnaire"
+              className={
+                location.pathname === '/pilot/pulse/questionnaire'
+                  ? 'govuk-link govuk-link--no-visited-state govuk-!-font-weight-bold'
+                  : 'govuk-link govuk-link--no-visited-state'
+              }
+            >
+              Pulse questionnaire
+            </Link>
+          </li>
+        )}
+        {canViewTrends && (
+          <li>
+            <Link
+              to="/pilot/pulse/trends"
+              className={
+                location.pathname === '/pilot/pulse/trends'
+                  ? 'govuk-link govuk-link--no-visited-state govuk-!-font-weight-bold'
+                  : 'govuk-link govuk-link--no-visited-state'
+              }
+            >
+              Structural trends
+            </Link>
+          </li>
+        )}
         <li>
           <details className="govuk-details govuk-!-margin-bottom-0" open={visionOpen}>
             <summary
@@ -74,3 +108,4 @@ const PilotSidebar: React.FC = () => {
 };
 
 export default PilotSidebar;
+

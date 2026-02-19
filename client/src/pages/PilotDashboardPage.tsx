@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import PilotSidebar from '../components/pilot/PilotSidebar';
 import SkipLink from '../components/SkipLink';
 import Header from '../components/Header';
@@ -24,6 +24,7 @@ const defaultFilters: PilotDashboardFilters = {
 
 const PilotDashboardPage: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, isAuthenticated, loading } = useSession();
   const [filters, setFilters] = useState<PilotDashboardFilters>(defaultFilters);
   const [dashboard, setDashboard] = useState<PilotDashboardResponse | null>(null);
@@ -98,6 +99,12 @@ const PilotDashboardPage: React.FC = () => {
         <div className="govuk-grid-column-three-quarters">
           <PhaseBanner />
           <main className="govuk-main-wrapper" id="main-content" role="main">
+          {(location.state as { submitted?: boolean } | null)?.submitted && (
+            <div className="govuk-panel govuk-panel--confirmation">
+              <h2 className="govuk-panel__title">Pulse submitted</h2>
+              <div className="govuk-panel__body">Your response has been recorded.</div>
+            </div>
+          )}
           <h1 className="govuk-heading-xl">Adoption Pilot Dashboard</h1>
           <p className="govuk-body">Signed in as {user?.username} ({user?.role}).</p>
           <div className="govuk-button-group">
