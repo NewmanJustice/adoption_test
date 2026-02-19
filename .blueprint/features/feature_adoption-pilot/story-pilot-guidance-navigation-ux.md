@@ -80,6 +80,19 @@
 **When** the sidebar renders  
 **Then** the "About the Pilot" section is automatically expanded (regardless of saved state) so the active link is always visible
 
+### AC-8 — Collapsible "Adoption Vision" section
+**Given** I am viewing the pilot sidebar  
+**When** the sidebar first renders  
+**Then** an "Adoption Vision" section appears above "About the Pilot", expanded by default using the GOV.UK Details component  
+**And** it contains links to all 15 business context documents, displayed sequentially (1–15)  
+**And** each link navigates to `/pilot/vision/:sectionId`  
+**And** clicking the heading collapses or expands the section  
+**And** the expanded/collapsed state is persisted in `localStorage` (`pilot-vision-section-open`)
+
+**Given** I am on any `/pilot/vision/*` page  
+**When** the sidebar renders  
+**Then** the "Adoption Vision" section is automatically expanded so the active link is always visible
+
 ---
 
 ## Definition of Done

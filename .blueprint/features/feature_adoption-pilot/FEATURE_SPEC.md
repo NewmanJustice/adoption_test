@@ -25,6 +25,7 @@
 - Dashboard views with filters for date range, phase, loop number, and experiment type (pilot/control/compare)
 - Audit trail for metric creation/updates and pilot phase transitions
 - Displaying the pilot specification content as navigable React pages, with sections structured as TypeScript data and rendered under /pilot/about
+- Sidebar navigation includes an "Adoption Vision" collapsible section (GOV.UK Details pattern) containing links to 15 business context documents (sourced from `.business_context/01–15`); expanded by default, state persisted in localStorage, and auto-expanded when on any `/pilot/vision/*` page
 - Sidebar navigation includes an "About the Pilot" collapsible section (GOV.UK Details pattern) containing links to all pilot guidance sections; expanded by default, state persisted in localStorage, and auto-expanded when on any `/pilot/about/*` page
 - Content stored in client/src/data/pilotSpecification.ts as structured TypeScript data with proper typing
 - Guidance on how the dashboard behaviour works, and what steps they need to take, tailored to the current Actor

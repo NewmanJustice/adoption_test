@@ -1,18 +1,28 @@
 import React, { useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { AboutSectionLinks } from './AboutSectionLinks';
+import { VisionSectionLinks } from './VisionSectionLinks';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
 
 const PilotSidebar: React.FC = () => {
   const location = useLocation();
   const isOnAboutPage = location.pathname.startsWith('/pilot/about');
+  const isOnVisionPage = location.pathname.startsWith('/pilot/vision');
+
   const [aboutOpen, setAboutOpen] = useLocalStorage('pilot-about-section-open', true);
+  const [visionOpen, setVisionOpen] = useLocalStorage('pilot-vision-section-open', true);
 
   useEffect(() => {
     if (isOnAboutPage && !aboutOpen) {
       setAboutOpen(true);
     }
   }, [isOnAboutPage]);
+
+  useEffect(() => {
+    if (isOnVisionPage && !visionOpen) {
+      setVisionOpen(true);
+    }
+  }, [isOnVisionPage]);
 
   return (
     <nav className="pilot-sidebar govuk-!-margin-top-6" aria-label="Pilot navigation">
@@ -21,6 +31,24 @@ const PilotSidebar: React.FC = () => {
           <Link to="/pilot" className={location.pathname === '/pilot' ? 'govuk-link govuk-link--no-visited-state govuk-!-font-weight-bold' : 'govuk-link govuk-link--no-visited-state'}>
             Dashboard
           </Link>
+        </li>
+        <li>
+          <details className="govuk-details govuk-!-margin-bottom-0" open={visionOpen}>
+            <summary
+              className="govuk-details__summary"
+              onClick={(e) => {
+                e.preventDefault();
+                setVisionOpen(!visionOpen);
+              }}
+            >
+              <span className="govuk-details__summary-text govuk-!-font-weight-bold">Adoption Vision</span>
+            </summary>
+            <div className="govuk-details__text govuk-!-padding-top-2">
+              <ul className="govuk-list govuk-list--spaced">
+                <VisionSectionLinks />
+              </ul>
+            </div>
+          </details>
         </li>
         <li>
           <details className="govuk-details govuk-!-margin-bottom-0" open={aboutOpen}>
