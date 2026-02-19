@@ -20,6 +20,10 @@ import { PilotRepository } from './repositories/pilotRepository.js';
 import { PilotService } from './services/pilotService.js';
 import { PilotController } from './controllers/pilotController.js';
 import { createPilotRoutes } from './routes/pilot.js';
+import { PilotPulseRepository } from './repositories/pilotPulseRepository.js';
+import { PilotPulseService } from './services/pilotPulseService.js';
+import { PilotPulseController } from './controllers/pilotPulseController.js';
+import { createPilotPulseRoutes } from './routes/pilotPulse.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { notFoundHandler } from './middleware/notFound.js';
 
@@ -220,6 +224,13 @@ const pilotService = new PilotService(pilotRepository);
 const pilotController = new PilotController(pilotService);
 const pilotRoutes = createPilotRoutes(pilotController);
 app.use('/api', pilotRoutes);
+
+// Pilot pulse routes (API + server-rendered HTML — must be before SPA catch-all)
+const pilotPulseRepository = new PilotPulseRepository(pool);
+const pilotPulseService = new PilotPulseService(pilotPulseRepository);
+const pilotPulseController = new PilotPulseController(pilotPulseService);
+const pilotPulseRoutes = createPilotPulseRoutes(pilotPulseController);
+app.use(pilotPulseRoutes);
 
 // Serve static files from client build (production)
 if (process.env.NODE_ENV === 'production') {
