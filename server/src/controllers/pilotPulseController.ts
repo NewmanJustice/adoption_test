@@ -17,6 +17,6 @@ export class PilotPulseController {
 
   getTrends = async (_req: AuthRequest, res: Response): Promise<void> => {
     const result = await this.service.getTrends();
-    res.status(200).json(result);
+    res.status(200).json({ data: result });
   };
 }

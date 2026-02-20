@@ -46,6 +46,7 @@ npm run migrate:create --workspace=server -- <migration-name>
 
 PostgreSQL runs via Docker Compose on `localhost:5432`:
 ```bash
+cp .env.example .env   # First-time setup
 docker compose up -d
 ```
 
@@ -78,6 +79,7 @@ See `DEV_TO_PROD_CHECKLIST.md` for complete migration requirements.
 - **Route organization:** Public routes (`/api/auth`) and protected routes (require authentication)
 - **Database:** pg connection pool in `server/src/config/database.ts`
 - **Authentication:** Session-based with role-based access control (roles in `server/src/config/roles.ts`)
+- **Dependency injection:** Manual — `app.ts` explicitly instantiates and wires `Repository → Service → Controller → createRoutes()`. When adding a new feature, follow this pattern and register routes in `app.ts`.
 
 ### Frontend (React + Vite)
 
@@ -111,7 +113,7 @@ All API responses must use types from `shared/types/api.ts`. Responses should fo
 Jest multi-project config in `jest.config.js` with five test suites:
 
 - **unit** - Unit tests in `test/unit/**/*.test.js`
-- **scaffold** - Integration tests in `test/**/*.test.js`
+- **scaffold** - Feature integration tests in `test/feature_<name>.test.js`
 - **server** - Backend tests in `server/**/*.test.ts` (node environment)
 - **client** - Frontend tests in `client/**/*.test.tsx|ts` (jsdom environment)
 - **shared** - Shared library tests in `shared/**/*.test.ts`
